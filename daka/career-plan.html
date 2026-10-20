@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>职业规划 - DAKA · 牛人工作台</title>
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body data-page="plan">
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="mobile-nav" id="mobileNav"></div>
+    <div class="content">
+      <section class="view" id="view-plan">
+      <div class="page-head">
+      <div>
+      <h1>职业规划</h1>
+      <p>面向 AI 类岗位的性格与兴趣测评 · 输出方向建议与能力差距</p>
+      </div>
+      <div class="head-ops">
+      <button class="btn" id="btnPlanHistory">历史规划</button>
+      </div>
+      </div>
+      <div class="plan-layout">
+      <div class="plan-form-card">
+      <h3>AI 职业规划测评</h3>
+      <p class="pf-sub">共 5 项，约 1 分钟。结果会结合平台在招岗位与你的求职条件给出建议。</p>
+      <div class="pf-block">
+      <label>MBTI 性格</label>
+      <select class="ctrl" id="planMbti"></select>
+      </div>
+      <div class="pf-block">
+      <label>兴趣爱好（可多选）</label>
+      <div class="chip-wrap" id="planHobbies"></div>
+      </div>
+      <div class="pf-block">
+      <label>期望城市</label>
+      <select class="ctrl" id="planCity">
+      <option>深圳</option><option>广州</option><option>杭州</option><option>成都</option>
+      <option>南京</option><option>武汉</option><option>北京</option><option>上海</option>
+      </select>
+      </div>
+      <div class="pf-block">
+      <label>期望月薪</label>
+      <select class="ctrl" id="planSalary">
+      <option>8-12K</option><option selected>12-20K</option><option>20-30K</option><option>30K 以上</option>
+      </select>
+      </div>
+      <div class="pf-block">
+      <label>当前学历</label>
+      <select class="ctrl" id="planEdu">
+      <option value="大专">大专</option><option value="本科" selected>本科</option><option value="硕士">硕士</option>
+      </select>
+      </div>
+      <div class="plan-note">
+      <div class="pn-t">测评怎么用</div>
+      <div class="pn-i"><i>1.</i><span>结果按匹配度排序，第一项为最匹配方向</span></div>
+      <div class="pn-i"><i>2.</i><span>建议结合「职位广场」里的在招岗位一起看</span></div>
+      <div class="pn-i"><i>3.</i><span>可重复测评，历史结果在右上角「历史规划」查看</span></div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" id="btnGenPlan">生成职业规划</button>
+      <p class="hint plan-foot">结果仅作求职参考，不构成录用承诺。测评数据仅用于生成建议。</p>
+      </div>
+      <div class="plan-result" id="planResult"></div>
+      </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div id="layerRoot"></div>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/career-plan.js"></script>
+</body>
+</html>
