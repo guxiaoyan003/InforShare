@@ -2082,7 +2082,8 @@ function openEdit(rec){
 }
 
 /* ---------- 事件绑定 ---------- */
-document.getElementById('btnCreate').onclick = openCreate;document.getElementById('fmClose').onclick = closeForm;
+document.getElementById('btnCreate').onclick = openCreate;
+document.getElementById('fmClose').onclick = closeForm;
 document.getElementById('fmCancel').onclick = closeForm;
 document.getElementById('fm-till').onchange = syncGrad;
 
@@ -2155,18 +2156,11 @@ const qkState = { rec:null };
 function openQuick(rec){
   qkState.rec = rec;
   document.getElementById('qkTitle').textContent = `快速编辑 · ${rec.name}`;
-  const q = {
-    name: rec.name || '',
-    city: rec.city || '',
-    intent: rec.job_intention || '',
-    school: rec.graduate_school || '',
-    major: rec.major || ''
-  };
-  document.getElementById('qk-name').value = q.name;
-  document.getElementById('qk-city').value = q.city;
-  document.getElementById('qk-intent').value = q.intent;
-  document.getElementById('qk-school').value = q.school;
-  document.getElementById('qk-major').value = q.major;
+  document.getElementById('qk-name').value = rec.name || '';
+  document.getElementById('qk-city').value = rec.city || '';
+  document.getElementById('qk-intent').value = rec.job_intention || '';
+  document.getElementById('qk-school').value = rec.graduate_school || '';
+  document.getElementById('qk-major').value = rec.major || '';
   document.querySelectorAll('#quickModal .fm-field.invalid').forEach(f=>f.classList.remove('invalid'));
   showMask();
   document.getElementById('quickModal').classList.add('show');
@@ -2188,14 +2182,14 @@ function saveQuick(){
     return;
   }
   field.classList.remove('invalid');
-  const next = {
+  Object.assign(rec, {
     name,
     city:            document.getElementById('qk-city').value.trim(),
     job_intention:   document.getElementById('qk-intent').value.trim(),
     graduate_school: document.getElementById('qk-school').value.trim(),
-    major:           document.getElementById('qk-major').value.trim()
-  };
-  Object.assign(rec, next, { update_time: nowText() });
+    major:           document.getElementById('qk-major').value.trim(),
+    update_time:     nowText()
+  });
   renderTable();
   closeQuick();
   toast(`已更新：${name}`);
@@ -2205,8 +2199,7 @@ document.getElementById('qkCancel').onclick = closeQuick;
 document.getElementById('qkSave').onclick = saveQuick;
 document.getElementById('qk-name').addEventListener('input', ev=>{
   if(ev.target.value.trim()){
-    const f = document.querySelector('#quickModal .fm-field[data-field="name"]');
-    f.classList.remove('invalid');
+    document.querySelector('#quickModal .fm-field[data-field="name"]').classList.remove('invalid');
   }
 });
 document.addEventListener('keydown', e=>{
