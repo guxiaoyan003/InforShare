@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业联系人 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:224px;flex:0 0 224px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:2px;transition:.15s;user-select:none;
+  }
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item .ico{font-size:15px;width:18px;text-align:center;opacity:.85}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item.active .ico{opacity:1}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 卡片 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--white)}
+  .tab{
+    padding:14px 14px 12px;font-size:14px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;
+    display:flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--blue-600)}
+  .tab.active{color:var(--blue-600);font-weight:600;border-bottom-color:var(--blue-600)}
+  .tab .cnt{font-size:11px;background:var(--gray-bg);color:var(--text-2);padding:1px 6px;border-radius:8px;font-weight:600}
+  .tab.active .cnt{background:var(--blue-100);color:var(--blue-600)}
+
+  .filters{padding:18px 18px 4px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .ctrl{
+    height:36px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:13px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+  .filter-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-danger{border-color:#F3C7C8;background:var(--red-bg);color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);background:#FBDCDC;color:var(--red)}
+  .btn-sm{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .toolbar{padding:14px 18px;display:flex;align-items:center;gap:10px}
+  .toolbar .spacer{flex:1}
+  .toolbar .sel-tip{font-size:12px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);padding:5px 10px;border-radius:8px}
+
+  /* ---------- 表格 ---------- */
+  .table-wrap{overflow-x:auto;border-top:1px solid var(--line)}
+  table{width:100%;min-width:1360px;border-collapse:collapse}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  tbody tr:hover{background:#F8FBFF}
+  tbody tr.checked{background:var(--blue-50)}
+  .col-id{color:var(--muted);font-variant-numeric:tabular-nums}
+  .company{min-width:230px}
+  .c-name{font-weight:600;color:var(--text);line-height:1.3}
+  .c-sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2)}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-0{background:var(--gray-bg);color:#6B7989}
+  .st-1{background:var(--orange-bg);color:#C2760A}
+  .st-2{background:var(--blue-100);color:var(--blue-600)} /* 保留：枚举 2 已下线 */
+  .st-3{background:var(--green-bg);color:var(--green)}
+  .st-4{background:var(--red-bg);color:var(--red)}
+  .st-5{background:#ECEFF4;color:#8A97A8}
+  .ops{display:flex;gap:6px;white-space:nowrap}
+  .link{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .link.gray{color:var(--muted)}
+  .link.red{color:var(--red)}
+  .empty{padding:60px 0;text-align:center;color:var(--muted);font-size:13px}
+  .empty .e-ico{font-size:38px;opacity:.35;display:block;margin-bottom:10px}
+
+  .pager{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:13px;color:var(--text-2)}
+  .pager .spacer{flex:1}
+  .pg{border:1px solid var(--line-strong);border-radius:8px;min-width:32px;height:32px;padding:0 8px;background:#fff;cursor:pointer;font-size:13px;color:var(--text-2);font-family:inherit}
+  .pg:hover{border-color:var(--blue-500);color:var(--blue-600)}
+  .pg.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+
+  /* ---------- 抽屉 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:720px;max-width:92vw;background:var(--white);z-index:61;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:var(--shadow-lg);
+  }
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .d-title{font-size:17px;font-weight:700}
+  .d-sub{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-close{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;font-size:16px;color:var(--muted)}
+  .d-close:hover{color:var(--text);border-color:var(--blue-500)}
+  .d-body{padding:4px 22px 22px;overflow-y:auto;flex:1}
+  .sec{margin-top:18px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sec-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+  .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px}
+  .kv.full{grid-column:1/-1}
+  .kv .k{font-size:12px;color:var(--muted)}
+  .kv .v{font-size:13px;color:var(--text);margin-top:4px;word-break:break-all;line-height:1.6}
+  .kv .v.strong{font-weight:600}
+  .lic{
+    display:flex;align-items:center;gap:14px;border:1px solid var(--line-strong);border-radius:10px;padding:12px;
+    background:#fff;
+  }
+  .lic .thumb{
+    width:96px;height:64px;border-radius:8px;background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--blue-600);
+  }
+  .timeline{border-left:2px solid var(--blue-100);margin-left:6px;padding-left:18px}
+  .tl-item{position:relative;padding-bottom:16px}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue-600);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue-100)}
+  .tl-item .t{font-size:13px;font-weight:600}
+  .tl-item .m{font-size:12px;color:var(--muted);margin-top:3px}
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#FCFDFF}
+  .d-foot .spacer{flex:1}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:520px;max-width:92vw;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700}
+  .m-body{padding:0 22px}
+  .m-body p{font-size:13px;color:var(--text-2);line-height:1.7}
+  textarea.ctrl{min-height:110px;padding:10px 12px;line-height:1.6;resize:vertical}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px}
+  .counter{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .quick span{font-size:12px;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);padding:4px 10px;border-radius:14px;cursor:pointer}
+  .quick span:hover{background:var(--blue-100)}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .placeholder{background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);padding:70px 20px;text-align:center;color:var(--muted)}
+  .placeholder b{display:block;color:var(--text);font-size:16px;margin-bottom:8px;font-weight:700}
+  .placeholder #ph-desc{display:block;font-size:13px;max-width:560px;margin:0 auto;line-height:1.7}
+  @media (max-width:1280px){
+    .filters{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* ---------- 扩展：宽弹窗与表单（仅新增，不覆盖基准） ---------- */
+  .modal.wide{width:720px}
+  .m-body.scroll{max-height:62vh;overflow-y:auto;padding-top:14px;padding-bottom:4px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+  .form-grid .full{grid-column:1/-1}
+  .form-hint{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6}
+  .form-hint.err{color:var(--red)}
+  .ctrl.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba(229,72,77,.12)}
+  .rq{color:var(--red);margin-left:2px}
+  .form-sec{grid-column:1/-1;font-size:12px;font-weight:700;color:var(--text-2);display:flex;align-items:center;gap:8px;margin:6px 0 -4px}
+  .form-sec::after{content:"";flex:1;height:1px;background:var(--line)}
+  .tag.warn{background:var(--orange-bg);color:#C2760A}
+
+  /* ---------- 扩展：批量导入 ---------- */
+  .steps{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+  .step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap}
+  .step i{width:18px;height:18px;border-radius:50%;background:var(--gray-bg);color:var(--muted);font-style:normal;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .step.on{color:var(--blue-600);font-weight:600}
+  .step.on i{background:var(--blue-600);color:#fff}
+  .step.done i{background:var(--green-bg);color:var(--green)}
+  .step-line{flex:1;height:1px;background:var(--line)}
+  .imp-drop{border:1.5px dashed var(--line-strong);border-radius:var(--radius);background:var(--blue-50);padding:26px 18px;text-align:center;cursor:pointer;transition:.15s}
+  .imp-drop:hover,.imp-drop.over{border-color:var(--blue-500)}
+  .imp-drop .i-ico{font-size:24px;color:var(--blue-600);line-height:1}
+  .imp-drop .i-t{font-size:13px;font-weight:600;margin-top:10px}
+  .imp-drop .i-t em{font-style:normal;color:var(--blue-600)}
+  .imp-drop .i-s{font-size:11px;color:var(--muted);margin-top:5px}
+  .imp-file{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;margin-top:12px}
+  .imp-file .f-ico{width:34px;height:34px;border-radius:9px;background:var(--blue-100);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto}
+  .imp-file .f-name{font-size:13px;font-weight:600}
+  .imp-file .f-meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .imp-file .f-del{margin-left:auto;font-size:12px;color:var(--muted);cursor:pointer}
+  .imp-file .f-del:hover{color:var(--red)}
+  .imp-opts{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .imp-opts .t{font-size:12px;color:var(--muted);margin-right:2px}
+  .imp-opt{font-size:12px;border:1px solid var(--line-strong);border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--text-2);background:#fff;transition:.15s}
+  .imp-opt:hover{border-color:var(--blue-500);color:var(--blue-600)}
+  .imp-opt.on{border-color:var(--blue-500);background:var(--blue-50);color:var(--blue-600);font-weight:600}
+  .imp-sum{display:flex;gap:10px;margin:14px 0}
+  .imp-sum div{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+  .imp-sum .n{font-size:16px;font-weight:700;line-height:1.3}
+  .imp-sum .n.g{color:var(--green)}
+  .imp-sum .n.r{color:var(--red)}
+  .imp-sum .l{font-size:11px;color:var(--muted);margin-top:2px}
+  .imp-wrap{border:1px solid var(--line);border-radius:10px;overflow:auto;max-height:230px}
+  .imp-table{width:100%;min-width:0;border-collapse:collapse}
+  .imp-table th{background:var(--blue-50);color:var(--text-2);font-size:11px;font-weight:600;text-align:left;padding:8px 10px;white-space:nowrap;position:sticky;top:0}
+  .imp-table td{padding:8px 10px;border-top:1px solid #F0F3F8;font-size:12px;white-space:nowrap;color:var(--text-2)}
+  .imp-table td.ok{color:var(--green);font-weight:600}
+  .imp-table td.bad{color:var(--red);font-weight:600;white-space:normal;min-width:200px}
+  .imp-note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}
+  .imp-note b{color:var(--text-2);font-weight:600}
+  .imp-tpl{font-size:12px;color:var(--blue-600);cursor:pointer;margin-top:10px;display:inline-block}
+  .imp-tpl:hover{text-decoration:underline}
+  @media (max-width:1280px){
+    .form-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <div class="nav-item" data-page="company">企业<span class="badge">42</span></div>
+        <div class="nav-item active" data-page="contact">企业联系人</div>
+        <div class="nav-item" data-page="daka">大咖</div>
+        <div class="nav-item" data-page="career">职业规划</div>
+        <div class="nav-item" data-page="job">岗位管理</div>
+        <div class="nav-item" data-page="project">项目大厅</div>
+        <div class="nav-item" data-page="course">就业课程</div>
+        <div class="nav-item" data-page="org">机构管理</div>
+        <div class="nav-item" data-page="apply">申请管理</div>
+        <div class="nav-item" data-page="complaint">投诉处理</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <div class="nav-item" data-page="sysconf">系统配置</div>
+        <div class="nav-item" data-page="dict">字典管理</div>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">基本信息 / <b id="crumbNow">企业联系人</b></div>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="content">
+      <section id="page-main">
+        <div class="card">
+          <div class="tabs" id="tabs"></div>
+
+          <div class="filters">
+            <div class="field">
+              <label>所属企业</label>
+              <select class="ctrl" id="f-company">
+                <option value="">全部企业</option>
+                <option>深圳市云启科技有限公司</option>
+                <option>杭州星野网络技术有限公司</option>
+                <option>广东华创建材集团有限公司</option>
+                <option>成都智行人力资源服务有限公司</option>
+                <option>南京博远智能装备有限公司</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>姓名 / 手机号</label>
+              <input class="ctrl" id="f-keyword" placeholder="支持姓名或手机号模糊搜索">
+            </div>
+            <div class="field">
+              <label>微信号</label>
+              <input class="ctrl" id="f-wechat" placeholder="请输入微信号">
+            </div>
+            <div class="field">
+              <label>职务</label>
+              <select class="ctrl" id="f-title">
+                <option value="">全部职务</option>
+                <option>HR</option><option>HRBP</option><option>招聘经理</option>
+                <option>招聘专员</option><option>店长</option><option>人力资源主管</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>认证状态</label>
+              <select class="ctrl" id="f-status">
+                <option value="">全部</option>
+                <option value="0">未认证</option>
+                <option value="1">待审核</option>
+                <option value="2">已通过</option>
+                <option value="3">已驳回</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>创建日期</label>
+              <input class="ctrl" id="f-date" type="date">
+            </div>
+            <div class="field">
+              <label>数据状态</label>
+              <select class="ctrl" id="f-deleted">
+                <option value="0">正常</option>
+                <option value="1">已删除</option>
+                <option value="">全部</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="btn" id="btn-reset">重置</button>
+              <button class="btn btn-primary" id="btn-search">查询</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btn-add">＋ 新增联系人</button>
+            <button class="btn" id="btn-import">⤒ 批量导入</button>
+            <button class="btn" id="btn-export">⬇ 导出 Excel</button>
+            <button class="btn" id="btn-batch">批量通过认证</button>
+            <span class="sel-tip" id="selTip" style="display:none"></span>
+            <div class="spacer"></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:44px"><input type="checkbox" id="ckAll"></th>
+                  <th style="width:96px">联系人 ID</th>
+                  <th style="min-width:170px">招聘人</th>
+                  <th style="min-width:220px">所属企业</th>
+                  <th style="width:130px">微信号</th>
+                  <th style="width:130px">手机号</th>
+                  <th style="width:170px">身份证号</th>
+                  <th style="width:190px">邮箱</th>
+                  <th style="width:110px">认证状态</th>
+                  <th style="width:150px">创建人 / 时间</th>
+                  <th style="width:170px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager" id="pager"></div>
+        </div>
+      </section>
+
+      <!-- ---------- 其它菜单占位 ---------- -->
+      <section id="page-ph" style="display:none">
+        <div class="placeholder"><b id="ph-title">—</b><span id="ph-desc">—</span></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 抽屉：联系人详情 / 审核 ============ -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div>
+      <div class="d-title" id="dName">—</div>
+      <div class="d-sub">
+        <span class="status" id="dStatus">—</span>
+        <span>联系人 ID：<span class="mono" id="dId">—</span></span>
+        <span>所属企业：<span id="dCompany">—</span></span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 弹窗：新增 / 编辑 ============ -->
+<div class="modal wide" id="modalForm">
+  <div class="m-head" id="foTitle">新增联系人</div>
+  <div class="m-body scroll">
+    <div class="form-grid">
+      <div class="form-sec">归属与身份</div>
+      <div class="field">
+        <label>所属企业<span class="rq">*</span></label>
+        <select class="ctrl" id="fo-company">
+          <option value="">请选择企业</option>
+          <option data-id="100286">深圳市云启科技有限公司</option>
+          <option data-id="100285">杭州星野网络技术有限公司</option>
+          <option data-id="100284">广东华创建材集团有限公司</option>
+          <option data-id="100283">成都智行人力资源服务有限公司</option>
+          <option data-id="100282">南京博远智能装备有限公司</option>
+        </select>
+        <div class="form-hint">手机号在同企业下唯一，不可跨企业复用</div>
+      </div>
+      <div class="field">
+        <label>招聘人姓名<span class="rq">*</span></label>
+        <input class="ctrl" id="fo-name" maxlength="50" placeholder="请输入真实姓名">
+      </div>
+      <div class="field">
+        <label>招聘人职务</label>
+        <select class="ctrl" id="fo-jobtitle">
+          <option value="">请选择职务</option>
+          <option>HR</option><option>HRBP</option><option>招聘经理</option>
+          <option>招聘专员</option><option>人力资源主管</option><option>店长</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>身份证号<span class="rq">*</span></label>
+        <input class="ctrl" id="fo-idcard" maxlength="18" placeholder="18 位，末位可为 X">
+        <div class="form-hint" id="h-idcard">AES 加密存储，列表页脱敏展示</div>
+      </div>
+
+      <div class="form-sec">联系方式（手机号与微信号至少填一项）</div>
+      <div class="field">
+        <label>手机号</label>
+        <input class="ctrl" id="fo-mobile" maxlength="11" placeholder="11 位手机号">
+        <div class="form-hint" id="h-mobile">同企业下唯一</div>
+      </div>
+      <div class="field">
+        <label>微信号</label>
+        <input class="ctrl" id="fo-wechat" maxlength="50" placeholder="微信号 / 企业微信">
+      </div>
+      <div class="field full">
+        <label>邮箱</label>
+        <input class="ctrl" id="fo-email" maxlength="100" placeholder="用于接收审核结果通知">
+        <div class="form-hint" id="h-email">选填，填写后须为合法邮箱格式</div>
+      </div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="foCancel">取消</button>
+    <button class="btn btn-primary" id="foSave">保存</button>
+  </div>
+</div>
+
+<!-- ============ 弹窗：批量导入 ============ -->
+<div class="modal wide" id="modalImport">
+  <div class="m-head">批量导入联系人</div>
+  <div class="m-body">
+    <div class="steps">
+      <div class="step on" id="sp1"><i>1</i>上传文件</div>
+      <div class="step-line"></div>
+      <div class="step" id="sp2"><i>2</i>校验并导入</div>
+    </div>
+
+    <div id="impStep1">
+      <div class="imp-drop" id="impDrop">
+        <div class="i-ico">⤒</div>
+        <div class="i-t">点击选择或拖拽文件到此处</div>
+        <div class="i-s">支持 .xlsx / .xls / .csv，单次不超过 500 行 · 5MB</div>
+      </div>
+      <input type="file" id="impFile" accept=".xlsx,.xls,.csv" style="display:none">
+      <div class="imp-opts">
+        <span class="t">重复数据</span>
+        <div class="imp-opt on" data-dup="skip">跳过</div>
+        <div class="imp-opt" data-dup="update">覆盖更新</div>
+      </div>
+      <div class="imp-note">
+        <b>模板字段：</b>所属企业名称<span class="mono">*</span> · 招聘人姓名<span class="mono">*</span> · 手机号 · 微信号 · 身份证号<span class="mono">*</span> · 邮箱 · 职务<br>
+        <b>校验规则：</b>手机号 11 位、同企业下手机号唯一、身份证 18 位且末位可为 X、手机号与微信号至少一项。导入后认证状态为「未认证」，需再提交认证。
+      </div>
+      <span class="imp-tpl" id="impTpl">⬇ 下载 Excel 模板</span>
+    </div>
+
+    <div id="impStep2" style="display:none">
+      <div class="imp-file">
+        <div class="f-ico">XLS</div>
+        <div>
+          <div class="f-name" id="impName">—</div>
+          <div class="f-meta" id="impMeta">—</div>
+        </div>
+        <span class="f-del" id="impDel">重新选择</span>
+      </div>
+      <div class="imp-sum">
+        <div><div class="n" id="impTotal">0</div><div class="l">总行数</div></div>
+        <div><div class="n g" id="impOk">0</div><div class="l">校验通过</div></div>
+        <div><div class="n r" id="impBad">0</div><div class="l">校验失败</div></div>
+      </div>
+      <div class="imp-wrap">
+        <table class="imp-table">
+          <thead><tr><th>行号</th><th>姓名</th><th>所属企业</th><th>手机号</th><th>身份证号</th><th>校验结果</th></tr></thead>
+          <tbody id="impTbody"></tbody>
+        </table>
+      </div>
+      <div class="imp-note">失败行不会写入，修正后可重新上传；覆盖更新仅对通过校验的行生效。</div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="impCancel">取消</button>
+    <button class="btn btn-primary" id="impConfirm" disabled style="opacity:.5">确认导入</button>
+  </div>
+</div>
+
+<!-- ============ 弹窗：驳回认证 ============ -->
+<div class="modal" id="modalReject">
+  <div class="m-head">驳回实名认证</div>
+  <div class="m-body">
+    <p>请填写驳回原因（对应字段 <span class="mono">rejection_reason</span>，最多 500 字），提交后系统将通知该联系人并允许其重新提交材料。</p>
+    <textarea class="ctrl" id="rejectText" maxlength="500" placeholder="例如：身份证照片存在反光，号码无法完整识别，请重新上传清晰的正面照片。"></textarea>
+    <div class="counter"><span id="cnt">0</span> / 500</div>
+    <div class="quick">
+      <span>身份证照片不清晰</span><span>身份证信息与本人不一致</span><span>手机号非本人实名</span><span>微信号无法添加</span>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="mCancel">取消</button>
+    <button class="btn btn-danger" id="mConfirm">确认驳回</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- 字典 ---------------- */
+const STATUS = [
+  {k:0,t:'未认证',c:'st-0'},
+  {k:1,t:'待审核',c:'st-1'},
+  {k:2,t:'已通过',c:'st-3'},
+  {k:3,t:'已驳回',c:'st-4'}
+];
+const stOf = k => STATUS.find(s=>s.k===k);
+
+/* ---------------- 模拟数据 ---------------- */
+const DATA = [
+  {id:300121,companyId:100286,company:'深圳市云启科技有限公司',name:'陈嘉敏',wechat:'cjm_hr',mobile:'13800138001',email:'chenjm@yunqi-tech.com',jobTitle:'HRBP',idcard:'440304199203124316',status:2,verifyUser:'王审核',verifyTime:'2026-10-12 10:24:08',jobs:['芯片测试工程师','嵌入式软件工程师','硬件工程师'],createBy:'陈启明',createTime:'2026-10-11 09:12:30',updateBy:'王审核',updateTime:'2026-10-12 10:24:08',isDeleted:0},
+  {id:300120,companyId:100285,company:'杭州星野网络技术有限公司',name:'林伟强',wechat:'lwq_star',mobile:'13800138002',email:'linwq@xingye.cn',jobTitle:'招聘经理',idcard:'330106199107081234',status:2,verifyUser:'李敏',verifyTime:'2026-10-10 16:41:52',jobs:['跨境电商运营','前端开发工程师','视觉设计师'],createBy:'林知微',createTime:'2026-10-10 11:08:14',updateBy:'李敏',updateTime:'2026-10-10 16:41:52',isDeleted:0},
+  {id:300119,companyId:100284,company:'广东华创建材集团有限公司',name:'赵晓雯',wechat:'zxw_huachuang',mobile:'13800138003',email:'zhaoxw@huachuang.com.cn',jobTitle:'人力资源主管',idcard:'440106198809153028',status:1,verifyUser:'—',verifyTime:'—',jobs:['建材销售代表','仓储管理员'],createBy:'赵国栋',createTime:'2026-10-18 15:30:02',updateBy:'赵国栋',updateTime:'2026-10-18 15:30:02',isDeleted:0},
+  {id:300118,companyId:100283,company:'成都智行人力资源服务有限公司',name:'周敏',wechat:'zhoumin88',mobile:'',email:'zhoumin@zhixing-hr.com',jobTitle:'招聘专员',idcard:'510107199505226644',status:0,verifyUser:'—',verifyTime:'—',jobs:[],createBy:'周雯',createTime:'2026-10-18 17:22:41',updateBy:'周雯',updateTime:'2026-10-18 17:22:41',isDeleted:0},
+  {id:300117,companyId:100282,company:'南京博远智能装备有限公司',name:'孙志远',wechat:'sunzy_by',mobile:'13800138005',email:'sunzy@boyuan-zn.com',jobTitle:'招聘专员',idcard:'320115199311207751',status:3,reject:'身份证信息与公安部核验结果不一致，请核对姓名与号码后重新提交。',verifyUser:'王审核',verifyTime:'2026-10-16 09:18:33',jobs:[],createBy:'孙博远',createTime:'2026-10-15 14:02:19',updateBy:'王审核',updateTime:'2026-10-16 09:18:33',isDeleted:0},
+  {id:300116,companyId:100286,company:'深圳市云启科技有限公司',name:'吴倩',wechat:'wuqian_yq',mobile:'13800138006',email:'wuq@yunqi-tech.com',jobTitle:'招聘经理',idcard:'440305199001182246',status:2,verifyUser:'陈思远',verifyTime:'2026-10-08 11:02:14',jobs:['数据分析师','产品经理'],createBy:'陈嘉敏',createTime:'2026-10-07 09:55:03',updateBy:'陈思远',updateTime:'2026-10-08 11:02:14',isDeleted:0},
+  {id:300115,companyId:100284,company:'广东华创建材集团有限公司',name:'郑凯',wechat:'zhengkai_hc',mobile:'13800138007',email:'zhengk@huachuang.com.cn',jobTitle:'HR',idcard:'440104198706042210',status:1,verifyUser:'—',verifyTime:'—',jobs:['建筑材料工程师'],createBy:'赵晓雯',createTime:'2026-10-18 09:40:55',updateBy:'赵晓雯',updateTime:'2026-10-18 09:40:55',isDeleted:0},
+  {id:300114,companyId:100283,company:'成都智行人力资源服务有限公司',name:'王雪',wechat:'wangxue_zx',mobile:'13800138008',email:'wangxue@zhixing-hr.com',jobTitle:'HR',idcard:'510105199408163329',status:2,verifyUser:'李敏',verifyTime:'2026-10-05 15:22:07',jobs:['电子普工','包装工','质检员'],createBy:'周雯',createTime:'2026-10-04 10:11:36',updateBy:'李敏',updateTime:'2026-10-05 15:22:07',isDeleted:0},
+  {id:300113,companyId:100282,company:'南京博远智能装备有限公司',name:'李国栋',wechat:'ligd_by',mobile:'13800138009',email:'ligd@boyuan-zn.com',jobTitle:'店长',idcard:'320102198205194417',status:2,verifyUser:'王审核',verifyTime:'2026-09-28 14:09:41',jobs:['设备装配工','机电维修技师'],createBy:'孙博远',createTime:'2026-09-27 16:44:12',updateBy:'王审核',updateTime:'2026-09-28 14:09:41',isDeleted:0},
+  {id:300112,companyId:100285,company:'杭州星野网络技术有限公司',name:'黄婷婷',wechat:'htt_star',mobile:'13800138010',email:'',jobTitle:'招聘专员',idcard:'330102199612015528',status:0,verifyUser:'—',verifyTime:'—',jobs:[],createBy:'林伟强',createTime:'2026-10-19 08:31:20',updateBy:'林伟强',updateTime:'2026-10-19 08:31:20',isDeleted:0},
+  {id:300111,companyId:100286,company:'深圳市云启科技有限公司',name:'刘洋',wechat:'liuyang_yq',mobile:'13800138011',email:'liuy@yunqi-tech.com',jobTitle:'招聘专员',idcard:'440306199502274413',status:2,verifyUser:'陈思远',verifyTime:'2026-09-22 10:08:55',jobs:['测试开发工程师'],createBy:'陈嘉敏',createTime:'2026-09-21 13:20:04',updateBy:'陈思远',updateTime:'2026-09-22 10:08:55',isDeleted:0},
+  {id:300110,companyId:100284,company:'广东华创建材集团有限公司',name:'何静',wechat:'hejing_hc',mobile:'13800138012',email:'hej@huachuang.com.cn',jobTitle:'招聘助理',idcard:'440103199203058842',status:3,reject:'手机号经运营商核验为他人实名，请使用本人实名号码重新提交。',verifyUser:'李敏',verifyTime:'2026-10-14 11:36:29',jobs:[],createBy:'赵晓雯',createTime:'2026-10-13 17:05:48',updateBy:'李敏',updateTime:'2026-10-14 11:36:29',isDeleted:0},
+  {id:300109,companyId:100283,company:'成都智行人力资源服务有限公司',name:'张伟',wechat:'zhangwei_zx',mobile:'13800138013',email:'zhangw@zhixing-hr.com',jobTitle:'HRBP',idcard:'510108198911124435',status:2,verifyUser:'王审核',verifyTime:'2026-09-15 09:47:18',jobs:['叉车司机','仓库分拣员','流水线操作工'],createBy:'周雯',createTime:'2026-09-14 10:02:33',updateBy:'王审核',updateTime:'2026-09-15 09:47:18',isDeleted:0},
+  {id:300108,companyId:100282,company:'南京博远智能装备有限公司',name:'陈曦',wechat:'chenxi_by',mobile:'13800138014',email:'chenx@boyuan-zn.com',jobTitle:'招聘经理',idcard:'320106199107163320',status:1,verifyUser:'—',verifyTime:'—',jobs:[],createBy:'孙博远',createTime:'2026-10-19 09:15:44',updateBy:'孙博远',updateTime:'2026-10-19 09:15:44',isDeleted:0},
+  {id:300107,companyId:100285,company:'杭州星野网络技术有限公司',name:'徐磊',wechat:'xulei_star',mobile:'13800138015',email:'xul@xingye.cn',jobTitle:'招聘专员',idcard:'330105199004221156',status:0,verifyUser:'—',verifyTime:'—',jobs:[],createBy:'林伟强',createTime:'2026-10-19 10:02:11',updateBy:'林伟强',updateTime:'2026-10-19 10:02:11',isDeleted:1}
+];
+
+/* ---------------- 工具 ---------------- */
+const $ = id => document.getElementById(id);
+const maskId = s => s ? s.slice(0,4) + '*'.repeat(Math.max(0,s.length-8)) + s.slice(-4) : '—';
+const maskMobile = s => s ? s.slice(0,3) + '****' + s.slice(-4) : '—';
+let curTab='all', rows=DATA.slice(), checked=new Set(), page=1, PAGE=10;
+let curId=null, rejectId=null, editingId=null, showId=false, showMobile=false;
+
+/* ---------------- 标签页 ---------------- */
+function tabCounts(){
+  const live = DATA.filter(d=>d.isDeleted===0);
+  const c={all:live.length};
+  STATUS.forEach(s=>c[s.k]=live.filter(d=>d.status===s.k).length);
+  return c;
+}
+function renderTabs(){
+  const c = tabCounts();
+  const items=[['all','全部',c.all]].concat(STATUS.map(s=>[s.k,s.t,c[s.k]]));
+  $('tabs').innerHTML = items.map(([k,t,n])=>
+    `<div class="tab ${String(k)===String(curTab)?'active':''}" data-k="${k}">${t}<span class="cnt">${n}</span></div>`).join('');
+  document.querySelectorAll('#tabs .tab').forEach(el=>{
+    el.onclick = ()=>{
+      curTab = el.dataset.k==='all'?'all':Number(el.dataset.k);
+      $('f-status').value = curTab==='all' ? '' : String(curTab);
+      page=1; applyFilter();
+    };
+  });
+}
+
+/* ---------------- 筛选 ---------------- */
+function applyFilter(){
+  const comp=$('f-company').value, kw=$('f-keyword').value.trim().toLowerCase();
+  const wx=$('f-wechat').value.trim().toLowerCase(), title=$('f-title').value;
+  const st=$('f-status').value, date=$('f-date').value, del=$('f-deleted').value;
+  rows = DATA.filter(d=>{
+    if(del!=='' && d.isDeleted!==Number(del)) return false;
+    if(comp && d.company!==comp) return false;
+    if(kw && !(d.name.toLowerCase().includes(kw) || d.mobile.includes(kw))) return false;
+    if(wx && !d.wechat.toLowerCase().includes(wx)) return false;
+    if(title && d.jobTitle!==title) return false;
+    if(st!=='' && d.status!==Number(st)) return false;
+    if(date && !d.createTime.startsWith(date)) return false;
+    if(curTab!=='all' && d.status!==curTab) return false;
+    return true;
+  });
+  renderTable();
+}
+
+/* ---------------- 表格 ---------------- */
+function renderTable(){
+  const tb=$('tbody');
+  if(!rows.length){
+    tb.innerHTML = `<tr><td colspan="11"><div class="empty"><span class="e-ico">🗃️</span>没有符合条件的联系人数据，试试调整筛选条件</div></td></tr>`;
+    renderPager(); return;
+  }
+  const maxPage = Math.max(1, Math.ceil(rows.length/PAGE));
+  if(page>maxPage) page=maxPage;
+  const list = rows.slice((page-1)*PAGE, page*PAGE);
+  tb.innerHTML = list.map(d=>{
+    const s=stOf(d.status);
+    const idShow = (d.id===curId && showId) ? d.idcard : maskId(d.idcard);
+    const mbShow = (d.id===curId && showMobile && d.mobile) ? d.mobile : maskMobile(d.mobile);
+    return `<tr class="${checked.has(d.id)?'checked':''}" data-id="${d.id}">
+      <td><input type="checkbox" class="ck" data-id="${d.id}" ${checked.has(d.id)?'checked':''}></td>
+      <td class="col-id">${d.id}</td>
+      <td>
+        <div class="c-name">${d.name}</div>
+        <div class="c-sub">${d.jobTitle || '未填写职务'}</div>
+      </td>
+      <td><div class="c-name" style="font-size:13px">${d.company}</div><div class="c-sub">企业 ID ${d.companyId}</div></td>
+      <td class="mono">${d.wechat || '—'}</td>
+      <td style="white-space:nowrap">
+        <span class="mono">${mbShow}</span>
+        ${d.mobile ? `<button class="link" style="margin-left:6px" data-eye="mobile">${d.id===curId&&showMobile?'隐藏':'显示'}</button>` : '<span class="tag">未填</span>'}
+      </td>
+      <td style="white-space:nowrap">
+        <span class="mono">${idShow}</span>
+        <button class="link" style="margin-left:6px" data-eye="idcard">${d.id===curId&&showId?'隐藏':'查看'}</button>
+      </td>
+      <td class="mono" style="font-size:12px">${d.email || '—'}</td>
+      <td><span class="status ${s.c}">${s.t}</span></td>
+      <td><div style="font-size:12px">${d.createBy}</div><div class="mono" style="font-size:11px;color:#8A97A8">${d.createTime}</div></td>
+      <td>
+        <div class="ops">
+          <button class="link" data-act="view">详情</button>
+          ${d.status===1?'<button class="link" data-act="audit">审核</button>':''}
+          <button class="link gray" data-act="edit">编辑</button>
+          <button class="link red" data-act="del">删除</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  bindRows(); renderPager(); updateSelTip();
+}
+
+function bindRows(){
+  document.querySelectorAll('#tbody tr[data-id]').forEach(tr=>{
+    const id=Number(tr.dataset.id), d=DATA.find(x=>x.id===id);
+    const q=a=>tr.querySelector(`[data-act="${a}"]`);
+    if(q('view')) q('view').onclick = ()=>openDrawer(id,'view');
+    if(q('audit')) q('audit').onclick = ()=>openDrawer(id,'audit');
+    if(q('edit')) q('edit').onclick = ()=>openForm(id);
+    if(q('del')) q('del').onclick = ()=>{
+      if(d.isDeleted===1){ toast('该联系人已删除'); return; }
+      d.isDeleted=1; d.updateBy='陈思远'; d.updateTime='2026-10-19 20:10:00';
+      toast('已删除：'+d.name); refreshAll();
+    };
+    const ck=tr.querySelector('.ck');
+    if(ck) ck.onchange = e=>{
+      e.target.checked ? checked.add(id) : checked.delete(id);
+      tr.classList.toggle('checked', e.target.checked);
+      updateSelTip();
+    };
+    tr.querySelectorAll('[data-eye]').forEach(b=>{
+      b.onclick = e=>{
+        e.stopPropagation();
+        if(b.dataset.eye==='idcard') showId = !showId;
+        else showMobile = !showMobile;
+        curId = id; renderTable();
+      };
+    });
+  });
+}
+
+function updateSelTip(){
+  const tip=$('selTip');
+  tip.style.display = checked.size ? 'inline-block' : 'none';
+  tip.textContent = `已选择 ${checked.size} 位联系人`;
+}
+
+/* ---------------- 分页 ---------------- */
+function renderPager(){
+  const total=rows.length, maxPage=Math.max(1,Math.ceil(total/PAGE));
+  let btns='';
+  const add=(t,p,a,dis)=>btns+=`<button class="pg ${a?'active':''}" ${dis?'disabled style="opacity:.45;cursor:not-allowed"':''} data-p="${p}">${t}</button>`;
+  add('‹', page-1, false, page<=1);
+  for(let i=1;i<=maxPage;i++){
+    if(maxPage<=7 || i===1 || i===maxPage || Math.abs(i-page)<=1) add(i,i,i===page,false);
+    else if(i===2||i===maxPage-1) btns+='<button class="pg" disabled style="opacity:.45;cursor:not-allowed">…</button>';
+  }
+  add('›', page+1, false, page>=maxPage);
+  $('pager').innerHTML = `<span>共 <b>${total}</b> 条 · 每页 ${PAGE} 条</span><div class="spacer"></div>${btns}`;
+  $('pager').querySelectorAll('[data-p]').forEach(b=>{
+    b.onclick = ()=>{
+      const p=Number(b.dataset.p);
+      if(p<1||p>maxPage) return;
+      page=p; renderTable();
+    };
+  });
+}
+
+function refreshAll(){ renderTabs(); applyFilter(); }
+
+/* ---------------- 抽屉 ---------------- */
+function openDrawer(id, mode){
+  curId = id;
+  const d = DATA.find(x=>x.id===id), s = stOf(d.status);
+  $('dName').textContent = d.name;
+  $('dId').textContent = d.id;
+  $('dCompany').textContent = d.company;
+  const stEl=$('dStatus'); stEl.className='status '+s.c; stEl.textContent=s.t;
+
+  const idShow = showId ? d.idcard : maskId(d.idcard);
+  const mbShow = showMobile ? (d.mobile||'—') : maskMobile(d.mobile);
+
+  $('dBody').innerHTML = `
+    <div class="sec">
+      <div class="sec-title">基础信息</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">联系人 ID（id · BIGINT UNSIGNED）</div><div class="v mono">${d.id}</div></div>
+        <div class="kv"><div class="k">招聘人姓名（name）</div><div class="v strong">${d.name}</div></div>
+        <div class="kv"><div class="k">招聘人职务（job_title）</div><div class="v">${d.jobTitle || '—'}</div></div>
+        <div class="kv"><div class="k">所属企业（company_id）</div><div class="v">${d.company}<span class="mono" style="color:#8A97A8;font-size:11px"> · ${d.companyId}</span></div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">联系方式</div>
+      <div class="grid2">
+        <div class="kv">
+          <div class="k">手机号（mobile · 同企业唯一）</div>
+          <div class="v mono">${mbShow}
+            ${d.mobile?`<button class="link" style="margin-left:8px;font-size:12px" id="dEyeM">${showMobile?'隐藏':'显示完整'}</button>`:'<span class="tag">未填写</span>'}
+          </div>
+        </div>
+        <div class="kv"><div class="k">微信号（wechat_id · 与手机号至少填一项）</div><div class="v mono">${d.wechat || '—'}</div></div>
+        <div class="kv full"><div class="k">邮箱（email）</div><div class="v">${d.email || '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">实名认证</div>
+      <div class="grid2">
+        <div class="kv full">
+          <div class="k">身份证号（id_card_no · AES 加密存储，列表页脱敏）</div>
+          <div class="v mono">${idShow}
+            <button class="link" style="margin-left:8px;font-size:12px" id="dEyeI">${showId?'隐藏':'查看完整'}</button>
+          </div>
+        </div>
+        <div class="kv"><div class="k">认证状态（verification_status）</div><div class="v"><span class="status ${s.c}">${s.t}</span>（枚举值 ${d.status}）</div></div>
+        <div class="kv"><div class="k">认证人 / 时间</div><div class="v">${d.verifyUser}${d.verifyTime!=='—'?' · <span class="mono">'+d.verifyTime+'</span>':''}</div></div>
+        ${d.status===3?`<div class="kv full" style="background:#FDECEC;border-color:#F7D4D5">
+          <div class="k" style="color:#E5484D">驳回原因（rejection_reason）</div>
+          <div class="v" style="color:#B03337">${d.reject||'—'}</div></div>`:''}
+      </div>
+      <div class="timeline" style="margin-top:14px">
+        <div class="tl-item"><div class="t">创建联系人档案</div><div class="m">${d.createBy} · ${d.createTime}</div></div>
+        ${d.verifyTime!=='—'?`<div class="tl-item"><div class="t">${d.status===3?'认证驳回':(d.status===2?'实名认证通过':'提交认证')}</div><div class="m">${d.verifyUser} · ${d.verifyTime}</div></div>`:''}
+        <div class="tl-item"><div class="t">最后更新</div><div class="m">${d.updateBy} · ${d.updateTime}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">关联岗位</div>
+      <div class="kv full">
+        <div class="k">该联系人作为发布人的岗位（job.contact_id）</div>
+        <div class="v">${d.jobs.length?d.jobs.map(t=>`<span class="tag blue" style="margin:2px 6px 2px 0;display:inline-block">${t}</span>`).join(''):'<span class="tag">暂未发布岗位</span>'}</div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">系统信息</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">创建人 / 创建时间（create_by · create_time）</div><div class="v">${d.createBy} · <span class="mono">${d.createTime}</span></div></div>
+        <div class="kv"><div class="k">更新人 / 更新时间（update_by · update_time）</div><div class="v">${d.updateBy} · <span class="mono">${d.updateTime}</span></div></div>
+        <div class="kv"><div class="k">是否删除（is_deleted）</div><div class="v">${d.isDeleted} · ${d.isDeleted?'已删除':'正常'}</div></div>
+      </div>
+    </div>`;
+
+  const eyeI=$('dEyeI'), eyeM=$('dEyeM');
+  if(eyeI) eyeI.onclick = ()=>{ showId=!showId; openDrawer(id,mode); };
+  if(eyeM) eyeM.onclick = ()=>{ showMobile=!showMobile; openDrawer(id,mode); };
+
+  const foot=$('dFoot');
+  if(d.status===1){
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">审核需核对身份证姓名与本人是否一致</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fEdit">编辑资料</button>
+      <button class="btn btn-danger" id="fReject">驳回</button>
+      <button class="btn btn-primary" id="fPass">✓ 审核通过</button>`;
+    $('fPass').onclick = ()=>{
+      d.status=2; d.verifyUser='陈思远'; d.verifyTime='2026-10-19 20:12:00';
+      d.updateBy='陈思远'; d.updateTime=d.verifyTime;
+      closeDrawer(); toast('已通过实名认证：'+d.name); refreshAll();
+    };
+    $('fReject').onclick = ()=>openReject(id);
+    $('fEdit').onclick = ()=>openForm(id);
+  }else if(d.status===3){
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">当前状态：已驳回（联系人可修改后重新提交）</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fClose2">关闭</button>
+      <button class="btn btn-primary" id="fReset">✓ 重新审核通过</button>`;
+    $('fClose2').onclick = closeDrawer;
+    $('fReset').onclick = ()=>{
+      d.status=2; d.verifyUser='陈思远'; d.verifyTime='2026-10-19 20:12:00'; d.reject='';
+      closeDrawer(); toast('已通过实名认证：'+d.name); refreshAll();
+    };
+  }else if(d.status===2){
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">当前状态：已通过实名认证，可撤销后重新提交</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fClose2">关闭</button>
+      <button class="btn btn-danger" id="fRevoke">撤销认证</button>`;
+    $('fClose2').onclick = closeDrawer;
+    $('fRevoke').onclick = ()=>{
+      d.status=0; d.verifyUser='—'; d.verifyTime='—'; d.updateBy='陈思远'; d.updateTime='2026-10-19 20:12:00';
+      closeDrawer(); toast('已撤销认证：'+d.name); refreshAll();
+    };
+  }else{
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">当前状态：未认证（尚未提交实名材料）</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fClose2">关闭</button>
+      <button class="btn btn-primary" id="fSubmit">发起认证</button>`;
+    $('fClose2').onclick = closeDrawer;
+    $('fSubmit').onclick = ()=>{ d.status=1; d.updateTime='2026-10-19 20:12:00'; closeDrawer(); toast('已提交认证，等待审核'); refreshAll(); };
+  }
+
+  $('mask').classList.add('show');
+  $('drawer').classList.add('show');
+  if(mode==='audit') setTimeout(()=>toast('请核对身份证信息与联系方式后操作'),260);
+}
+function closeDrawer(){
+  $('mask').classList.remove('show');
+  $('drawer').classList.remove('show');
+}
+
+/* ---------------- 新增 / 编辑 ---------------- */
+function openForm(id){
+  editingId = id;
+  const d = id ? DATA.find(x=>x.id===id) : null;
+  $('foTitle').textContent = d ? '编辑联系人 · ' + d.name : '新增联系人';
+  const set=(k,v)=>{ $(k).value=v||''; $(k).classList.remove('invalid'); };
+  set('fo-company', d ? d.company : '');
+  set('fo-name', d ? d.name : '');
+  set('fo-jobtitle', d ? d.jobTitle : '');
+  set('fo-idcard', d ? d.idcard : '');
+  set('fo-mobile', d ? d.mobile : '');
+  set('fo-wechat', d ? d.wechat : '');
+  set('fo-email', d ? d.email : '');
+  ['h-idcard','h-mobile','h-email'].forEach(h=>{ $(h).classList.remove('err'); });
+  $('h-idcard').textContent='AES 加密存储，列表页脱敏展示';
+  $('h-mobile').textContent='同企业下唯一';
+  $('h-email').textContent='选填，填写后须为合法邮箱格式';
+  $('mask').classList.add('show');
+  $('modalForm').classList.add('show');
+}
+function closeForm(){ $('modalForm').classList.remove('show'); $('mask').classList.remove('show'); }
+
+function saveForm(){
+  const company=$('fo-company').value, name=$('fo-name').value.trim();
+  const idcard=$('fo-idcard').value.trim().toUpperCase(), mobile=$('fo-mobile').value.trim();
+  const wechat=$('fo-wechat').value.trim(), email=$('fo-email').value.trim(), jobTitle=$('fo-jobtitle').value;
+  ['fo-company','fo-name','fo-idcard','fo-mobile','fo-email'].forEach(i=>$(i).classList.remove('invalid'));
+  ['h-idcard','h-mobile','h-email'].forEach(h=>$(h).classList.remove('err'));
+  $('h-idcard').textContent='AES 加密存储，列表页脱敏展示';
+  $('h-mobile').textContent='同企业下唯一';
+  $('h-email').textContent='选填，填写后须为合法邮箱格式';
+  const mark=(elid,hid,txt)=>{ $(elid).classList.add('invalid'); $(hid).textContent=txt; $(hid).classList.add('err'); };
+
+  if(!company){ mark('fo-company','h-mobile','请选择所属企业'); toast('请选择所属企业'); return; }
+  if(!name){ mark('fo-name','h-mobile','请填写招聘人姓名'); toast('请填写招聘人姓名'); return; }
+  if(!/^\d{17}[\dX]$/.test(idcard)){ mark('fo-idcard','h-idcard','身份证须为 18 位，末位可为 X'); toast('身份证号格式不正确'); return; }
+  if(mobile && !/^1[3-9]\d{9}$/.test(mobile)){ mark('fo-mobile','h-mobile','手机号须为 11 位，且以 1 开头'); toast('手机号格式不正确'); return; }
+  if(!mobile && !wechat){ mark('fo-mobile','h-mobile','手机号与微信号至少填写一项'); toast('手机号与微信号至少填写一项'); return; }
+  if(mobile){
+    const dup = DATA.find(x=>x.company===company && x.mobile===mobile && x.id!==editingId && x.isDeleted===0);
+    if(dup){ mark('fo-mobile','h-mobile','该手机号已在本企业登记：'+dup.name); toast('同企业下手机号已存在'); return; }
+  }
+  if(email && !/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(email)){ mark('fo-email','h-email','邮箱格式不正确'); toast('邮箱格式不正确'); return; }
+
+  const cid = Number(document.querySelector('#fo-company option:checked').dataset.id)||100286;
+  if(editingId){
+    const d=DATA.find(x=>x.id===editingId);
+    Object.assign(d,{companyId:cid,company,name,wechat,mobile,email,jobTitle,idcard,updateBy:'陈思远',updateTime:'2026-10-19 20:14:00'});
+    toast('已保存：'+name);
+  }else{
+    const id = Math.max.apply(null, DATA.map(x=>x.id)) + 1;
+    DATA.unshift({id,companyId:cid,company,name,wechat,mobile,email,jobTitle,idcard,status:0,verifyUser:'—',verifyTime:'—',jobs:[],
+      createBy:'陈思远',createTime:'2026-10-19 20:14:00',updateBy:'陈思远',updateTime:'2026-10-19 20:14:00',isDeleted:0});
+    toast('已新增联系人：'+name);
+  }
+  closeForm(); refreshAll();
+}
+
+/* ---------------- 驳回 ---------------- */
+function openReject(id){
+  rejectId=id; $('rejectText').value=''; $('cnt').textContent='0';
+  $('mask').classList.add('show'); $('modalReject').classList.add('show');
+}
+function closeReject(){ $('modalReject').classList.remove('show'); $('mask').classList.remove('show'); }
+$('rejectText').addEventListener('input',e=>{ $('cnt').textContent = e.target.value.length; });
+document.querySelectorAll('.quick span').forEach(el=>{
+  el.onclick=()=>{ const t=$('rejectText'); t.value=el.textContent+'。'; t.dispatchEvent(new Event('input')); };
+});
+$('mConfirm').onclick=()=>{
+  const reason=$('rejectText').value.trim();
+  if(!reason){ toast('请填写驳回原因'); return; }
+  const d=DATA.find(x=>x.id===rejectId);
+  d.status=3; d.reject=reason; d.verifyUser='陈思远'; d.verifyTime='2026-10-19 20:13:00';
+  d.updateBy='陈思远'; d.updateTime=d.verifyTime;
+  closeReject(); closeDrawer(); toast('已驳回：'+d.name); refreshAll();
+};
+$('mCancel').onclick=closeReject;
+
+/* ---------------- 批量导入 ---------------- */
+const IMP_ROWS = [
+  {line:2,name:'黄嘉伟',company:'深圳市云启科技有限公司',mobile:'13900139001',idcard:'440307199405126612',ok:true},
+  {line:3,name:'邓丽',company:'杭州星野网络技术有限公司',mobile:'13900139002',idcard:'330108199308224425',ok:true},
+  {line:4,name:'马涛',company:'广东华创建材集团有限公司',mobile:'1390013900',idcard:'440105199607091133',ok:false,err:'手机号须为 11 位'},
+  {line:5,name:'冯雪梅',company:'成都智行人力资源服务有限公司',mobile:'13800138001',idcard:'510109199506033329',ok:false,err:'该手机号已在本企业登记'},
+  {line:6,name:'许志刚',company:'南京博远智能装备有限公司',mobile:'13900139005',idcard:'32011319920118441',ok:false,err:'身份证号须为 18 位'},
+  {line:7,name:'唐诗雨',company:'深圳市云启科技有限公司',mobile:'13900139006',idcard:'440304199811274468',ok:true},
+  {line:8,name:'罗建平',company:'杭州星野网络技术有限公司',mobile:'13900139007',idcard:'330106199002152239',ok:true}
+];
+let impDup='skip', impReady=false;
+
+function impRender(){
+  const okOf = r => r.ok || (impDup==='update' && /登记/.test(r.err||''));
+  const pass = IMP_ROWS.filter(okOf).length;
+  const fail = IMP_ROWS.length - pass;
+  $('impTotal').textContent = IMP_ROWS.length;
+  $('impOk').textContent = pass;
+  $('impBad').textContent = fail;
+  $('impTbody').innerHTML = IMP_ROWS.map(r=>{
+    const ok = okOf(r);
+    return `<tr>
+      <td class="mono" style="color:#8A97A8">${r.line}</td>
+      <td>${r.name}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis">${r.company}</td>
+      <td class="mono">${r.mobile}</td>
+      <td class="mono">${maskId(r.idcard)}</td>
+      <td class="${ok?'ok':'bad'}">${ok?'通过':r.err}</td>
+    </tr>`;
+  }).join('');
+  impReady = pass>0;
+  const btn=$('impConfirm');
+  btn.disabled=!impReady;
+  btn.style.opacity = impReady?1:.5;
+  btn.textContent = impReady?`确认导入（${pass} 条）`:'确认导入';
+}
+function openImport(){
+  impDup='skip'; impReady=false;
+  document.querySelectorAll('.imp-opt').forEach(o=>o.classList.toggle('on',o.dataset.dup==='skip'));
+  $('impStep1').style.display='block'; $('impStep2').style.display='none';
+  $('sp1').className='step on'; $('sp2').className='step';
+  $('impConfirm').disabled=true; $('impConfirm').style.opacity=.5; $('impConfirm').textContent='确认导入';
+  $('impFile').value='';
+  $('mask').classList.add('show'); $('modalImport').classList.add('show');
+}
+function closeImport(){ $('modalImport').classList.remove('show'); $('mask').classList.remove('show'); }
+function impLoaded(file){
+  $('impName').textContent = file ? file.name : '联系人导入模板_2026Q4.xlsx';
+  const kb = file ? Math.max(1, Math.round(file.size/1024)) : 18;
+  $('impMeta').textContent = `${IMP_ROWS.length} 行 · ${kb} KB · 刚刚解析`;
+  $('impStep1').style.display='none'; $('impStep2').style.display='block';
+  $('sp1').className='step done'; $('sp2').className='step on';
+  impRender();
+}
+$('impDrop').onclick = ()=>$('impFile').click();
+$('impFile').onchange = e=>{ if(e.target.files[0]) impLoaded(e.target.files[0]); };
+$('impDrop').addEventListener('dragover',e=>{ e.preventDefault(); $('impDrop').classList.add('over'); });
+$('impDrop').addEventListener('dragleave',()=>$('impDrop').classList.remove('over'));
+$('impDrop').addEventListener('drop',e=>{
+  e.preventDefault(); $('impDrop').classList.remove('over');
+  const f=e.dataTransfer.files[0]; if(f) impLoaded(f);
+});
+document.querySelectorAll('.imp-opt').forEach(o=>{
+  o.onclick=()=>{
+    document.querySelectorAll('.imp-opt').forEach(x=>x.classList.remove('on'));
+    o.classList.add('on'); impDup=o.dataset.dup; impRender();
+  };
+});
+$('impTpl').onclick = ()=>toast('模板已下载：联系人导入模板.xlsx');
+$('impDel').onclick = ()=>{ $('impStep2').style.display='none'; $('impStep1').style.display='block'; $('sp1').className='step on'; $('sp2').className='step'; };
+$('impCancel').onclick = closeImport;
+$('impConfirm').onclick = ()=>{
+  if(!impReady) return;
+  const list = IMP_ROWS.filter(r=>r.ok || (impDup==='update' && /登记/.test(r.err||'')));
+  const base = Math.max.apply(null, DATA.map(x=>x.id));
+  list.forEach((r,i)=>{
+    let d = DATA.find(x=>x.mobile===r.mobile);
+    if(d){
+      d.company=r.company; d.idcard=r.idcard; d.updateBy='陈思远'; d.updateTime='2026-10-19 20:16:00';
+    }else{
+      DATA.unshift({id:base+1+i,companyId:100286,company:r.company,name:r.name,wechat:'',mobile:r.mobile,email:'',
+        jobTitle:'招聘专员',idcard:r.idcard,status:0,verifyUser:'—',verifyTime:'—',jobs:[],
+        createBy:'批量导入',createTime:'2026-10-19 20:16:00',updateBy:'批量导入',updateTime:'2026-10-19 20:16:00',isDeleted:0});
+    }
+  });
+  closeImport(); toast(`导入完成：成功 ${list.length} 条，失败 ${IMP_ROWS.length-list.length} 条`); refreshAll();
+};
+
+/* ---------------- 交互 ---------------- */
+$('mask').onclick = ()=>{ closeReject(); closeForm(); closeImport(); closeDrawer(); };
+$('dClose').onclick = closeDrawer;
+$('btn-search').onclick = ()=>{ page=1; applyFilter(); toast('查询完成，共 '+rows.length+' 条'); };
+$('btn-reset').onclick = ()=>{
+  ['f-company','f-keyword','f-wechat','f-title','f-status','f-date'].forEach(i=>$(i).value='');
+  $('f-deleted').value='0';
+  curTab='all'; page=1; refreshAll(); toast('筛选条件已重置');
+};
+$('btn-add').onclick = ()=>openForm(null);
+$('btn-import').onclick = openImport;
+$('btn-export').onclick = ()=>toast('已导出当前 '+rows.length+' 条数据为 Excel');
+$('btn-batch').onclick = ()=>{
+  if(!checked.size){ toast('请先勾选需要认证的联系人'); return; }
+  let n=0;
+  checked.forEach(id=>{
+    const d=DATA.find(x=>x.id===id);
+    if(d && d.status!==2){ d.status=2; d.verifyUser='陈思远'; d.verifyTime='2026-10-19 20:15:00'; n++; }
+  });
+  toast(`已批量通过认证：${n} 位`); checked.clear(); refreshAll();
+};
+$('ckAll').onchange = e=>{
+  checked.clear();
+  if(e.target.checked) rows.slice((page-1)*PAGE, page*PAGE).forEach(d=>checked.add(d.id));
+  renderTable();
+};
+$('foCancel').onclick = closeForm;
+$('foSave').onclick = saveForm;
+
+/* ---------------- 菜单跳转 ---------------- */
+const LINKS = { company:'infoshar_bus_manage.html', contact:'contact.html', job:'job.html' };
+const SELF = 'contact.html';
+const PAGES = {
+  daka:{name:'大咖',desc:'专家 / 牛人档案、认证与服务记录管理。'},
+  career:{name:'职业规划',desc:'职业测评题库、规划方案模板与结果统计。'},
+  project:{name:'项目大厅',desc:'项目需求发布、撮合进度与结算状态。'},
+  course:{name:'就业课程',desc:'课程、班级、学员与学习进度管理。'},
+  org:{name:'机构管理',desc:'合作机构入驻资料与资质审核。'},
+  apply:{name:'申请管理',desc:'入驻、认证、开票等各类申请的统一审批。'},
+  complaint:{name:'投诉处理',desc:'用户投诉工单受理、流转与结案。'},
+  sysconf:{name:'系统配置',desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
+  dict:{name:'字典管理',desc:'company_type / staff_size / area 等字典枚举值维护。'}
+};
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.onclick=()=>{
+    const p = el.dataset.page;
+    if(LINKS[p]){
+      if(LINKS[p]===SELF) return;
+      const main=document.querySelector('.main');
+      if(main){ main.style.transition='.14s'; main.style.opacity='0'; }
+      setTimeout(()=>{ location.href = LINKS[p]; }, 120);
+      return;
+    }
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const meta = PAGES[p] || {name:'—',desc:''};
+    $('crumbNow').textContent = meta.name;
+    $('page-main').style.display='none';
+    $('page-ph').style.display='block';
+    $('ph-title').textContent = meta.name;
+    $('ph-desc').textContent = meta.desc;
+  };
+});
+
+/* ---------------- Toast ---------------- */
+let toastTimer;
+function toast(msg){
+  const t=$('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+/* ---------------- 启动 ---------------- */
+renderTabs(); applyFilter();
+</script>
+</body>
+</html>
