@@ -168,3 +168,13 @@ V5定位到 区/县名称,通过**工单**进行商务咨询（http://console.am
 
 ### 二、前置条件
 
+参数	必选	说明
+app_id	是	支付宝分配的应用 ID
+method	是	固定 alipay.trade.precreate
+sign_type	是	固定 RSA2
+notify_url	强烈建议	异步接收支付结果的服务端地址
+biz_content	是	业务参数的 JSON 字符串
+out_trade_no	是	商户唯一订单号，同一笔订单重试时不要更换
+total_amount	是	单位元，范围 [0.01, 100000000]，两位小数
+subject	是	订单标题，不可含 /、=、& 等特殊字符
+product_code	否	默认 FACE_TO_FACE_PAYMENT，订单码支付场景保持默认即可
