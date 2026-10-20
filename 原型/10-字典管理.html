@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字典管理 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:224px;flex:0 0 224px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:2px;transition:.15s;user-select:none;
+  }
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item .ico{font-size:15px;width:18px;text-align:center;opacity:.85}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item.active .ico{opacity:1}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 通用 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2)}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-0{background:var(--gray-bg);color:#6B7989}
+  .st-3{background:var(--green-bg);color:var(--green)}
+  .st-5{background:#ECEFF4;color:#8A97A8}
+  .link{color:var(--blue-600);cursor:pointer;font-size:12.5px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .link.gray{color:var(--muted)}
+  .link.red{color:var(--red)}
+  .empty{padding:56px 0;text-align:center;color:var(--muted);font-size:13px}
+  .empty .e-ico{font-size:38px;opacity:.35;display:block;margin-bottom:10px}
+
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-danger{border-color:#F3C7C8;background:var(--red-bg);color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);background:#FBDCDC;color:var(--red)}
+  .btn-sm{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
+  .btn:disabled,.btn:disabled:hover{background:#F5F8FC;border-color:#E9EEF6;color:#B3BFCE;cursor:not-allowed;box-shadow:none}
+
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .ctrl{
+    height:36px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:13px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  .ctrl:disabled{background:#F7F9FC;color:var(--muted);cursor:not-allowed}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+  select.ctrl:disabled{background-image:none}
+  textarea.ctrl{min-height:96px;padding:10px 12px;line-height:1.6;resize:vertical;height:auto}
+
+  /* ---------- 页头 ---------- */
+  .page-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:.2px}
+  .page-sub{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.7}
+  .page-sub b{color:var(--text-2);font-weight:600}
+  .page-head .spacer{flex:1}
+  .page-head .actions{display:flex;gap:10px;flex:0 0 auto;padding-top:2px}
+  .notice{
+    display:flex;gap:10px;align-items:flex-start;background:var(--blue-50);border:1px solid var(--blue-100);
+    border-radius:10px;padding:11px 14px;font-size:12.5px;color:var(--text-2);line-height:1.7;margin-bottom:14px;
+  }
+  .notice .n-ico{
+    flex:0 0 auto;width:16px;height:16px;border-radius:50%;background:var(--blue-600);color:#fff;
+    font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:2px;font-style:normal;
+  }
+  .notice b{color:var(--text);font-weight:600}
+
+  /* ---------- 左右分栏 ---------- */
+  .split{display:flex;gap:16px;align-items:flex-start}
+  .type-panel{width:252px;flex:0 0 252px}
+  .item-panel{flex:1;min-width:0}
+
+  .type-head{padding:14px 14px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+  .type-head .t{font-size:13.5px;font-weight:700}
+  .type-head .cnt{font-size:11px;font-weight:600;color:var(--blue-600);background:var(--blue-100);padding:1px 7px;border-radius:9px}
+  .type-head .spacer{flex:1}
+  .type-search{padding:10px 12px;border-bottom:1px solid var(--line)}
+  .type-search .ctrl{height:32px;font-size:12.5px;background:#FAFCFF}
+  .type-list{max-height:calc(100vh - 300px);overflow-y:auto;padding:6px}
+  .type-item{
+    display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;
+    border-left:3px solid transparent;transition:.14s;margin-bottom:2px;
+  }
+  .type-item:hover{background:var(--blue-50)}
+  .type-item.active{background:var(--blue-50);border-left-color:var(--blue-600)}
+  .type-item.active .ti-name{color:var(--blue-600);font-weight:600}
+  .ti-main{min-width:0;flex:1}
+  .ti-name{font-size:13px;color:var(--text);line-height:1.4;display:flex;align-items:center;gap:5px}
+  .ti-code{font-size:10.5px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .ti-cnt{font-size:11px;color:var(--muted);background:var(--gray-bg);padding:1px 6px;border-radius:8px;font-weight:600;flex:0 0 auto}
+  .type-item.active .ti-cnt{background:#fff;color:var(--blue-600)}
+  .tree-flag{font-size:9.5px;color:#6B46C1;background:#F3EEFF;border-radius:4px;padding:0 4px;font-weight:600;line-height:1.5}
+
+  /* ---------- 右侧：类型头 ---------- */
+  .ih{padding:16px 18px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .ih-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .ih-sub{font-size:12px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .ih-sub .dot{width:3px;height:3px;border-radius:50%;background:#C7D2E0}
+  .ih .spacer{flex:1}
+  .ih-actions{display:flex;gap:8px;flex:0 0 auto}
+
+  .bar{padding:12px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);background:#FCFDFF;flex-wrap:wrap}
+  .bar .ctrl{height:32px;font-size:12.5px}
+  .bar .spacer{flex:1}
+  .bar .sel-tip{font-size:12px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);padding:4px 10px;border-radius:8px}
+
+  /* ---------- 表格 ---------- */
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:10px 12px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:10px 12px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  tbody tr:hover{background:#F8FBFF}
+  tbody tr.off-row{background:#FAFBFC}
+  .nm-cell{display:flex;align-items:center;gap:6px;min-width:0}
+  .tw{
+    width:16px;height:16px;flex:0 0 16px;display:inline-flex;align-items:center;justify-content:center;
+    font-size:10px;color:var(--muted);cursor:pointer;border-radius:4px;user-select:none;
+  }
+  .tw:hover{background:var(--blue-100);color:var(--blue-600)}
+  .tw.tw-ph{cursor:default}
+  .tw.tw-ph:hover{background:transparent;color:var(--muted)}
+  .nm{font-size:13px;color:var(--text);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nm:hover{color:var(--blue-600);text-decoration:underline}
+  .nm.off{color:var(--muted);text-decoration:line-through}
+  .sub-cnt{font-size:10px;color:var(--muted);background:var(--gray-bg);border-radius:8px;padding:0 5px;font-weight:600}
+  .rmk{font-size:10px;color:#C2760A;background:var(--orange-bg);border-radius:4px;padding:0 4px;line-height:1.6;cursor:help}
+  .col-id{color:var(--muted);font-variant-numeric:tabular-nums}
+  .pname{font-size:12px;color:var(--text-2)}
+  .pname.top{color:var(--muted)}
+  .ops{display:flex;gap:10px;white-space:nowrap;align-items:center}
+
+  .cfg-foot{padding:12px 18px;font-size:12px;color:var(--muted);background:#FCFDFF;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .cfg-foot .spacer{flex:1}
+
+  /* ---------- 抽屉 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:660px;max-width:92vw;background:var(--white);z-index:61;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:var(--shadow-lg);
+  }
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .d-title{font-size:17px;font-weight:700}
+  .d-sub{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-close{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;font-size:16px;color:var(--muted)}
+  .d-close:hover{color:var(--text);border-color:var(--blue-500)}
+  .d-body{padding:4px 22px 22px;overflow-y:auto;flex:1}
+  .sec{margin-top:18px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sec-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+  .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px}
+  .kv.full{grid-column:1/-1}
+  .kv .k{font-size:12px;color:var(--muted)}
+  .kv .v{font-size:13px;color:var(--text);margin-top:4px;word-break:break-all;line-height:1.6}
+  .kv .v.strong{font-weight:600}
+  .timeline{border-left:2px solid var(--blue-100);margin-left:6px;padding-left:18px}
+  .tl-item{position:relative;padding-bottom:16px}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue-600);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue-100)}
+  .tl-item .t{font-size:13px;font-weight:600}
+  .tl-item .m{font-size:12px;color:var(--muted);margin-top:3px}
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#FCFDFF}
+  .d-foot .spacer{flex:1}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:620px;max-width:92vw;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+    display:flex;flex-direction:column;max-height:88vh;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .m-head .sub{font-size:11.5px;font-weight:400;color:var(--muted)}
+  .m-body{padding:0 22px 4px;overflow-y:auto}
+  .m-body p{font-size:12.5px;color:var(--text-2);line-height:1.7}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;padding:4px 0 8px}
+  .form-grid .full{grid-column:1/-1}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px}
+  .counter{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+  .tip-line{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:6px}
+  .inline-tip{display:flex;gap:8px;background:#F8FAFE;border:1px dashed var(--line-strong);border-radius:9px;padding:9px 12px;font-size:11.5px;color:var(--muted);line-height:1.7}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:74vw;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1360px){
+    .split{flex-direction:column}
+    .type-panel{width:100%;flex:1 1 auto}
+    .type-list{max-height:240px}
+    .form-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <div class="nav-item" data-page="company">企业<span class="badge">42</span></div>
+        <div class="nav-item" data-page="contact">企业联系人</div>
+        <div class="nav-item" data-page="daka" title="该页面暂无原型">大咖</div>
+        <div class="nav-item" data-page="career">职业规划</div>
+        <div class="nav-item" data-page="job">岗位管理</div>
+        <div class="nav-item" data-page="project">项目大厅</div>
+        <div class="nav-item" data-page="course">就业课程</div>
+        <div class="nav-item" data-page="org">机构管理</div>
+        <div class="nav-item" data-page="apply">申请管理</div>
+        <div class="nav-item" data-page="complaint">投诉处理</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <div class="nav-item" data-page="sysconf">系统配置</div>
+        <div class="nav-item active" data-page="dict">字典管理</div>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">系统设置 / <b id="crumbNow">字典管理</b></div>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="page-title">字典管理</div>
+          <div class="page-sub">
+            <span class="mono">dict</span> · 单表 + <span class="mono">parent_id</span> 自关联 · 共 <b id="statTypes">22</b> 类 /
+            <b id="statItems">157</b> 项，其中树形 <b id="statTree">6</b> 类。业务表存 <span class="mono">dict.id</span>。
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="actions">
+          <button class="btn" id="btnExport">⬇ 导出字典</button>
+          <button class="btn btn-primary" id="btnAddType">＋ 新增字典类型</button>
+        </div>
+      </div>
+
+      <div class="notice">
+        <i class="n-ico">i</i>
+        <div>
+          <b>三条硬规则：</b>① 字典<b>只停用、不删除</b>（物理删了历史数据就成孤儿，<span class="mono">status=0</span> 即可）；
+          ② 审批状态、课程上架状态、申请进度、投诉状态这类<b>参与代码判断的枚举不进字典</b>，用 <span class="mono">TINYINT</span> 硬编码；
+          ③ <span class="mono">level</span> 由后端按父级推导，前端不传。
+        </div>
+      </div>
+
+      <div class="split">
+        <!-- 左：字典类型 -->
+        <div class="card type-panel">
+          <div class="type-head">
+            <span class="t">字典类型</span>
+            <span class="cnt" id="typeCnt">22</span>
+            <div class="spacer"></div>
+            <button class="link" id="btnAddType2">新增</button>
+          </div>
+          <div class="type-search">
+            <input class="ctrl" id="typeKw" placeholder="搜索类型名称 / 编码">
+          </div>
+          <div class="type-list" id="typeList"></div>
+        </div>
+
+        <!-- 右：字典项 -->
+        <div class="card item-panel">
+          <div class="ih">
+            <div style="min-width:0">
+              <div class="ih-title">
+                <span id="ihName">学历</span>
+                <span class="mono" id="ihCode">education</span>
+                <span class="tag blue" id="ihOwner">牛人</span>
+              </div>
+              <div class="ih-sub" id="ihSub"></div>
+            </div>
+            <div class="spacer"></div>
+            <div class="ih-actions">
+              <button class="btn" id="btnFold" style="display:none">收起全部</button>
+              <button class="btn btn-primary" id="btnAddItem">＋ 新增字典项</button>
+            </div>
+          </div>
+
+          <div class="bar">
+            <input class="ctrl" id="itemKw" style="width:200px" placeholder="搜索字典项名称">
+            <select class="ctrl" id="itemSt" style="width:120px">
+              <option value="">全部状态</option>
+              <option value="1">启用</option>
+              <option value="0">停用</option>
+            </select>
+            <button class="btn btn-sm" id="btnItemSearch">查询</button>
+            <button class="btn btn-sm" id="btnItemReset">重置</button>
+            <div class="spacer"></div>
+            <span class="sel-tip" id="itemTip">共 5 项</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead id="thead"></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="cfg-foot">
+            <span id="footStat">—</span>
+            <div class="spacer"></div>
+            <span>唯一键 <span class="mono">(dict_type, parent_id, name)</span> · 排序 <span class="mono">sort</span> 升序</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 抽屉：字典项详情 ============ -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div>
+      <div class="d-title" id="dName">—</div>
+      <div class="d-sub">
+        <span class="status st-3" id="dStatus">启用</span>
+        <span class="mono" id="dId">—</span>
+        <span id="dType">—</span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 弹窗：新增 / 编辑字典项 ============ -->
+<div class="modal" id="modalItem">
+  <div class="m-head"><span id="miTitle">新增字典项</span><span class="sub" id="miSub"></span></div>
+  <div class="m-body">
+    <p id="miHint" style="display:none"></p>
+    <div class="form-grid">
+      <div class="field">
+        <label>字典类型 dict_type <span style="color:#E5484D">*</span></label>
+        <select class="ctrl" id="iType"></select>
+        <div class="tip-line" id="iTypeTip">类型决定归属端，创建后不可修改</div>
+      </div>
+      <div class="field">
+        <label>父级 parent_id</label>
+        <select class="ctrl" id="iParent"></select>
+        <div class="tip-line" id="iParentTip">顶级存 0；层级 level = 父级 level + 1</div>
+      </div>
+      <div class="field">
+        <label>字典项名称 name <span style="color:#E5484D">*</span></label>
+        <input class="ctrl" id="iName" placeholder="页面展示文案，如「本科」" maxlength="50">
+        <div class="tip-line">同一类型、同一父级下不可重名</div>
+      </div>
+      <div class="field">
+        <label>字典值 dict_value</label>
+        <input class="ctrl" id="iValue" placeholder="国标码 / 三方接口值，可空" maxlength="50">
+        <div class="tip-line">纯内部使用，不对用户展示</div>
+      </div>
+      <div class="field">
+        <label>排序 sort</label>
+        <input class="ctrl" id="iSort" type="number" min="0" step="10" value="10">
+        <div class="tip-line">同级升序，建议 10 / 20 / 30 留出插入空间</div>
+      </div>
+      <div class="field">
+        <label>状态 status</label>
+        <select class="ctrl" id="iStatus">
+          <option value="1">启用</option>
+          <option value="0">停用</option>
+        </select>
+        <div class="tip-line">停用后不在下拉中展示，历史数据仍可渲染</div>
+      </div>
+      <div class="field full">
+        <label>备注 remark</label>
+        <textarea class="ctrl" id="iRemark" maxlength="255" placeholder="运营维护用，如「QS 前 200 在此备注」"></textarea>
+        <div class="counter"><span id="iCnt">0</span> / 255</div>
+      </div>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="miCancel">取消</button>
+    <button class="btn btn-primary" id="miConfirm">保存</button>
+  </div>
+</div>
+
+<!-- ============ 弹窗：新增字典类型 ============ -->
+<div class="modal" id="modalType" style="width:560px">
+  <div class="m-head"><span>新增字典类型</span><span class="sub">单表设计，类型由字典项带出</span></div>
+  <div class="m-body">
+    <p style="font-size:12.5px;color:#8A97A8;line-height:1.7;margin-bottom:2px">
+      字典没有独立的类型表，<span class="mono">type_name</span> 冗余在每一项上。因此新增类型需同时创建首个字典项。
+    </p>
+    <div class="form-grid">
+      <div class="field">
+        <label>类型编码 dict_type <span style="color:#E5484D">*</span></label>
+        <input class="ctrl" id="tCode" placeholder="如 scholarship_level">
+        <div class="tip-line">英文小写 + 下划线，不存中文</div>
+      </div>
+      <div class="field">
+        <label>类型名称 type_name <span style="color:#E5484D">*</span></label>
+        <input class="ctrl" id="tName" placeholder="如 奖学金等级">
+      </div>
+      <div class="field">
+        <label>结构</label>
+        <select class="ctrl" id="tTree">
+          <option value="0">平铺（单层）</option>
+          <option value="1">树形（支持父子）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>归属</label>
+        <select class="ctrl" id="tOwner">
+          <option>牛人</option><option>企业</option><option>项目</option>
+          <option>课程</option><option>机构</option><option>应届生规划</option><option>通用审批</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>首个字典项名称 <span style="color:#E5484D">*</span></label>
+        <input class="ctrl" id="tFirst" placeholder="如 国家奖学金">
+      </div>
+      <div class="field">
+        <label>排序 sort</label>
+        <input class="ctrl" id="tSort" type="number" min="0" step="10" value="10">
+      </div>
+    </div>
+    <div class="inline-tip" style="margin-bottom:6px">
+      新增类型后需在数据库侧确认业务表是否已预留对应字段，否则字典项无法被业务引用。
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="mtCancel">取消</button>
+    <button class="btn btn-primary" id="mtConfirm">确认新增</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 字典类型元数据 [编码, 名称, 是否树形, 归属] ================= */
+const TYPES = [
+  ['education','学历',0,'牛人'],
+  ['school_level','院校层次',0,'牛人'],
+  ['edu_mode','教育方式',0,'牛人'],
+  ['work_years','工作年限',0,'牛人'],
+  ['job_intention','求职意向',1,'牛人'],
+  ['career_direction','职业规划方向',0,'应届生规划'],
+  ['mbti','性格类型',0,'应届生规划'],
+  ['hobby','爱好',0,'应届生规划'],
+  ['industry','行业',1,'企业'],
+  ['company_type','企业类型',0,'企业'],
+  ['staff_size','人员范围',0,'企业'],
+  ['project_type','项目类型',0,'项目'],
+  ['coop_mode','合作方式',0,'项目'],
+  ['project_category','项目分类',1,'项目'],
+  ['tech_stack','技术范围',1,'项目'],
+  ['budget_range','预算区间',0,'项目'],
+  ['human_need_type','人力需求类型',0,'项目'],
+  ['course_category','课程分类',1,'课程'],
+  ['teach_mode','授课方式',0,'课程'],
+  ['salary_range','薪资范围',1,'课程/岗位'],
+  ['org_scale','机构规模',0,'机构'],
+  ['reject_reason','驳回原因',0,'通用审批'],
+];
+
+const DICT = [
+  /* ---- 学历 · education ---- */
+  {id:1001, type:'education', name:'大专', parent:0, level:1, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-15 11:26:26'},
+  {id:1002, type:'education', name:'本科', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-09 17:20:20'},
+  {id:1003, type:'education', name:'硕士', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 11:38:38'},
+  {id:1004, type:'education', name:'博士', parent:0, level:1, sort:40, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:1099, type:'education', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  /* ---- 院校层次 · school_level ---- */
+  {id:1101, type:'school_level', name:'985', parent:0, level:1, sort:10, remark:'同时具备211身份，只记最高', status:1, updateBy:'陈思远', updateTime:'2026-09-26 18:57:57'},
+  {id:1102, type:'school_level', name:'211', parent:0, level:1, sort:20, remark:'非985的211', status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 19:58:58'},
+  {id:1103, type:'school_level', name:'双一流', parent:0, level:1, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-13 17:44:44'},
+  {id:1104, type:'school_level', name:'普通本科', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-09 17:20:20'},
+  {id:1105, type:'school_level', name:'海外院校', parent:0, level:1, sort:50, remark:'QS前200可在此项备注', status:1, updateBy:'王审核', updateTime:'2026-09-14 10:25:25'},
+  {id:1199, type:'school_level', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'陈思远', updateTime:'2026-09-16 16:07:07'},
+  /* ---- 教育方式 · edu_mode ---- */
+  {id:1201, type:'edu_mode', name:'全日制', parent:0, level:1, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 10:13:13'},
+  {id:1202, type:'edu_mode', name:'非全日制', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-12 12:03:03'},
+  {id:1203, type:'edu_mode', name:'脱产', parent:0, level:1, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-23 19:34:34'},
+  {id:1204, type:'edu_mode', name:'留学', parent:0, level:1, sort:40, status:1, updateBy:'陈思远', updateTime:'2026-09-16 20:47:47'},
+  /* ---- 工作年限 · work_years ---- */
+  {id:1301, type:'work_years', name:'应届生', parent:0, level:1, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-20 12:51:51'},
+  {id:1302, type:'work_years', name:'1年以内', parent:0, level:1, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-10 10:01:01'},
+  {id:1303, type:'work_years', name:'1-3年', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 15:18:18'},
+  {id:1304, type:'work_years', name:'3-5年', parent:0, level:1, sort:40, status:1, updateBy:'朱琦雯', updateTime:'2026-09-17 17:08:08'},
+  {id:1305, type:'work_years', name:'5-10年', parent:0, level:1, sort:50, status:1, updateBy:'李薪', updateTime:'2026-09-18 10:49:49'},
+  {id:1306, type:'work_years', name:'10年以上', parent:0, level:1, sort:60, status:1, updateBy:'李薪', updateTime:'2026-09-28 20:59:59'},
+  /* ---- 求职意向 · job_intention ---- */
+  {id:2701, type:'job_intention', name:'AI技术类', parent:0, level:1, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-11 15:42:42'},
+  {id:2710, type:'job_intention', name:'产品与项目', parent:0, level:1, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:2720, type:'job_intention', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'陈思远', updateTime:'2026-09-21 17:32:32'},
+  {id:2702, type:'job_intention', name:'算法工程师', parent:2701, level:2, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-12 20:23:23'},
+  {id:2711, type:'job_intention', name:'AI产品经理', parent:2710, level:2, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-16 12:27:27'},
+  {id:2721, type:'job_intention', name:'不限', parent:2720, level:2, sort:10, status:1, updateBy:'李薪', updateTime:'2026-09-23 19:34:34'},
+  {id:2703, type:'job_intention', name:'大模型应用开发', parent:2701, level:2, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-20 20:11:11'},
+  {id:2712, type:'job_intention', name:'AI项目经理', parent:2710, level:2, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-24 20:35:35'},
+  {id:2704, type:'job_intention', name:'数据标注/数据工程', parent:2701, level:2, sort:30, status:1, updateBy:'李敏', updateTime:'2026-09-15 11:26:26'},
+  {id:2705, type:'job_intention', name:'算法测试', parent:2701, level:2, sort:40, status:1, updateBy:'李薪', updateTime:'2026-09-28 12:39:39'},
+  /* ---- 职业规划方向 · career_direction ---- */
+  {id:1401, type:'career_direction', name:'AI算法', parent:0, level:1, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-26 18:57:57'},
+  {id:1402, type:'career_direction', name:'大模型应用', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 18:33:33'},
+  {id:1403, type:'career_direction', name:'数据分析', parent:0, level:1, sort:30, status:1, updateBy:'李敏', updateTime:'2026-09-10 14:41:41'},
+  {id:1404, type:'career_direction', name:'AI产品', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-24 12:15:15'},
+  {id:1405, type:'career_direction', name:'AI测试/实施', parent:0, level:1, sort:50, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  /* ---- 性格类型 · mbti ---- */
+  {id:1601, type:'mbti', name:'INTJ', parent:0, level:1, sort:1, status:1, updateBy:'陈思远', updateTime:'2026-09-21 17:32:32'},
+  {id:1602, type:'mbti', name:'INTP', parent:0, level:1, sort:2, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  {id:1603, type:'mbti', name:'ENTJ', parent:0, level:1, sort:3, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 15:18:18'},
+  {id:1604, type:'mbti', name:'ENTP', parent:0, level:1, sort:4, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:1605, type:'mbti', name:'INFJ', parent:0, level:1, sort:5, status:1, updateBy:'李敏', updateTime:'2026-09-15 11:26:26'},
+  {id:1606, type:'mbti', name:'INFP', parent:0, level:1, sort:6, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  {id:1607, type:'mbti', name:'ENFJ', parent:0, level:1, sort:7, status:1, updateBy:'陈思远', updateTime:'2026-09-11 19:22:22'},
+  {id:1608, type:'mbti', name:'ENFP', parent:0, level:1, sort:8, status:1, updateBy:'王审核', updateTime:'2026-09-14 14:05:05'},
+  {id:1609, type:'mbti', name:'ISTJ', parent:0, level:1, sort:9, status:1, updateBy:'李敏', updateTime:'2026-09-20 16:31:31'},
+  {id:1610, type:'mbti', name:'ISFJ', parent:0, level:1, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-11 19:22:22'},
+  {id:1611, type:'mbti', name:'ESTJ', parent:0, level:1, sort:11, status:1, updateBy:'李薪', updateTime:'2026-09-13 09:24:24'},
+  {id:1612, type:'mbti', name:'ESFJ', parent:0, level:1, sort:12, status:1, updateBy:'陈思远', updateTime:'2026-09-11 11:02:02'},
+  {id:1613, type:'mbti', name:'ISTP', parent:0, level:1, sort:13, status:1, updateBy:'李薪', updateTime:'2026-09-13 09:24:24'},
+  {id:1614, type:'mbti', name:'ISFP', parent:0, level:1, sort:14, status:1, updateBy:'朱琦雯', updateTime:'2026-09-17 09:48:48'},
+  {id:1615, type:'mbti', name:'ESTP', parent:0, level:1, sort:15, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:1616, type:'mbti', name:'ESFP', parent:0, level:1, sort:16, status:1, updateBy:'李薪', updateTime:'2026-09-28 16:19:19'},
+  /* ---- 爱好 · hobby ---- */
+  {id:1501, type:'hobby', name:'编程与开源', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:1502, type:'hobby', name:'阅读', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:1503, type:'hobby', name:'运动', parent:0, level:1, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-09 13:40:40'},
+  {id:1504, type:'hobby', name:'游戏', parent:0, level:1, sort:40, status:1, updateBy:'陈思远', updateTime:'2026-09-16 12:27:27'},
+  {id:1505, type:'hobby', name:'音乐', parent:0, level:1, sort:50, status:1, updateBy:'陈思远', updateTime:'2026-09-21 13:52:52'},
+  {id:1506, type:'hobby', name:'旅行', parent:0, level:1, sort:60, status:1, updateBy:'李薪', updateTime:'2026-09-13 13:04:04'},
+  {id:1507, type:'hobby', name:'摄影', parent:0, level:1, sort:70, status:1, updateBy:'李敏', updateTime:'2026-09-15 19:46:46'},
+  {id:1599, type:'hobby', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'陈思远', updateTime:'2026-09-26 10:37:37'},
+  /* ---- 行业 · industry ---- */
+  {id:1701, type:'industry', name:'AI与互联网', parent:0, level:1, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-17 17:08:08'},
+  {id:1702, type:'industry', name:'智能制造', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 14:53:53'},
+  {id:1703, type:'industry', name:'金融', parent:0, level:1, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  {id:1704, type:'industry', name:'医疗健康', parent:0, level:1, sort:40, status:1, updateBy:'陈思远', updateTime:'2026-09-21 09:12:12'},
+  {id:1705, type:'industry', name:'教育', parent:0, level:1, sort:50, status:1, updateBy:'陈思远', updateTime:'2026-09-16 16:07:07'},
+  {id:1706, type:'industry', name:'政务', parent:0, level:1, sort:60, status:1, updateBy:'李薪', updateTime:'2026-09-23 15:54:54'},
+  {id:1707, type:'industry', name:'消费零售', parent:0, level:1, sort:70, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 11:38:38'},
+  {id:1799, type:'industry', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'李敏', updateTime:'2026-09-25 13:16:16'},
+  /* ---- 企业类型 · company_type ---- */
+  {id:1801, type:'company_type', name:'外企', parent:0, level:1, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-15 11:26:26'},
+  {id:1802, type:'company_type', name:'私企', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  {id:1803, type:'company_type', name:'国企', parent:0, level:1, sort:30, status:1, updateBy:'李敏', updateTime:'2026-09-10 10:01:01'},
+  {id:1804, type:'company_type', name:'个体工商户', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-09 13:40:40'},
+  {id:1805, type:'company_type', name:'事业单位', parent:0, level:1, sort:50, status:1, updateBy:'王审核', updateTime:'2026-09-09 17:20:20'},
+  {id:1806, type:'company_type', name:'社会组织', parent:0, level:1, sort:60, status:1, updateBy:'王审核', updateTime:'2026-09-19 15:30:30'},
+  {id:1899, type:'company_type', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 15:18:18'},
+  /* ---- 人员范围 · staff_size ---- */
+  {id:1901, type:'staff_size', name:'1-20人', parent:0, level:1, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-16 12:27:27'},
+  {id:1902, type:'staff_size', name:'21-99人', parent:0, level:1, sort:20, status:1, updateBy:'陈思远', updateTime:'2026-09-16 20:47:47'},
+  {id:1903, type:'staff_size', name:'100-499人', parent:0, level:1, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-09 09:00:00'},
+  {id:1904, type:'staff_size', name:'500-999人', parent:0, level:1, sort:40, status:1, updateBy:'李敏', updateTime:'2026-09-15 19:46:46'},
+  {id:1905, type:'staff_size', name:'1000人及以上', parent:0, level:1, sort:50, status:1, updateBy:'陈思远', updateTime:'2026-09-11 19:22:22'},
+  /* ---- 项目类型 · project_type ---- */
+  {id:2001, type:'project_type', name:'企业项目', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:2002, type:'project_type', name:'政府项目', parent:0, level:1, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-20 20:11:11'},
+  {id:2003, type:'project_type', name:'个人项目', parent:0, level:1, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-23 19:34:34'},
+  /* ---- 合作方式 · coop_mode ---- */
+  {id:2101, type:'coop_mode', name:'线上远程', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:2102, type:'coop_mode', name:'线下驻场', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-19 11:50:50'},
+  {id:2103, type:'coop_mode', name:'线上线下结合', parent:0, level:1, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-19 19:10:10'},
+  /* ---- 项目分类 · project_category ---- */
+  {id:2801, type:'project_category', name:'AI算法开发', parent:0, level:1, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-21 09:12:12'},
+  {id:2810, type:'project_category', name:'大模型应用', parent:0, level:1, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-15 19:46:46'},
+  {id:2820, type:'project_category', name:'数据服务', parent:0, level:1, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-18 14:29:29'},
+  {id:2830, type:'project_category', name:'AI产品设计', parent:0, level:1, sort:40, status:1, updateBy:'李薪', updateTime:'2026-09-23 15:54:54'},
+  {id:2840, type:'project_category', name:'智能化改造', parent:0, level:1, sort:50, status:1, updateBy:'李薪', updateTime:'2026-09-13 17:44:44'},
+  {id:2802, type:'project_category', name:'计算机视觉', parent:2801, level:2, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-11 15:42:42'},
+  {id:2811, type:'project_category', name:'RAG知识库', parent:2810, level:2, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 14:53:53'},
+  {id:2821, type:'project_category', name:'数据标注', parent:2820, level:2, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-25 13:16:16'},
+  {id:2803, type:'project_category', name:'自然语言处理', parent:2801, level:2, sort:20, status:1, updateBy:'陈思远', updateTime:'2026-09-11 11:02:02'},
+  {id:2812, type:'project_category', name:'智能体开发', parent:2810, level:2, sort:20, status:1, updateBy:'李敏', updateTime:'2026-09-15 19:46:46'},
+  {id:2822, type:'project_category', name:'数据清洗', parent:2820, level:2, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 10:13:13'},
+  {id:2804, type:'project_category', name:'推荐/搜索', parent:2801, level:2, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:2813, type:'project_category', name:'模型微调', parent:2810, level:2, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-14 18:45:45'},
+  /* ---- 技术范围 · tech_stack ---- */
+  {id:2901, type:'tech_stack', name:'编程语言', parent:0, level:1, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-25 13:16:16'},
+  {id:2910, type:'tech_stack', name:'框架与工具', parent:0, level:1, sort:20, status:1, updateBy:'陈思远', updateTime:'2026-09-21 09:12:12'},
+  {id:2920, type:'tech_stack', name:'技术方向', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 19:58:58'},
+  {id:2902, type:'tech_stack', name:'Python', parent:2901, level:2, sort:10, status:1, updateBy:'李薪', updateTime:'2026-09-23 19:34:34'},
+  {id:2911, type:'tech_stack', name:'PyTorch', parent:2910, level:2, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-20 16:31:31'},
+  {id:2921, type:'tech_stack', name:'CV', parent:2920, level:2, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 19:58:58'},
+  {id:2903, type:'tech_stack', name:'Java', parent:2901, level:2, sort:20, status:1, updateBy:'陈思远', updateTime:'2026-09-11 15:42:42'},
+  {id:2912, type:'tech_stack', name:'TensorFlow', parent:2910, level:2, sort:20, status:1, updateBy:'李薪', updateTime:'2026-09-28 16:19:19'},
+  {id:2922, type:'tech_stack', name:'NLP', parent:2920, level:2, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-09 17:20:20'},
+  {id:2904, type:'tech_stack', name:'C++', parent:2901, level:2, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-12 16:43:43'},
+  {id:2913, type:'tech_stack', name:'LangChain', parent:2910, level:2, sort:30, status:1, updateBy:'陈思远', updateTime:'2026-09-26 14:17:17'},
+  {id:2923, type:'tech_stack', name:'数据分析', parent:2920, level:2, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-28 12:39:39'},
+  {id:2924, type:'tech_stack', name:'MLOps', parent:2920, level:2, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-24 20:35:35'},
+  /* ---- 预算区间 · budget_range ---- */
+  {id:2201, type:'budget_range', name:'1万以下', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:2202, type:'budget_range', name:'1-5万', parent:0, level:1, sort:20, status:1, updateBy:'陈思远', updateTime:'2026-09-11 11:02:02'},
+  {id:2203, type:'budget_range', name:'5-10万', parent:0, level:1, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-18 18:09:09'},
+  {id:2204, type:'budget_range', name:'10-30万', parent:0, level:1, sort:40, status:1, updateBy:'陈思远', updateTime:'2026-09-26 14:17:17'},
+  {id:2205, type:'budget_range', name:'30-50万', parent:0, level:1, sort:50, status:1, updateBy:'王审核', updateTime:'2026-09-14 10:25:25'},
+  {id:2206, type:'budget_range', name:'50万以上', parent:0, level:1, sort:60, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 19:58:58'},
+  {id:2207, type:'budget_range', name:'面议', parent:0, level:1, sort:99, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 11:38:38'},
+  /* ---- 人力需求类型 · human_need_type ---- */
+  {id:2301, type:'human_need_type', name:'全职', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-14 14:05:05'},
+  {id:2302, type:'human_need_type', name:'兼职', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:2303, type:'human_need_type', name:'项目制', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 10:13:13'},
+  {id:2304, type:'human_need_type', name:'短期顾问', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-09 09:00:00'},
+  /* ---- 课程分类 · course_category ---- */
+  {id:3001, type:'course_category', name:'AI基础', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-09 13:40:40'},
+  {id:3010, type:'course_category', name:'机器学习', parent:0, level:1, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-19 19:10:10'},
+  {id:3020, type:'course_category', name:'大模型', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-12 16:43:43'},
+  {id:3030, type:'course_category', name:'求职面试', parent:0, level:1, sort:40, status:1, updateBy:'陈思远', updateTime:'2026-09-26 18:57:57'},
+  {id:3002, type:'course_category', name:'Python入门', parent:3001, level:2, sort:10, status:1, updateBy:'陈思远', updateTime:'2026-09-11 19:22:22'},
+  {id:3011, type:'course_category', name:'经典算法', parent:3010, level:2, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 11:38:38'},
+  {id:3021, type:'course_category', name:'提示词工程', parent:3020, level:2, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-17 17:08:08'},
+  {id:3003, type:'course_category', name:'数学基础', parent:3001, level:2, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-24 16:55:55'},
+  {id:3012, type:'course_category', name:'深度学习', parent:3010, level:2, sort:20, status:1, updateBy:'王审核', updateTime:'2026-09-19 19:10:10'},
+  {id:3022, type:'course_category', name:'RAG实战', parent:3020, level:2, sort:20, status:1, updateBy:'李薪', updateTime:'2026-09-18 18:09:09'},
+  {id:3023, type:'course_category', name:'智能体开发', parent:3020, level:2, sort:30, status:1, updateBy:'李薪', updateTime:'2026-09-23 11:14:14'},
+  /* ---- 授课方式 · teach_mode ---- */
+  {id:2401, type:'teach_mode', name:'线上直播', parent:0, level:1, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:2402, type:'teach_mode', name:'线下面授', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 10:13:13'},
+  {id:2403, type:'teach_mode', name:'录播', parent:0, level:1, sort:30, status:1, updateBy:'陈思远', updateTime:'2026-09-21 13:52:52'},
+  {id:2404, type:'teach_mode', name:'线上线下混合', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-09 17:20:20'},
+  /* ---- 薪资范围 · salary_range ---- */
+  {id:3101, type:'salary_range', name:'面议', parent:0, level:1, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 14:53:53'},
+  {id:3110, type:'salary_range', name:'月薪', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 15:18:18'},
+  {id:3111, type:'salary_range', name:'3K以下', parent:3110, level:2, sort:10, status:1, updateBy:'李敏', updateTime:'2026-09-10 14:41:41'},
+  {id:3112, type:'salary_range', name:'3-5K', parent:3110, level:2, sort:20, status:1, updateBy:'李薪', updateTime:'2026-09-18 14:29:29'},
+  {id:3113, type:'salary_range', name:'5-8K', parent:3110, level:2, sort:30, status:1, updateBy:'李敏', updateTime:'2026-09-15 15:06:06'},
+  {id:3114, type:'salary_range', name:'8-12K', parent:3110, level:2, sort:40, status:1, updateBy:'李薪', updateTime:'2026-09-23 15:54:54'},
+  {id:3115, type:'salary_range', name:'12-20K', parent:3110, level:2, sort:50, status:1, updateBy:'陈思远', updateTime:'2026-09-26 18:57:57'},
+  {id:3116, type:'salary_range', name:'20-30K', parent:3110, level:2, sort:60, status:1, updateBy:'朱琦雯', updateTime:'2026-09-22 10:13:13'},
+  {id:3117, type:'salary_range', name:'30-50K', parent:3110, level:2, sort:70, status:1, updateBy:'李薪', updateTime:'2026-09-28 12:39:39'},
+  {id:3118, type:'salary_range', name:'50K以上', parent:3110, level:2, sort:80, status:1, updateBy:'王审核', updateTime:'2026-09-14 18:45:45'},
+  /* ---- 机构规模 · org_scale ---- */
+  {id:2501, type:'org_scale', name:'10人以下', parent:0, level:1, sort:10, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 19:58:58'},
+  {id:2502, type:'org_scale', name:'10-50人', parent:0, level:1, sort:20, status:1, updateBy:'李薪', updateTime:'2026-09-28 16:19:19'},
+  {id:2503, type:'org_scale', name:'50-200人', parent:0, level:1, sort:30, status:1, updateBy:'朱琦雯', updateTime:'2026-09-17 17:08:08'},
+  {id:2504, type:'org_scale', name:'200人以上', parent:0, level:1, sort:40, status:1, updateBy:'王审核', updateTime:'2026-09-19 19:10:10'},
+  /* ---- 驳回原因 · reject_reason ---- */
+  {id:2601, type:'reject_reason', name:'资料不全', parent:0, level:1, sort:10, status:1, updateBy:'王审核', updateTime:'2026-09-14 18:45:45'},
+  {id:2602, type:'reject_reason', name:'信息不实', parent:0, level:1, sort:20, status:1, updateBy:'朱琦雯', updateTime:'2026-09-27 15:18:18'},
+  {id:2603, type:'reject_reason', name:'资质不符', parent:0, level:1, sort:30, status:1, updateBy:'王审核', updateTime:'2026-09-14 18:45:45'},
+  {id:2604, type:'reject_reason', name:'内容违规', parent:0, level:1, sort:40, status:1, updateBy:'李薪', updateTime:'2026-09-28 16:19:19'},
+  {id:2699, type:'reject_reason', name:'其他', parent:0, level:1, sort:99, status:1, updateBy:'陈思远', updateTime:'2026-09-16 16:07:07'},
+];
+
+/* ================= 运行态 ================= */
+const state = { code: TYPES[0][0], typeKw: '', itemKw: '', itemSt: '', collapsed: new Set() };
+
+const typeMeta = code => {
+  const t = TYPES.find(x => x[0] === code);
+  return t ? { code:t[0], name:t[1], tree:!!t[2], owner:t[3] } : { code, name:code, tree:false, owner:'—' };
+};
+const itemsOf   = code => DICT.filter(d => d.type === code);
+const childrenOf= id   => DICT.filter(d => d.parent === id);
+const byId      = id   => DICT.find(d => d.id === id);
+const nowStr = () => {
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+};
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const typeNameOf = code => typeMeta(code).name;
+
+/* ================= 左：类型列表 ================= */
+function renderTypes(){
+  const kw = state.typeKw.trim().toLowerCase();
+  const list = TYPES.filter(t => !kw || t[0].toLowerCase().includes(kw) || t[1].includes(kw));
+
+  document.getElementById('typeCnt').textContent = list.length;
+  document.getElementById('typeList').innerHTML = list.length ? list.map(t=>{
+    const n = itemsOf(t[0]).length;
+    return `<div class="type-item ${t[0]===state.code?'active':''}" data-code="${t[0]}">
+      <div class="ti-main">
+        <div class="ti-name">${t[1]}${t[2] ? '<span class="tree-flag">树</span>' : ''}</div>
+        <div class="ti-code">${t[0]}</div>
+      </div>
+      <span class="ti-cnt">${n}</span>
+    </div>`;
+  }).join('') : `<div class="empty" style="padding:26px 8px">无匹配类型</div>`;
+
+  document.querySelectorAll('.type-item').forEach(el=>{
+    el.onclick = ()=>{
+      state.code = el.dataset.code;
+      state.itemKw = ''; state.itemSt = '';
+      document.getElementById('itemKw').value = '';
+      document.getElementById('itemSt').value = '';
+      renderTypes(); renderHead(); renderItems();
+    };
+  });
+}
+
+/* ================= 右上：类型头 ================= */
+function renderHead(){
+  const m = typeMeta(state.code);
+  const all = itemsOf(state.code);
+  const on = all.filter(d=>d.status===1).length;
+  const hasChild = all.some(d=>d.parent !== 0);
+
+  document.getElementById('ihName').textContent = m.name;
+  document.getElementById('ihCode').textContent = m.code;
+  document.getElementById('ihOwner').textContent = '归属 · ' + m.owner;
+  document.getElementById('ihSub').innerHTML = `
+    <span>${m.tree ? '树形结构（parent_id 自关联）' : '平铺结构（父级固定 0）'}</span>
+    <span class="dot"></span>
+    <span>共 ${all.length} 项 · 启用 ${on} / 停用 ${all.length - on}</span>
+    <span class="dot"></span>
+    <span>${hasChild ? '含二级 ' + all.filter(d=>d.level===2).length + ' 项' : '无子层级'}</span>`;
+  document.getElementById('btnFold').style.display = m.tree ? 'inline-flex' : 'none';
+  document.getElementById('btnFold').textContent = state.collapsed.size ? '展开全部' : '收起全部';
+  document.getElementById('btnAddItem').disabled = false;
+}
+
+/* ================= 右：字典项表格 ================= */
+/* 前端组装缩进树：父项按 sort 排完后紧跟其子项，避免出现「先列完所有一级再列二级」 */
+function orderedRows(all){
+  const map = new Map();
+  all.forEach(d=>{ if(!map.has(d.parent)) map.set(d.parent, []); map.get(d.parent).push(d); });
+  const out = [];
+  const walk = pid =>{
+    (map.get(pid) || []).sort((a,b)=> a.sort - b.sort || a.id - b.id)
+      .forEach(d=>{ out.push(d); walk(d.id); });
+  };
+  walk(0);
+  return out;
+}
+
+function visibleRows(){
+  const m = typeMeta(state.code);
+  let rows = orderedRows(itemsOf(state.code));
+
+  // 树形：折叠隐藏子级
+  if(m.tree && state.collapsed.size){
+    rows = rows.filter(d=>{
+      let p = d.parent;
+      while(p !== 0){
+        if(state.collapsed.has(p)) return false;
+        const pa = byId(p);
+        if(!pa) break;
+        p = pa.parent;
+      }
+      return true;
+    });
+  }
+
+  const kw = state.itemKw.trim();
+  if(kw) rows = rows.filter(d=> d.name.includes(kw) || (d.value||'').includes(kw));
+  if(state.itemSt !== '') rows = rows.filter(d=> d.status === Number(state.itemSt));
+  return rows;
+}
+
+function renderItems(){
+  const m = typeMeta(state.code);
+  const rows = visibleRows();
+  const all = itemsOf(state.code);
+
+  // 表头
+  document.getElementById('thead').innerHTML = m.tree ? `
+    <tr>
+      <th style="width:78px">字典项 ID</th>
+      <th style="min-width:190px">字典项名称</th>
+      <th style="width:96px">字典值</th>
+      <th style="width:112px">父级</th>
+      <th style="width:52px">层级</th>
+      <th style="width:56px">排序</th>
+      <th style="width:82px">状态</th>
+      <th style="width:112px">更新时间</th>
+      <th style="width:132px">操作</th>
+    </tr>` : `
+    <tr>
+      <th style="width:78px">字典项 ID</th>
+      <th style="min-width:210px">字典项名称</th>
+      <th style="width:110px">字典值</th>
+      <th style="width:56px">排序</th>
+      <th style="width:88px">状态</th>
+      <th style="width:128px">更新时间</th>
+      <th style="width:132px">操作</th>
+    </tr>`;
+
+  // 表体
+  const tb = document.getElementById('tbody');
+  if(!rows.length){
+    tb.innerHTML = `<tr><td colspan="9"><div class="empty"><span class="e-ico">🗃️</span>没有符合条件的字典项</div></td></tr>`;
+  }else{
+    tb.innerHTML = rows.map(d=>{
+      const kids = childrenOf(d.id);
+      const open = !state.collapsed.has(d.id);
+      const pad = m.tree ? (d.level - 1) * 20 : 0;
+      const parent = d.parent === 0 ? '—' : (byId(d.parent) ? byId(d.parent).name : '#' + d.parent);
+      const nmCell = `
+        <div class="nm-cell" style="padding-left:${pad}px">
+          ${kids.length ? `<span class="tw" data-tw="${d.id}">${open ? '▾' : '▸'}</span>` : '<span class="tw tw-ph"></span>'}
+          <span class="nm ${d.status===0?'off':''}" data-nm="${d.id}">${esc(d.name)}</span>
+          ${kids.length ? `<span class="sub-cnt" title="子项数">${kids.length}</span>` : ''}
+          ${d.remark ? `<span class="rmk" title="${esc(d.remark)}">备注</span>` : ''}
+        </div>`;
+      const ops = `
+        <div class="ops">
+          <button class="link" data-edit="${d.id}">编辑</button>
+          ${m.tree && d.level < 3 ? `<button class="link gray" data-addsub="${d.id}">加子项</button>` : ''}
+          <button class="link ${d.status===1?'red':''}" data-toggle="${d.id}">${d.status===1?'停用':'启用'}</button>
+        </div>`;
+      return `<tr class="${d.status===0?'off-row':''}" data-id="${d.id}">
+        <td class="col-id">${d.id}</td>
+        <td>${nmCell}</td>
+        <td class="mono">${d.value ? esc(d.value) : '—'}</td>
+        ${m.tree ? `<td><span class="pname ${d.parent===0?'top':''}">${esc(parent)}</span></td>` : ''}
+        ${m.tree ? `<td>L${d.level}</td>` : ''}
+        <td class="mono">${d.sort}</td>
+        <td><span class="status ${d.status===1?'st-3':'st-5'}">${d.status===1?'启用':'停用'}</span></td>
+        <td class="mono" style="font-size:11px">${d.updateTime.slice(2,10)}<br><span style="color:#B3BFCE">${d.updateBy}</span></td>
+        <td>${ops}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // 统计
+  const on = all.filter(d=>d.status===1).length;
+  document.getElementById('itemTip').textContent = `当前展示 ${rows.length} 项`;
+  document.getElementById('footStat').textContent =
+    `本类型共 ${all.length} 项 · 启用 ${on} / 停用 ${all.length-on} · 排序按 level、sort 升序`;
+
+  bindRows();
+}
+
+function bindRows(){
+  document.querySelectorAll('[data-tw]').forEach(el=>{
+    el.onclick = ()=>{
+      const id = Number(el.dataset.tw);
+      state.collapsed.has(id) ? state.collapsed.delete(id) : state.collapsed.add(id);
+      renderItems(); renderHead();
+    };
+  });
+  document.querySelectorAll('[data-nm]').forEach(el=>{
+    el.onclick = ()=> openDetail(Number(el.dataset.nm));
+  });
+  document.querySelectorAll('[data-edit]').forEach(el=>{
+    el.onclick = ()=> openItemModal('edit', byId(Number(el.dataset.edit)));
+  });
+  document.querySelectorAll('[data-addsub]').forEach(el=>{
+    el.onclick = ()=> openItemModal('add', null, Number(el.dataset.addsub));
+  });
+  document.querySelectorAll('[data-toggle]').forEach(el=>{
+    el.onclick = ()=> toggleStatus(byId(Number(el.dataset.toggle)));
+  });
+}
+
+/* ================= 停用 / 启用 ================= */
+function toggleStatus(d){
+  if(d.status === 1){
+    const kidsOn = childrenOf(d.id).filter(k=>k.status===1);
+    if(kidsOn.length){
+      toast(`「${d.name}」下还有 ${kidsOn.length} 个启用子项，请先停用子项`);
+      return;
+    }
+    d.status = 0;
+  }else{
+    d.status = 1;
+  }
+  d.updateBy = '陈思远'; d.updateTime = nowStr();
+  renderTypes(); renderHead(); renderItems();
+  toast(`已${d.status===1?'启用':'停用'}：${d.name}${d.status===0?'（历史数据仍按 id 展示）':''}`);
+}
+
+/* ================= 抽屉：详情 ================= */
+let detailId = null;
+function openDetail(id){
+  detailId = id;
+  const d = byId(id);
+  const m = typeMeta(d.type);
+  const parent = d.parent === 0 ? null : byId(d.parent);
+  const kids = childrenOf(d.id);
+
+  document.getElementById('dName').textContent = d.name;
+  document.getElementById('dId').textContent = 'ID ' + d.id;
+  document.getElementById('dType').textContent = `${m.name} · ${d.type}`;
+  const st = document.getElementById('dStatus');
+  st.className = 'status ' + (d.status===1?'st-3':'st-5');
+  st.textContent = d.status===1?'启用':'停用';
+
+  document.getElementById('dBody').innerHTML = `
+    <div class="sec">
+      <div class="sec-title">字典项</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">字典项 ID（id · 业务表存的就是这个值）</div><div class="v mono strong">${d.id}</div></div>
+        <div class="kv"><div class="k">字典项名称（name）</div><div class="v strong">${esc(d.name)}</div></div>
+        <div class="kv"><div class="k">类型编码（dict_type）</div><div class="v mono">${d.type}</div></div>
+        <div class="kv"><div class="k">类型名称（type_name · 冗余）</div><div class="v">${m.name}</div></div>
+        <div class="kv"><div class="k">字典值（dict_value · 外部编码）</div><div class="v mono">${d.value ? esc(d.value) : '—'}</div></div>
+        <div class="kv"><div class="k">父级（parent_id）</div><div class="v">${d.parent === 0 ? '0 · 顶级' : d.parent + ' · ' + esc(parent ? parent.name : '')}</div></div>
+        <div class="kv"><div class="k">层级（level · 后端推导）</div><div class="v">L${d.level}</div></div>
+        <div class="kv"><div class="k">排序（sort）</div><div class="v mono">${d.sort}</div></div>
+        <div class="kv"><div class="k">状态（status）</div><div class="v"><span class="status ${d.status===1?'st-3':'st-5'}">${d.status===1?'启用':'停用'}</span>（枚举值 ${d.status}）</div></div>
+        <div class="kv"><div class="k">是否删除（is_deleted）</div><div class="v">0 · 正常（字典页恒为 0，不做物理删除）</div></div>
+        <div class="kv full"><div class="k">备注（remark）</div><div class="v">${d.remark ? esc(d.remark) : '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">关系与约束</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">子项（同一 parent_id 下）</div><div class="v">${kids.length ? kids.length + ' 个 · ' + kids.map(k=>esc(k.name)).join(' / ') : '无子项'}</div></div>
+        <div class="kv"><div class="k">唯一键</div><div class="v mono">(dict_type, parent_id, name)</div></div>
+        <div class="kv full" style="background:#FFFCF3;border-color:#F8E3BE">
+          <div class="k" style="color:#C2760A">删除策略</div>
+          <div class="v" style="color:#8A6A24">字典项不提供物理删除。已被业务表引用的项只能停用，否则历史数据会变成孤儿记录；${
+            kids.length ? '当前该项下有 ' + kids.length + ' 个子项，<b>需先处理子项才能停用</b>。' : '当前无子项，可直接停用。'
+          }</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">维护记录</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="t">创建字典项</div><div class="m">系统初始化 · 2026-09-10 09:00:00</div></div>
+        <div class="tl-item"><div class="t">最近一次更新</div><div class="m">${esc(d.updateBy)} · ${d.updateTime}</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('dFoot').innerHTML = `
+    <span style="font-size:12px;color:#8A97A8">业务表按 dict.id 引用，改名称不影响历史数据</span>
+    <div class="spacer"></div>
+    <button class="btn" id="dtEdit">编辑</button>
+    <button class="btn ${d.status===1?'btn-danger':''}" id="dtToggle">${d.status===1?'停用':'启用'}</button>
+    <button class="btn btn-primary" id="dtClose">关闭</button>`;
+
+  document.getElementById('dtClose').onclick = closeDetail;
+  document.getElementById('dtEdit').onclick = ()=>{ closeDetail(); openItemModal('edit', d); };
+  document.getElementById('dtToggle').onclick = ()=>{ closeDetail(); toggleStatus(d); };
+
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+function closeDetail(){
+  document.getElementById('mask').classList.remove('show');
+  document.getElementById('drawer').classList.remove('show');
+}
+
+/* ================= 弹窗：新增 / 编辑字典项 ================= */
+const modalItem = document.getElementById('modalItem');
+let editId = null, presetParent = 0;
+
+function fillTypeSelect(sel, code){
+  sel.innerHTML = TYPES.map(t=>`<option value="${t[0]}" ${t[0]===code?'selected':''}>${t[1]} · ${t[0]}</option>`).join('');
+}
+
+function fillParentSelect(code, excludeId){
+  const sel = document.getElementById('iParent');
+  const m = typeMeta(code);
+  if(!m.tree){
+    sel.innerHTML = `<option value="0">— 无（平铺类型固定 0）—</option>`;
+    sel.disabled = true;
+    document.getElementById('iParentTip').textContent = '该类型为平铺结构，父级固定为 0，level 恒为 1';
+    return;
+  }
+  sel.disabled = false;
+  const list = itemsOf(code).filter(d=> d.level < 3 && d.id !== excludeId).sort((a,b)=> a.level-b.level || a.sort-b.sort);
+  sel.innerHTML = `<option value="0">— 无（作为顶级项）—</option>` +
+    list.map(d=>`<option value="${d.id}">${d.level===2?'　└ ':''}${esc(d.name)}（L${d.level}）</option>`).join('');
+  document.getElementById('iParentTip').textContent = '顶级存 0；层级 level = 父级 level + 1，最多 3 级';
+}
+
+function openItemModal(mode, item, parentId){
+  editId = mode === 'edit' ? item.id : null;
+  presetParent = parentId || 0;
+
+  document.getElementById('miTitle').textContent = mode === 'edit' ? '编辑字典项' : '新增字典项';
+  document.getElementById('miSub').textContent = mode === 'edit' ? `ID ${item.id}` : `当前类型：${typeNameOf(state.code)}`;
+
+  const code = mode === 'edit' ? item.type : state.code;
+  fillTypeSelect(document.getElementById('iType'), code);
+  document.getElementById('iType').disabled = mode === 'edit';
+  document.getElementById('iTypeTip').textContent = mode === 'edit'
+    ? '类型创建后不可修改（业务表按 id 引用，改类型会导致归属混乱）'
+    : '类型决定归属端';
+
+  fillParentSelect(code, editId);
+  const kids = editId ? childrenOf(editId) : [];
+  if(editId && kids.length){
+    document.getElementById('iParent').disabled = true;
+    document.getElementById('iParentTip').textContent = `该项下有 ${kids.length} 个子项，不允许调整父级（会导致子项层级错乱）`;
+  }
+  document.getElementById('iParent').value = String(mode === 'edit' ? item.parent : (presetParent || 0));
+  if(editId && kids.length){ /* 保持禁用 */ }
+
+  document.getElementById('iName').value   = mode === 'edit' ? item.name : '';
+  document.getElementById('iValue').value  = mode === 'edit' ? (item.value || '') : '';
+  document.getElementById('iSort').value   = mode === 'edit' ? item.sort : 10;
+  document.getElementById('iStatus').value = mode === 'edit' ? String(item.status) : '1';
+  document.getElementById('iRemark').value = mode === 'edit' ? (item.remark || '') : '';
+  document.getElementById('iCnt').textContent = document.getElementById('iRemark').value.length;
+
+  if(typeof item === 'undefined' && !parentId){ /* noop */ }
+
+  document.getElementById('mask').classList.add('show');
+  modalItem.classList.add('show');
+  setTimeout(()=> document.getElementById('iName').focus(), 120);
+}
+function closeItemModal(){
+  modalItem.classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+document.getElementById('iType').onchange = e=>{
+  fillParentSelect(e.target.value, editId);
+  document.getElementById('iParent').value = '0';
+};
+document.getElementById('iRemark').addEventListener('input', e=>{
+  document.getElementById('iCnt').textContent = e.target.value.length;
+});
+
+document.getElementById('miConfirm').onclick = ()=>{
+  const code   = document.getElementById('iType').value;
+  const parent = Number(document.getElementById('iParent').value || 0);
+  const name   = document.getElementById('iName').value.trim();
+  const value  = document.getElementById('iValue').value.trim();
+  const sort   = document.getElementById('iSort').value.trim();
+  const status = Number(document.getElementById('iStatus').value);
+  const remark = document.getElementById('iRemark').value.trim();
+
+  if(!name){ toast('请填写字典项名称'); return; }
+  if(name.length > 50){ toast('字典项名称不超过 50 字'); return; }
+  if(!/^\d+$/.test(sort)){ toast('排序需为非负整数'); return; }
+
+  // 同类型同父级不重名
+  const dup = itemsOf(code).some(d=> d.parent === parent && d.name === name && d.id !== editId);
+  if(dup){ toast(`「${typeNameOf(code)}」下同一父级已存在「${name}」，换个名称`); return; }
+
+  const parentItem = parent === 0 ? null : byId(parent);
+  const level = parentItem ? parentItem.level + 1 : 1;
+
+  if(editId){
+    const d = byId(editId);
+    d.parent = parent; d.level = level; d.name = name; d.value = value;
+    d.sort = Number(sort); d.status = status; d.remark = remark;
+    d.updateBy = '陈思远'; d.updateTime = nowStr();
+  }else{
+    DICT.push({
+      id: Math.max.apply(null, DICT.map(x=>x.id)) + 1,
+      type: code, name, parent, level, sort: Number(sort),
+      value: value || undefined, remark: remark || undefined,
+      status, updateBy:'陈思远', updateTime: nowStr()
+    });
+  }
+
+  state.code = code;
+  closeItemModal();
+  renderTypes(); renderHead(); renderItems();
+  toast(editId ? `已保存：${name}` : `已新增字典项：${name}（L${level}）`);
+};
+
+/* ================= 弹窗：新增类型 ================= */
+const modalType = document.getElementById('modalType');
+function openTypeModal(){
+  ['tCode','tName','tFirst'].forEach(i=> document.getElementById(i).value = '');
+  document.getElementById('tSort').value = 10;
+  document.getElementById('tTree').value = '0';
+  document.getElementById('mask').classList.add('show');
+  modalType.classList.add('show');
+  setTimeout(()=> document.getElementById('tCode').focus(), 120);
+}
+function closeTypeModal(){
+  modalType.classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+document.getElementById('mtConfirm').onclick = ()=>{
+  const code  = document.getElementById('tCode').value.trim();
+  const name  = document.getElementById('tName').value.trim();
+  const tree  = Number(document.getElementById('tTree').value);
+  const owner = document.getElementById('tOwner').value;
+  const first = document.getElementById('tFirst').value.trim();
+  const sort  = document.getElementById('tSort').value.trim();
+
+  if(!/^[a-z][a-z0-9_]{2,49}$/.test(code)){ toast('类型编码需为英文小写 + 下划线，3–50 位'); return; }
+  if(TYPES.some(t=>t[0] === code)){ toast('类型编码已存在'); return; }
+  if(!name){ toast('请填写类型名称'); return; }
+  if(!first){ toast('请填写首个字典项名称（单表设计下类型由字典项带出）'); return; }
+
+  TYPES.push([code, name, tree, owner]);
+  DICT.push({
+    id: Math.max.apply(null, DICT.map(x=>x.id)) + 1,
+    type: code, name: first, parent: 0, level: 1, sort: Number(sort) || 10,
+    status: 1, updateBy: '陈思远', updateTime: nowStr()
+  });
+
+  state.code = code;
+  closeTypeModal();
+  renderTypes(); renderHead(); renderItems();
+  toast(`已新增类型：${name}（${code}）`);
+};
+
+/* ================= 交互 ================= */
+document.getElementById('mask').onclick = ()=>{ closeDetail(); closeItemModal(); closeTypeModal(); };
+document.getElementById('dClose').onclick = closeDetail;
+document.getElementById('btnAddItem').onclick  = ()=> openItemModal('add', null, 0);
+document.getElementById('btnAddType').onclick  = openTypeModal;
+document.getElementById('btnAddType2').onclick = openTypeModal;
+document.getElementById('miCancel').onclick    = closeItemModal;
+document.getElementById('mtCancel').onclick    = closeTypeModal;
+
+document.getElementById('btnFold').onclick = ()=>{
+  const all = itemsOf(state.code).filter(d=> childrenOf(d.id).length);
+  if(state.collapsed.size) state.collapsed.clear();
+  else all.forEach(d=> state.collapsed.add(d.id));
+  renderItems(); renderHead();
+};
+
+document.getElementById('typeKw').addEventListener('input', e=>{
+  state.typeKw = e.target.value; renderTypes();
+});
+document.getElementById('itemKw').addEventListener('keydown', e=>{
+  if(e.key === 'Enter') document.getElementById('btnItemSearch').click();
+});
+document.getElementById('btnItemSearch').onclick = ()=>{
+  state.itemKw = document.getElementById('itemKw').value;
+  state.itemSt = document.getElementById('itemSt').value;
+  renderItems();
+  toast(`查询完成，共 ${visibleRows().length} 项`);
+};
+document.getElementById('btnItemReset').onclick = ()=>{
+  document.getElementById('itemKw').value = '';
+  document.getElementById('itemSt').value = '';
+  state.itemKw = ''; state.itemSt = '';
+  renderItems();
+  toast('筛选条件已重置');
+};
+document.getElementById('btnExport').onclick = ()=>{
+  toast(`已导出 ${TYPES.length} 类 / ${DICT.length} 条字典项（含 dict_type / name / parent_id / level / sort）`);
+};
+
+/* 菜单 */
+const PAGES = {
+  company:'企业', contact:'企业联系人', daka:'大咖', career:'职业规划', job:'岗位管理',
+  project:'项目大厅', course:'就业课程', org:'机构管理', apply:'申请管理', complaint:'投诉处理',
+  sysconf:'系统配置', dict:'字典管理'
+};
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.onclick = ()=>{
+    const p = el.dataset.page;
+    if(p === 'dict') return;
+    if(p === 'company'){ location.href = '01-企业管理.html'; return; }
+    if(p === 'sysconf'){ location.href = '09-系统配置.html'; return; }
+    toast(`「${PAGES[p]}」页原型尚未产出，当前仅演示字典管理`);
+  };
+});
+
+/* ================= Toast ================= */
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ================= 启动 ================= */
+document.getElementById('statTypes').textContent = TYPES.length;
+document.getElementById('statItems').textContent = DICT.length;
+document.getElementById('statTree').textContent = TYPES.filter(t=>t[2]).length;
+renderTypes();
+renderHead();
+renderItems();
+</script>
+
+<style>a.nav-item{text-decoration:none}</style>
+<script>
+/* 原型串联：左侧菜单跳转（按目录顺序自动注入；站内项与原生链接不拦截） */
+(function(){
+  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',career:'03a-职业规划.html',job:'04-岗位管理.html',project:'05-项目大厅.html',course:'06-就业课程与机构管理.html',org:'06-就业课程与机构管理.html',apply:'07-申请管理.html',complaint:'08-投诉处理.html',sysconf:'09-系统配置.html',dict:'10-字典管理.html'};
+  var SELF='10-字典管理.html';
+  document.addEventListener('click',function(e){
+    var el=(e.target&&e.target.closest)?e.target.closest('.nav-item'):null;
+    if(!el) return;
+    if(el.tagName==='A') return;                       /* 已经是原生链接 */
+    var href=MAP[el.getAttribute('data-page')];
+    if(!href||href.charAt(0)==='#'||href===SELF) return; /* 无原型 / 本站内切换，交给页面自身 */
+    e.preventDefault(); e.stopPropagation();
+    location.href=href;
+  },true);
+})();
+</script>
+</body>
+</html>
