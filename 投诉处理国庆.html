@@ -1,0 +1,2048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>投诉处理 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:224px;flex:0 0 224px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:2px;transition:.15s;user-select:none;
+  }
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item .ico{font-size:15px;width:18px;text-align:center;opacity:.85}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item.active .ico{opacity:1}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .role-box{display:flex;align-items:center;gap:8px;padding:4px 6px 4px 12px;border:1px solid var(--line-strong);border-radius:10px;background:#fff}
+  .role-box .rb-l{font-size:12px;color:var(--muted)}
+  .role-sel{width:auto;height:28px;border:none;padding:0 24px 0 8px;font-size:12px;font-weight:600;color:var(--blue-600);background-color:var(--blue-50)}
+  .role-sel:focus{box-shadow:none}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 卡片 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--white);overflow-x:auto}
+  .tab{
+    padding:14px 14px 12px;font-size:14px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;
+    display:flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--blue-600)}
+  .tab.active{color:var(--blue-600);font-weight:600;border-bottom-color:var(--blue-600)}
+  .tab .cnt{font-size:11px;background:var(--gray-bg);color:var(--text-2);padding:1px 6px;border-radius:8px;font-weight:600}
+  .tab.active .cnt{background:var(--blue-100);color:var(--blue-600)}
+
+  /* ---------- 顶部统计卡片 ---------- */
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px}
+  .stat{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);
+    padding:16px 18px 15px;position:relative;overflow:hidden;transition:.18s;
+  }
+  .stat:hover{box-shadow:0 8px 22px rgba(18,38,74,.09);transform:translateY(-1px)}
+  .stat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue-500);opacity:.85}
+  .stat.k-orange::after{background:var(--orange)}
+  .stat.k-green::after{background:var(--green)}
+  .stat.k-purple::after{background:#7C5CFF}
+  .stat-top{display:flex;align-items:center;gap:10px}
+  .stat-top .s-label{font-size:13px;color:var(--muted)}
+  .stat-top .s-ico{margin-left:auto;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--blue-50);color:var(--blue-600)}
+  .stat.k-orange .s-ico{background:var(--orange-bg);color:var(--orange)}
+  .stat.k-green .s-ico{background:var(--green-bg);color:var(--green)}
+  .stat.k-purple .s-ico{background:#F0EBFF;color:#7C5CFF}
+  .stat-val{font-size:27px;font-weight:700;letter-spacing:-.6px;margin-top:11px;font-variant-numeric:tabular-nums;line-height:1.1}
+  .stat-val small{font-size:13px;font-weight:500;color:var(--muted);margin-left:4px;letter-spacing:0}
+  .stat-foot{font-size:12px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .trend{display:inline-flex;align-items:center;gap:3px;font-weight:600;padding:1px 7px;border-radius:8px;font-size:11px}
+  .trend.up{background:var(--red-bg);color:var(--red)}
+  .trend.down{background:var(--green-bg);color:var(--green)}
+  .trend.flat{background:var(--gray-bg);color:var(--muted)}
+
+  /* ---------- 筛选区 ---------- */
+  .filter-head{
+    display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--line);
+  }
+  .filter-head .fh-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .filter-head .fh-sub{font-size:12px;color:var(--muted);font-weight:400}
+  .filter-head .spacer{flex:1}
+  .filters{padding:18px 18px 4px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
+  .filters.folded{display:none}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field.sp2{grid-column:span 2}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .ctrl{
+    height:36px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:13px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl::placeholder{color:#AEB9C8}
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px}
+  .pair{display:grid;grid-template-columns:132px 1fr;gap:8px}
+  .pair.date{grid-template-columns:1fr 22px 1fr;align-items:center}
+  .pair.date .tilde{text-align:center;color:var(--muted);font-size:13px}
+  .filter-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-danger{border-color:#F3C7C8;background:var(--red-bg);color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);background:#FBDCDC;color:var(--red)}
+  .btn-sm{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  .btn:disabled:hover{border-color:var(--line-strong);color:var(--text-2);background:var(--white)}
+
+  .toolbar{padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line)}
+  .toolbar .spacer{flex:1}
+  .toolbar .sel-tip{font-size:12px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);padding:5px 10px;border-radius:8px}
+  .toolbar .hint{font-size:12px;color:var(--muted)}
+  .wrap-rel{position:relative}
+
+  /* 列设置浮层 */
+  .pop{
+    position:absolute;top:36px;right:0;z-index:40;width:210px;background:#fff;border:1px solid var(--line-strong);
+    border-radius:10px;box-shadow:var(--shadow-lg);padding:8px;display:none;
+  }
+  .pop.show{display:block}
+  .pop-t{font-size:12px;color:var(--muted);padding:6px 8px 8px;border-bottom:1px dashed var(--line);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+  .pop-t a{color:var(--blue-600);cursor:pointer}
+  .pop label{display:flex;align-items:center;gap:9px;padding:7px 8px;font-size:13px;color:var(--text-2);cursor:pointer;border-radius:7px}
+  .pop label:hover{background:var(--blue-50);color:var(--blue-600)}
+  .pop label.dis{color:var(--muted);cursor:not-allowed}
+  .pop label.dis:hover{background:none;color:var(--muted)}
+  input[type=checkbox]{accent-color:var(--blue-600);width:14px;height:14px;cursor:pointer}
+
+  /* ---------- 表格 ---------- */
+  .table-wrap{overflow:auto;border-top:1px solid var(--line);max-height:calc(100vh - 356px);min-height:260px}
+  table{width:100%;border-collapse:separate;border-spacing:0}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:3;
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle;background:var(--white)}
+  tbody tr:hover td{background:#F8FBFF}
+  tbody tr.checked td{background:var(--blue-50)}
+  tbody tr:last-child td{border-bottom:none}
+
+  .fx-l{position:sticky;left:0;z-index:2}
+  .fx-r{position:sticky;right:0;z-index:2;box-shadow:-7px 0 9px -7px rgba(18,38,74,.16)}
+  thead th.fx-l,thead th.fx-r{z-index:4;background:var(--blue-50)}
+  th.sortable{cursor:pointer;user-select:none}
+  th.sortable:hover{color:var(--blue-600)}
+  .sort-ico{font-size:9px;margin-left:5px;opacity:.32;vertical-align:middle}
+  th.sorted{color:var(--blue-600)}
+  th.sorted .sort-ico{opacity:1;color:var(--blue-600)}
+
+  .no{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--blue-600);font-weight:600;letter-spacing:.2px;cursor:pointer;white-space:nowrap}
+  .no:hover{text-decoration:underline}
+  .party{min-width:0}
+  .p-name{font-weight:600;color:var(--text);line-height:1.35;display:flex;align-items:center;gap:6px}
+  .p-sub{font-size:11px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .role-dot{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+  .r-ent{background:var(--blue-500)} .r-daka{background:#7C5CFF} .r-org{background:var(--orange)} .r-user{background:var(--muted)}
+  .prj{min-width:0}
+  .prj-name{font-size:13px;color:var(--text);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2);white-space:nowrap}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .tag.orange{background:var(--orange-bg);color:#C2760A}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-0{background:var(--gray-bg);color:#6B7989}
+  .st-1{background:var(--orange-bg);color:#C2760A}
+  .st-2{background:var(--blue-100);color:var(--blue-600)}
+  .st-3{background:var(--green-bg);color:var(--green)}
+  .st-4{background:var(--red-bg);color:var(--red)}
+  .st-5{background:#ECEFF4;color:#8A97A8}
+  .prio{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);margin-top:4px}
+  .prio i{width:5px;height:5px;border-radius:50%;background:#D7DEE9;display:inline-block}
+  .prio.p1{color:var(--red)} .prio.p1 i{background:var(--red)}
+  .prio.p2{color:var(--orange)} .prio.p2 i{background:var(--orange)}
+  .ops{display:flex;gap:7px;white-space:nowrap}
+  .link{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .link.gray{color:var(--muted)}
+  .link.red{color:var(--red)}
+  .link[disabled]{color:#C6CEDA;cursor:not-allowed;text-decoration:none}
+  .empty{padding:64px 0;text-align:center;color:var(--muted);font-size:13px}
+  .empty .e-ico{font-size:40px;opacity:.35;display:block;margin-bottom:10px}
+  .empty b{display:block;color:var(--text-2);font-size:14px;margin-bottom:6px;font-weight:600}
+  .empty .e-act{margin-top:14px}
+
+  .pager{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:13px;color:var(--text-2);border-top:1px solid var(--line);flex-wrap:wrap}
+  .pager .spacer{flex:1}
+  .pager select{height:32px;width:auto;padding:0 26px 0 10px;font-size:12px;border-color:var(--line-strong);border-radius:8px}
+  .pg{border:1px solid var(--line-strong);border-radius:8px;min-width:32px;height:32px;padding:0 8px;background:#fff;cursor:pointer;font-size:13px;color:var(--text-2);font-family:inherit}
+  .pg:hover:not(:disabled){border-color:var(--blue-500);color:var(--blue-600)}
+  .pg.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+  .pg:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ---------- 抽屉 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:760px;max-width:94vw;background:var(--white);z-index:61;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:var(--shadow-lg);
+  }
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .d-title{font-size:17px;font-weight:700;line-height:1.4}
+  .d-sub{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-close{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;font-size:16px;color:var(--muted)}
+  .d-close:hover{color:var(--text);border-color:var(--blue-500)}
+  .d-body{padding:0 22px 22px;overflow-y:auto;flex:1}
+  .anchor{
+    display:flex;gap:8px;position:sticky;top:0;z-index:5;background:var(--white);padding:12px 0;
+    border-bottom:1px solid var(--line);margin-bottom:2px;
+  }
+  .anchor span{
+    font-size:12px;padding:5px 11px;border-radius:14px;background:var(--blue-50);border:1px solid var(--blue-100);
+    color:var(--blue-600);cursor:pointer;white-space:nowrap;
+  }
+  .anchor span:hover{background:var(--blue-100)}
+  .sec{margin-top:18px;scroll-margin-top:56px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sec-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .sec-title .st-num{width:17px;height:17px;border-radius:5px;background:var(--blue-600);color:#fff;font-size:11px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+  .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px;min-width:0}
+  .kv.full{grid-column:1/-1}
+  .kv .k{font-size:12px;color:var(--muted)}
+  .kv .v{font-size:13px;color:var(--text);margin-top:4px;word-break:break-word;line-height:1.6}
+  .kv .v.strong{font-weight:600}
+  .kv.warn{background:var(--red-bg);border-color:#F7D4D5}
+  .kv.warn .k{color:#E5484D} .kv.warn .v{color:#B03337}
+  .kv.ok{background:var(--green-bg);border-color:#D2F0DE}
+  .kv.ok .k{color:#0C8A44} .kv.ok .v{color:#0A6E37}
+
+  /* 附件墙 */
+  .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(186px,1fr));gap:12px;margin-top:8px}
+  .file{border:1px solid var(--line-strong);border-radius:10px;padding:10px;background:#fff;display:flex;gap:10px;align-items:center;transition:.15s}
+  .file:hover{border-color:var(--blue-500);box-shadow:0 4px 12px rgba(27,98,245,.12)}
+  .file .f-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto;background:var(--blue-50)}
+  .file .f-ico.pdf{background:var(--red-bg)}
+  .file .f-ico.img{background:var(--green-bg)}
+  .file .f-ico.vid{background:var(--orange-bg)}
+  .file .f-txt{min-width:0;flex:1}
+  .file .f-name{font-size:12px;font-weight:600;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file .f-meta{font-size:11px;color:var(--muted);margin-top:3px}
+
+  .timeline{border-left:2px solid var(--blue-100);margin-left:6px;padding-left:18px}
+  .tl-item{position:relative;padding-bottom:16px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue-600);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue-100)}
+  .tl-item.mute::before{background:#fff;box-shadow:0 0 0 2px var(--line-strong)}
+  .tl-item .t{font-size:13px;font-weight:600}
+  .tl-item .m{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+  .tl-item .x{font-size:12px;color:var(--text-2);margin-top:6px;background:var(--blue-50);border:1px solid #EDF2FB;border-radius:8px;padding:8px 10px;line-height:1.65}
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#FCFDFF;flex-wrap:wrap}
+  .d-foot .spacer{flex:1}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:520px;max-width:94vw;max-height:92vh;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+    display:flex;flex-direction:column;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .m-head .m-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;background:var(--blue-100);color:var(--blue-600)}
+  .m-head .m-x{margin-left:auto;width:28px;height:28px;border-radius:8px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;color:var(--muted)}
+  .m-head .m-x:hover{color:var(--text);border-color:var(--blue-500)}
+  .m-body{padding:0 22px;overflow-y:auto;flex:1}
+  .m-body p{font-size:13px;color:var(--text-2);line-height:1.7}
+  .m-body p+p{margin-top:10px}
+  textarea.ctrl{min-height:104px;padding:10px 12px;line-height:1.6;resize:vertical}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+  .counter{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .quick span{font-size:12px;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);padding:4px 10px;border-radius:14px;cursor:pointer}
+  .quick span:hover{background:var(--blue-100)}
+  .chkline{display:flex;align-items:flex-start;gap:9px;margin-top:14px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--blue-50);font-size:12px;color:var(--text-2);line-height:1.6;cursor:pointer}
+  .chkline:hover{border-color:var(--blue-500)}
+  .chkline input{margin-top:2px}
+
+  /* 表单分区 */
+  .fs{border:1px solid var(--line);border-radius:10px;margin-top:14px;overflow:hidden;background:#fff}
+  .fs-h{padding:10px 14px;background:var(--blue-50);font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
+  .fs-h::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--blue-600)}
+  .fs-h .fs-x{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted)}
+  .fs-b{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+  .fs-b .full{grid-column:1/-1}
+  .fs-b .field{gap:6px}
+  .req::after{content:"*";color:var(--red);margin-left:3px}
+  .ctrl.invalid{border-color:var(--red);background:#FFF7F7}
+  .ro{background:var(--gray-bg)!important;color:var(--muted)!important;cursor:not-allowed}
+  .upload{border:1px dashed var(--line-strong);border-radius:10px;padding:20px;text-align:center;color:var(--muted);background:var(--blue-50);cursor:pointer;transition:.15s}
+  .upload:hover{border-color:var(--blue-500);background:var(--blue-100);color:var(--blue-600)}
+  .upload .u-ico{font-size:22px;display:block;margin-bottom:6px;opacity:.6}
+  .flist{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .fchip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-strong);border-radius:8px;padding:5px 8px 5px 6px;font-size:12px;background:#fff}
+  .fchip .fc-x{color:var(--muted);cursor:pointer;font-size:13px;line-height:1}
+  .fchip .fc-x:hover{color:var(--red)}
+  .helper{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.6}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .placeholder{background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);padding:70px 20px;text-align:center;color:var(--muted)}
+  .placeholder b{display:block;color:var(--text);font-size:16px;margin-bottom:8px;font-weight:700}
+  .placeholder span{display:block;font-size:13px;max-width:560px;margin:0 auto;line-height:1.7}
+
+  @media (max-width:1400px){
+    .stat-row{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:1280px){
+    .filters{grid-template-columns:repeat(2,1fr)}
+    .fs-b{grid-template-columns:1fr}
+  }
+  @media (max-width:860px){
+    .stat-row{grid-template-columns:1fr}
+    .filters{grid-template-columns:1fr}
+    .field.sp2{grid-column:span 1}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <div class="nav-item" data-page="company">企业<span class="badge">42</span></div>
+        <div class="nav-item" data-page="contact">企业联系人</div>
+        <div class="nav-item" data-page="daka">大咖</div>
+        <div class="nav-item" data-page="career">职业规划</div>
+        <div class="nav-item" data-page="job">岗位管理</div>
+        <div class="nav-item" data-page="project">项目大厅</div>
+        <div class="nav-item" data-page="course">就业课程</div>
+        <div class="nav-item" data-page="org">机构管理</div>
+        <div class="nav-item" data-page="apply">申请管理</div>
+        <div class="nav-item active" data-page="complaint">投诉处理<span class="badge" id="navBadge">6</span></div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <div class="nav-item" data-page="sysconf">系统配置</div>
+        <div class="nav-item" data-page="dict">字典管理</div>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">基本信息 / <b id="crumbNow">投诉处理</b></div>
+      <div class="spacer"></div>
+      <div class="role-box">
+        <span class="rb-l">当前角色</span>
+        <select class="ctrl role-sel" id="roleSel">
+          <option value="admin">超级管理员</option>
+          <option value="cs">客服专员</option>
+          <option value="viewer">只读访客</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- ---------- 投诉处理 ---------- -->
+      <section id="page-complaint">
+
+        <!-- A. 顶部统计卡片 -->
+        <div class="stat-row">
+          <div class="stat k-orange">
+            <div class="stat-top"><span class="s-label">待处理数</span><span class="s-ico">⏳</span></div>
+            <div class="stat-val" id="stPending">0<small>单</small></div>
+            <div class="stat-foot" id="stPendingFoot"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-top"><span class="s-label">今日新增</span><span class="s-ico">📥</span></div>
+            <div class="stat-val" id="stToday">0<small>单</small></div>
+            <div class="stat-foot" id="stTodayFoot"></div>
+          </div>
+          <div class="stat k-green">
+            <div class="stat-top"><span class="s-label">本周已处理</span><span class="s-ico">✅</span></div>
+            <div class="stat-val" id="stWeek">0<small>单</small></div>
+            <div class="stat-foot" id="stWeekFoot"></div>
+          </div>
+          <div class="stat k-purple">
+            <div class="stat-top"><span class="s-label">平均处理时长</span><span class="s-ico">⚡</span></div>
+            <div class="stat-val" id="stAvg">0<small>小时</small></div>
+            <div class="stat-foot" id="stAvgFoot"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tabs" id="tabs"></div>
+
+          <!-- B. 搜索区（可折叠） -->
+          <div class="filter-head">
+            <div class="fh-title">🔍 筛选条件 <span class="fh-sub">支持投诉单号 / 双方主体 / 项目 / 时间范围组合检索</span></div>
+            <div class="spacer"></div>
+            <button class="btn btn-sm" id="btn-fold">收起 ⌃</button>
+          </div>
+
+          <div class="filters" id="filters">
+            <div class="field sp2">
+              <label>投诉单号</label>
+              <input class="ctrl" id="f-no" placeholder="如 TS202610190001">
+            </div>
+            <div class="field sp2">
+              <label>投诉人</label>
+              <div class="pair">
+                <select class="ctrl" id="f-cType">
+                  <option value="">全部类型</option>
+                  <option>企业</option><option>大咖</option><option>机构</option><option>个人</option>
+                </select>
+                <input class="ctrl" id="f-cName" placeholder="名称 / 主体 ID 关键字">
+              </div>
+            </div>
+            <div class="field sp2">
+              <label>被投诉人</label>
+              <div class="pair">
+                <select class="ctrl" id="f-tType">
+                  <option value="">全部类型</option>
+                  <option>企业</option><option>大咖</option><option>机构</option><option>个人</option>
+                </select>
+                <input class="ctrl" id="f-tName" placeholder="名称 / 主体 ID 关键字">
+              </div>
+            </div>
+            <div class="field">
+              <label>项目关键字</label>
+              <input class="ctrl" id="f-project" placeholder="项目名称关键字">
+            </div>
+            <div class="field">
+              <label>投诉分类</label>
+              <select class="ctrl" id="f-cat">
+                <option value="">全部分类</option>
+                <option>服务态度</option><option>虚假宣传</option><option>乱收费</option>
+                <option>合同纠纷</option><option>工程质量</option><option>拖单毁约</option><option>违规招聘</option><option>其他
+              </select>
+            </div>
+            <div class="field">
+              <label>投诉来源</label>
+              <select class="ctrl" id="f-src">
+                <option value="">全部来源</option>
+                <option>APP 在线提交</option><option>客服热线</option><option>企业后台</option>
+                <option>人工录入</option><option>第三方平台</option><option>12345 转发</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="ctrl" id="f-status">
+                <option value="">全部状态</option>
+                <option value="1">待处理</option><option value="2">处理中</option>
+                <option value="3">已完成</option><option value="4">已驳回</option><option value="5">已撤回</option>
+              </select>
+            </div>
+            <div class="field sp2">
+              <label>创建时间范围</label>
+              <div class="pair date">
+                <input class="ctrl" type="date" id="f-from">
+                <span class="tilde">~</span>
+                <input class="ctrl" type="date" id="f-to">
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="btn" id="btn-reset">重置</button>
+              <button class="btn btn-primary" id="btn-search">查询</button>
+            </div>
+          </div>
+
+          <!-- C. 快捷操作栏 -->
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btn-add">＋ 新建投诉工单</button>
+            <button class="btn" id="btn-batch">⇄ 批量分配处理人</button>
+            <button class="btn" id="btn-export">⬇ 导出</button>
+            <button class="btn" id="btn-refresh">⟳ 刷新</button>
+            <span class="sel-tip" id="selTip" style="display:none"></span>
+            <div class="spacer"></div>
+            <span class="hint" id="permTip"></span>
+            <div class="wrap-rel">
+              <button class="btn btn-sm" id="btn-cols">☰ 列设置</button>
+              <div class="pop" id="colPop"></div>
+            </div>
+          </div>
+
+          <!-- D. 数据表格 -->
+          <div class="table-wrap" id="tableWrap">
+            <table id="mainTable">
+              <colgroup id="cols"></colgroup>
+              <thead><tr id="headRow"></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- H. 分页器 -->
+          <div class="pager">
+            <span>共 <b id="total">0</b> 条</span>
+            <select class="ctrl" id="pageSize">
+              <option value="10">10 条/页</option><option value="20">20 条/页</option>
+              <option value="50">50 条/页</option><option value="100">100 条/页</option>
+            </select>
+            <div class="spacer"></div>
+            <span id="pgInfo"></span>
+            <button class="pg" id="pgFirst">«</button>
+            <button class="pg" id="pgPrev">‹</button>
+            <span id="pgList" style="display:flex;gap:6px"></span>
+            <button class="pg" id="pgNext">›</button>
+            <button class="pg" id="pgLast">»</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 其它菜单占位 ---------- -->
+      <section id="page-ph" style="display:none">
+        <div class="placeholder"><b id="ph-title">—</b><span id="ph-desc">—</span></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 抽屉 ============ -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div style="min-width:0">
+      <div class="d-title" id="dTitle">—</div>
+      <div class="d-sub" id="dSub"></div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 弹窗（通用） ============ -->
+<div class="modal" id="modal">
+  <div class="m-head"><span id="mTag" class="m-tag" style="display:none"></span><span id="mTitle">—</span><button class="m-x" id="mX">✕</button></div>
+  <div class="m-body" id="mBody"></div>
+  <div class="m-foot" id="mFoot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =======================================================================
+   字典
+======================================================================= */
+const STATUS = [
+  {k:1,t:'待处理',c:'st-1'},
+  {k:2,t:'处理中',c:'st-2'},
+  {k:3,t:'已完成',c:'st-3'},
+  {k:4,t:'已驳回',c:'st-4'},
+  {k:5,t:'已撤回',c:'st-5'}
+];
+const stOf = k => STATUS.find(s=>s.k===k) || STATUS[0];
+
+const CATS   = ['服务态度','虚假宣传','乱收费','合同纠纷','工程质量','拖单毁约','违规招聘','其他'];
+const SRCS   = ['APP 在线提交','客服热线','企业后台','人工录入','第三方平台','12345 转发'];
+const OWNERS = ['陈思远','王审核','李敏','赵晓彤','孙倩'];
+const ROLECLS= {'企业':'r-ent','大咖':'r-daka','机构':'r-org','个人':'r-user'};
+
+const ROLE_PERM = {
+  admin : {export:1, create:1, edit:1, del:1, handle:1, assign:1, revoke:1, view:1},
+  cs    : {export:1, create:1, edit:0, del:0, handle:1, assign:1, revoke:1, view:1},
+  viewer: {export:0, create:0, edit:0, del:0, handle:0, assign:0, revoke:0, view:1}
+};
+const ROLE_NAME = {admin:'超级管理员', cs:'客服专员', viewer:'只读访客'};
+
+/* =======================================================================
+   模拟数据
+======================================================================= */
+function mk(o){
+  return Object.assign({
+    priority:'中', files:[], solution:'', remark:'', doneTime:'', logs:[], timeline:[]
+  }, o);
+}
+const IMG = n=>({n:n,t:'img',s:(1.2+Math.random()*3).toFixed(1)+' MB'});
+const PDF = n=>({n:n,t:'pdf',s:(0.3+Math.random()*1.4).toFixed(1)+' MB'});
+const VID = n=>({n:n,t:'vid',s:(8+Math.random()*20).toFixed(1)+' MB'});
+
+let DATA = [
+  mk({
+    no:'TS202610190004', cType:'企业', cName:'成都智行人力资源服务有限公司', cSub:'主体 ID C-100283 · 联系人 周雯 138****4021',
+    tType:'大咖', tName:'林知微', tSub:'主体 ID D-20381 · 已认证',
+    project:'2026 秋季校园招聘服务（西南区）', category:'服务态度', source:'客服热线', status:1, owner:'—', priority:'高',
+    createTime:'2026-10-19 09:12:41',
+    title:'面试安排爽约三次且不提前告知',
+    content:'我司于 10 月 12 日至 10 月 16 日通过大咖平台向贵司大咖「林知微」发起 3 批次面试邀约，分别为西南交通大学、成都理工大学与四川大学。每一批对方均在面试开始前 1 至 3 小时以「临时有事」为由取消，且未提前 24 小时告知，累计造成我司 210 名候选人的行程损失。我司已按平台协议要求对方给出书面说明，至今未获回复。',
+    demand:'1. 要求被投诉人书面说明三次爽约原因；2. 按《平台服务协议》第 8.3 条赔付我司候选人差旅损失；3. 若无法继续履约，请予以下架处理。',
+    files:[PDF('面试邀约记录.pdf'),PDF('候选人行程损失汇总.xlsx'),VID('第三次爽约通话录音.mp4')],
+    timeline:[{t:'提交投诉工单',m:'周雯（企业后台）· 2026-10-19 09:12:41'}],
+    logs:[{t:'系统创建工单',m:'2026-10-19 09:12:41 · 来源：企业后台'}]
+  }),
+  mk({
+    no:'TS202610190003', cType:'个人', cName:'刘梦琪', cSub:'主体 ID U-882140 · 求职者',
+    tType:'大咖', tName:'郑芯', tSub:'主体 ID D-31107 · 已认证',
+    project:'半导体行业高端人才咨询', category:'乱收费', source:'APP 在线提交', status:1, owner:'—', priority:'高',
+    createTime:'2026-10-19 08:47:20',
+    title:'被要求支付 8000 元「内推保过费」',
+    content:'我在平台咨询职业规划后被推荐「大咖郑芯」，对方在私聊中告知需支付 8000 元「内推保过费」才可进入企业终面，并称该费用可开具发票。我未支付后，对方态度转冷并拉黑我的账号。怀疑存在违规收费与欺骗行为。',
+    demand:'退还已支付的 300 元咨询定金；核查该大咖是否存在平台之外的违规收费行为并作出处理。',
+    files:[IMG('私聊截图_1.png'),IMG('私聊截图_2.png'),PDF('付款记录.png')],
+    timeline:[{t:'提交投诉工单',m:'刘梦琪（APP 在线提交）· 2026-10-19 08:47:20'}],
+    logs:[{t:'系统创建工单',m:'2026-10-19 08:47:20 · 来源：APP 在线提交'}]
+  }),
+  mk({
+    no:'TS202610180012', cType:'企业', cName:'深圳市云启科技有限公司', cSub:'主体 ID C-100286 · 联系人 陈启明 139****6677',
+    tType:'机构', tName:'启航职业培训学校', tSub:'主体 ID O-0512 · 合作机构',
+    project:'2026 秋招宣讲会联合主办', category:'虚假宣传', source:'企业后台', status:1, owner:'李敏', priority:'中',
+    createTime:'2026-10-18 17:33:09',
+    title:'宣讲会到场企业数量与宣传物料不符',
+    content:'主办方物料标注「预计到场企业 60+」，实际到场 23 家，且我司作为签约方未收到任何书面说明。物料中「提供岗位 5000+」亦与我司核验的实际岗位数 320 个存在明显差异，已对候选人造成预期落差。',
+    demand:'说明宣传数据来源并致歉；对虚假宣传部分给予书面澄清。',
+    files:[PDF('宣讲会物料.pdf'),IMG('现场照片.jpg')],
+    timeline:[
+      {t:'提交投诉工单',m:'陈启明（企业后台）· 2026-10-18 17:33:09'},
+      {t:'分派处理人',m:'系统自动分派 · 李敏 · 2026-10-18 17:35:20'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-18 17:33:09 · 来源：企业后台'},
+      {t:'自动分派',m:'李敏 · 2026-10-18 17:35:20'}
+    ]
+  }),
+  mk({
+    no:'TS202610180011', cType:'大咖', cName:'孙博远', cSub:'主体 ID D-45220 · 南京博远智能装备',
+    tType:'企业', tName:'杭州星野网络技术有限公司', tSub:'主体 ID C-100285 · 法定代表人 林知微',
+    project:'工业自动化系统集成（二期）', category:'合同纠纷', source:'12345 转发', status:2, owner:'王审核', priority:'高',
+    createTime:'2026-10-18 14:02:55',
+    title:'二期项目尾款结算金额存在争议',
+    content:'依据 2026-04-11 签署的《系统集成服务合同（二期）》，项目验收后 15 个工作日内支付尾款人民币 486,000 元。甲方于 2026-09-30 单方面出具《验收确认单》并主张扣减 120,000 元质量保证金，我方对扣减依据提出异议，要求提供第三方检测报告。该争议已同步至属地商务主管部门，现通过平台转办。',
+    demand:'1. 提供第三方检测报告；2. 明确扣减依据与计算口径；3. 争议解决期间不得单方面停止服务。',
+    files:[PDF('合同（二期）.pdf'),PDF('验收确认单.pdf'),PDF('往来函件汇总.pdf')],
+    remark:'金额较大且涉及政府部门转办，建议法务与财务联合处理，48 小时内给出首轮回复。',
+    timeline:[
+      {t:'提交投诉工单',m:'孙博远（12345 转发）· 2026-10-18 14:02:55'},
+      {t:'受理并分派',m:'王审核 · 2026-10-18 15:10:24'},
+      {t:'联系被投诉方',m:'王审核 · 2026-10-18 16:40:02'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-18 14:02:55 · 来源：12345 转发'},
+      {t:'受理',m:'王审核 · 2026-10-18 15:10:24'},
+      {t:'添加内部备注',m:'王审核 · 2026-10-18 16:38:50'},
+      {t:'状态流转',m:'待处理 → 处理中 · 王审核 · 2026-10-18 16:40:02'}
+    ]
+  }),
+  mk({
+    no:'TS202610180010', cType:'企业', cName:'广东华创建材集团有限公司', cSub:'主体 ID C-100284 · 联系人 赵国栋 137****2210',
+    tType:'大咖', tName:'钱荟', tSub:'主体 ID D-77213 · 上海市静安区',
+    project:'装配式建材采购与配送', category:'拖单毁约', source:'人工录入', status:1, owner:'—', priority:'中',
+    createTime:'2026-10-18 11:26:30',
+    title:'签约后单方面取消订单导致工期延误',
+    content:'双方于 2026-09-28 通过平台签约采购 1,200 套装配式墙板，约定 45 日内完成首批发货。签约后第 3 日对方以「产能不足」为由要求取消订单，我司已因此向总包方申请延期并产生违约金 18 万元。',
+    demand:'按合同继续履约，或赔偿违约金及重新采购差价。',
+    files:[PDF('平台签约合同.pdf'),IMG('沟通记录.png')],
+    timeline:[{t:'提交投诉工单',m:'赵国栋（人工录入）· 2026-10-18 11:26:30'}],
+    logs:[{t:'系统创建工单',m:'2026-10-18 11:26:30 · 来源：人工录入'}]
+  }),
+  mk({
+    no:'TS202610170009', cType:'个人', cName:'张宇轩', cSub:'主体 ID U-903311 · 在校大学生',
+    tType:'机构', tName:'启航职业培训学校', tSub:'主体 ID O-0512 · 合作机构',
+    project:'大数据专业就业实训营（秋季）', category:'违规招聘', source:'APP 在线提交', status:1, owner:'赵晓彤', priority:'中',
+    createTime:'2026-10-17 19:40:12',
+    title:'实训营岗位与承诺薪资严重不符',
+    content:'报名时机构承诺「结业即推荐 8000 元以上岗位」，实际推荐岗位多为 4000 至 5000 元的客服类岗位，且部分岗位存在收费前置。合同中亦未明确薪资区间。',
+    demand:'退还未开课课时费；对机构宣传与实际不符的行为进行核查。',
+    files:[IMG('宣传海报.png'),PDF('报名合同.pdf'),PDF('offer-1.png')],
+    timeline:[
+      {t:'提交投诉工单',m:'张宇轩（APP 在线提交）· 2026-10-17 19:40:12'},
+      {t:'分派处理人',m:'系统自动分派 · 赵晓彤 · 2026-10-17 19:41:05'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-17 19:40:12 · 来源：APP 在线提交'},
+      {t:'自动分派',m:'赵晓彤 · 2026-10-17 19:41:05'}
+    ]
+  }),
+  mk({
+    no:'TS202610160008', cType:'企业', cName:'南京博远智能装备有限公司', cSub:'主体 ID C-100282 · 联系人 孙博远 158****3390',
+    tType:'大咖', tName:'吴清源', tSub:'主体 ID D-19002 · 苏州清源环保',
+    project:'环保设备安装调试外包', category:'工程质量', source:'客服热线', status:3, owner:'陈思远', priority:'中',
+    createTime:'2026-10-16 10:05:00',
+    title:'设备安装精度未达验收标准',
+    content:'外包安装的 6 台废气处理设备中，3 台安装垂直度偏差超 4‰，超出合同约定的 2‰。已要求返工 2 次仍未达标，导致我司项目节点延误 9 天。',
+    demand:'完成全部返工并承担返工期间我司对外违约责任。',
+    files:[IMG('安装现场-01.jpg'),IMG('安装现场-02.jpg'),PDF('第三方检测报告.pdf')],
+    solution:'经协商，被投诉方已于 10-18 完成全部 6 台设备返工并通过第三方复检（垂直度偏差 ≤1.2‰）。我司项目节点已恢复，对处理结果表示认可，工单予以办结。',
+    remark:'已同步机构资质档案，标记「交付质量关注」。',
+    doneTime:'2026-10-18 17:20:44',
+    timeline:[
+      {t:'提交投诉工单',m:'孙博远（客服热线）· 2026-10-16 10:05:00'},
+      {t:'受理并分派',m:'陈思远 · 2026-10-16 10:30:12'},
+      {t:'现场核验',m:'陈思远 · 2026-10-17 15:30:00'},
+      {t:'处理完成',m:'陈思远 · 2026-10-18 17:20:44'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-16 10:05:00 · 来源：客服热线'},
+      {t:'受理',m:'陈思远 · 2026-10-16 10:30:12'},
+      {t:'状态流转',m:'待处理 → 处理中 · 陈思远 · 2026-10-16 10:31:40'},
+      {t:'上传核验材料',m:'陈思远 · 2026-10-17 15:35:12'},
+      {t:'结案',m:'陈思远 · 2026-10-18 17:20:44'}
+    ]
+  }),
+  mk({
+    no:'TS202610160007', cType:'大咖', cName:'周雯', cSub:'主体 ID D-60431 · 成都智行人力资源',
+    tType:'企业', tName:'苏州清源环保科技有限公司', tSub:'主体 ID C-100279 · 法定代表人 吴清源',
+    project:'工业园污水运维服务', category:'服务态度', source:'企业后台', status:4, owner:'李敏', priority:'低',
+    createTime:'2026-10-16 09:18:44',
+    title:'运维响应超时导致超标排放告警',
+    content:'10-15 22:40 平台收到污水在线监测超标告警，通知贵司运维工程师响应，超过 4 小时未到场，次日 04:10 才恢复。受属地生态环境部门约谈。',
+    demand:'说明响应机制并明确 SLA 违约责任。',
+    files:[IMG('监测告警截图.png'),PDF('约谈通知书.pdf')],
+    solution:'经核查，被投诉方运维人员于 10-15 晚间同时承接 3 个园区项目，属人员配置不足，非主观怠于响应，且已完成内部排班调整。投诉方所述「服务态度」不成立，工单予以驳回，已同步建议完善跨园区备班机制。',
+    doneTime:'2026-10-17 16:05:31',
+    timeline:[
+      {t:'提交投诉工单',m:'周雯（企业后台）· 2026-10-16 09:18:44'},
+      {t:'受理并分派',m:'李敏 · 2026-10-16 09:40:20'},
+      {t:'调查取证',m:'李敏 · 2026-10-16 15:20:00'},
+      {t:'驳回结案',m:'李敏 · 2026-10-17 16:05:31'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-16 09:18:44 · 来源：企业后台'},
+      {t:'受理',m:'李敏 · 2026-10-16 09:40:20'},
+      {t:'状态流转',m:'待处理 → 处理中 · 李敏 · 2026-10-16 09:41:05'},
+      {t:'结案（驳回）',m:'李敏 · 2026-10-17 16:05:31'}
+    ]
+  }),
+  mk({
+    no:'TS202610150006', cType:'企业', cName:'上海荟萃餐饮管理有限公司', cSub:'主体 ID C-100281 · 联系人 钱荟 136****8890',
+    tType:'个人', tName:'吴大伟', tSub:'主体 ID U-771209 · 兼职骑手',
+    project:'门店配送运力合作', category:'乱收费', source:'第三方平台', status:2, owner:'孙倩', priority:'中',
+    createTime:'2026-10-15 15:44:19',
+    title:'配送高峰被重复收取「补贴服务费」',
+    content:'10-12 至 10-14 期间，骑手在晚高峰订单中被额外收取每单 2 元补贴服务费，同一订单在结算单中出现两次，合计多收 186 元。',
+    demand:'退还重复收取费用并修正结算规则。',
+    files:[IMG('结算单.png'),PDF('订单明细.xlsx')],
+    timeline:[
+      {t:'提交投诉工单',m:'钱荟（第三方平台）· 2026-10-15 15:44:19'},
+      {t:'受理并分派',m:'孙倩 · 2026-10-15 16:10:00'},
+      {t:'核对结算数据',m:'孙倩 · 2026-10-16 10:22:13'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-15 15:44:19 · 来源：第三方平台'},
+      {t:'受理',m:'孙倩 · 2026-10-15 16:10:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 孙倩 · 2026-10-15 16:11:30'}
+    ]
+  }),
+  mk({
+    no:'TS202610150005', cType:'个人', cName:'陈嘉禾', cSub:'主体 ID U-552318 · 在职人员',
+    tType:'大咖', tName:'林知微', tSub:'主体 ID D-20381 · 已认证',
+    project:'职业规划咨询（1v1）', category:'虚假宣传', source:'APP 在线提交', status:3, owner:'陈思远', priority:'低',
+    createTime:'2026-10-15 11:02:07',
+    title:'咨询师资质与宣传不符',
+    content:'大咖主页标注「国家一级职业规划师、12 年从业」，实际核实其资质证书为三级且从业 6 年。',
+    demand:'更正主页信息；退还 30% 咨询费用。',
+    files:[IMG('主页截图.png'),PDF('资质证书.png')],
+    solution:'被投诉人已于 10-16 更正主页资质信息，并按协商比例退还咨询费 600 元，双方达成一致，工单办结。平台同步对大咖档案添加「宣传信息需复核」标记。',
+    doneTime:'2026-10-16 14:52:00',
+    timeline:[
+      {t:'提交投诉工单',m:'陈嘉禾（APP 在线提交）· 2026-10-15 11:02:07'},
+      {t:'受理并分派',m:'陈思远 · 2026-10-15 11:30:00'},
+      {t:'处理完成',m:'陈思远 · 2026-10-16 14:52:00'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-15 11:02:07 · 来源：APP 在线提交'},
+      {t:'受理',m:'陈思远 · 2026-10-15 11:30:00'},
+      {t:'结案',m:'陈思远 · 2026-10-16 14:52:00'}
+    ]
+  }),
+  mk({
+    no:'TS202610140004',
+    cType:'机构', cName:'华南就业促进中心', cSub:'主体 ID O-0338 · 民办非企业',
+    tType:'企业', tName:'广州匠造家居定制有限公司', tSub:'主体 ID C-100278 · 法定代表人 梁匠',
+    project:'技能培训定向就业合作', category:'合同纠纷', source:'人工录入', status:2, owner:'李敏', priority:'中',
+    createTime:'2026-10-14 16:21:37',
+    title:'定向就业安置人数未达协议约定',
+    content:'协议约定定向安置不少于 120 人，实际完成 74 人，且 22 人被安置至薪资低于承诺 30% 的岗位。',
+    demand:'按协议差额安置并支付未达部分违约金。',
+    files:[PDF('定向就业合作协议.pdf'),PDF('安置名单.xlsx')],
+    timeline:[
+      {t:'提交投诉工单',m:'华南就业促进中心（人工录入）· 2026-10-14 16:21:37'},
+      {t:'受理并分派',m:'李敏 · 2026-10-14 17:00:00'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-14 16:21:37 · 来源：人工录入'},
+      {t:'受理',m:'李敏 · 2026-10-14 17:00:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 李敏 · 2026-10-14 17:01:12'}
+    ]
+  }),
+  mk({
+    no:'TS202610130003', cType:'企业', cName:'武汉光谷芯动半导体有限公司', cSub:'主体 ID C-100277 · 联系人 郑芯 180****4412',
+    tType:'大咖', tName:'Kevin Zhang', tSub:'主体 ID D-90021 · 北京恒安数据',
+    project:'数据合规咨询', category:'拖单毁约', source:'客服热线', status:1, owner:'—', priority:'中',
+    createTime:'2026-10-13 10:47:02',
+    title:'约定交付日期已过仍未提交报告',
+    content:'合同约定 10-05 提交数据合规诊断报告，至今 8 天未收到任何阶段性成果，多次催促均未获回应。',
+    demand:'立即提交成果或按合同赔偿延期违约金。',
+    files:[PDF('咨询服务合同.pdf'),IMG('催促记录.png')],
+    timeline:[{t:'提交投诉工单',m:'郑芯（客服热线）· 2026-10-13 10:47:02'}],
+    logs:[{t:'系统创建工单',m:'2026-10-13 10:47:02 · 来源：客服热线'}]
+  }),
+  mk({
+    no:'TS202610120002', cType:'个人', cName:'王诗涵', cSub:'主体 ID U-401227 · 应届生',
+    tType:'机构', tName:'启航职业培训学校', tSub:'主体 ID O-0512 · 合作机构',
+    project:'UI 设计就业训练营', category:'虚假宣传', source:'APP 在线提交', status:5, owner:'赵晓彤', priority:'低',
+    createTime:'2026-10-12 14:33:50',
+    title:'就业承诺与实际不符',
+    content:'机构承诺「包就业，起薪 1 万」，实际部分学员未获得推荐岗位。',
+    demand:'退费并给出就业名单。',
+    solution:'（工单已由投诉方主动撤回）',
+    remark:'投诉人于 2026-10-13 与机构自行达成和解，主动申请撤回本工单。',
+    doneTime:'2026-10-13 09:15:22',
+    timeline:[
+      {t:'提交投诉工单',m:'王诗涵（APP 在线提交）· 2026-10-12 14:33:50'},
+      {t:'分派处理人',m:'系统自动分派 · 赵晓彤 · 2026-10-12 14:34:10'},
+      {t:'投诉方撤回',m:'王诗涵 · 2026-10-13 09:15:22'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-12 14:33:50 · 来源：APP 在线提交'},
+      {t:'自动分派',m:'赵晓彤 · 2026-10-12 14:34:10'},
+      {t:'撤回',m:'王诗涵 · 2026-10-13 09:15:22'}
+    ]
+  }),
+  mk({
+    no:'TS202610110001', cType:'企业', cName:'北京恒安数据服务有限公司', cSub:'主体 ID C-100280 · 联系人 Kevin Zhang 186****7788',
+    tType:'大咖', tName:'钱荟', tSub:'主体 ID D-77213 · 上海市静安区',
+    project:'IT 运维岗位推荐', category:'服务态度', source:'第三方平台', status:3, owner:'王审核', priority:'低',
+    createTime:'2026-10-11 09:30:00',
+    title:'推荐大咖多次更换联系方式',
+    content:'同一岗位先后推荐 4 位大咖，其中 3 位联系方式为空或长期不回复，影响我司招聘进度。',
+    demand:'提高推荐大咖的响应率与联系方式完整度。',
+    files:[],
+    solution:'平台已对 3 位联系信息不完整的大咖做信息补录与提醒，并在推荐规则中增加「联系方式可用性」校验项。已与投诉方沟通确认，工单办结。',
+    doneTime:'2026-10-12 15:12:08',
+    timeline:[
+      {t:'提交投诉工单',m:'Kevin Zhang（第三方平台）· 2026-10-11 09:30:00'},
+      {t:'受理并分派',m:'王审核 · 2026-10-11 10:00:00'},
+      {t:'处理完成',m:'王审核 · 2026-10-12 15:12:08'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-11 09:30:00 · 来源：第三方平台'},
+      {t:'受理',m:'王审核 · 2026-10-11 10:00:00'},
+      {t:'结案',m:'王审核 · 2026-10-12 15:12:08'}
+    ]
+  }),
+  mk({
+    no:'TS202610100005', cType:'企业', cName:'广东华创建材集团有限公司', cSub:'主体 ID C-100284 · 联系人 赵国栋 137****2210',
+    tType:'机构', tName:'南粤人才服务中心', tSub:'主体 ID O-0129 · 民办非企业',
+    project:'技术工人技能提升培训', category:'乱收费', source:'客服热线', status:2, owner:'孙倩', priority:'中',
+    createTime:'2026-10-10 13:55:26',
+    title:'培训后加收 600 元「教材工本费」',
+    content:'合同明确培训费含教材，但开票时另列 600 元教材工本费。',
+    demand:'退还多收费用。',
+    files:[PDF('培训合同.pdf'),PDF('费用清单.xlsx')],
+    timeline:[
+      {t:'提交投诉工单',m:'赵国栋（客服热线）· 2026-10-10 13:55:26'},
+      {t:'受理并分派',m:'孙倩 · 2026-10-10 14:20:00'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-10 13:55:26 · 来源：客服热线'},
+      {t:'受理',m:'孙倩 · 2026-10-10 14:20:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 孙倩 · 2026-10-10 14:21:10'}
+    ]
+  }),
+  mk({
+    no:'TS202610100004', cType:'个人', cName:'黄丽君', cSub:'主体 ID U-668041 · 职场新人',
+    tType:'大咖', tName:'郑芯', tSub:'主体 ID D-31107 · 已认证',
+    project:'简历诊断服务', category:'服务态度', source:'APP 在线提交', status:1, owner:'—', priority:'低',
+    createTime:'2026-10-10 09:18:04',
+    title:'服务过程中长时间不回消息',
+    content:'支付 199 元简历诊断费后，48 小时内仅回复过 1 条消息，承诺的诊断报告至今未交付。',
+    demand:'尽快交付诊断报告。',
+    files:[IMG('订单截图.png')],
+    timeline:[{t:'提交投诉工单',m:'黄丽君（APP 在线提交）· 2026-10-10 09:18:04'}],
+    logs:[{t:'系统创建工单',m:'2026-10-10 09:18:04 · 来源：APP 在线提交'}]
+  }),
+  mk({
+    no:'TS202610090003', cType:'企业', cName:'苏州清源环保科技有限公司', cSub:'主体 ID C-100279 · 联系人 吴清源 189****3311',
+    tType:'机构', tName:'启航职业培训学校', tSub:'主体 ID O-0512 · 合作机构',
+    project:'安全作业证考前培训', category:'工程质量', source:'企业后台', status:3, owner:'陈思远', priority:'中',
+    createTime:'2026-10-09 16:40:22',
+    title:'培训教材内容与考试大纲不符',
+    content:'教材为 2019 年旧版，与 2026 年考试大纲差异较大，学员通过率不足 40%。',
+    demand:'更换教材并安排免费重训。',
+    files:[PDF('教材目录.pdf'),PDF('考试大纲.pdf')],
+    solution:'机构已于 10-11 上传新版教材并对 2026 年 8 月后报名的 62 名学员提供免费重训，重训后模拟通过率提升至 86%。投诉方确认，工单办结。',
+    doneTime:'2026-10-12 11:05:47',
+    timeline:[
+      {t:'提交投诉工单',m:'吴清源（企业后台）· 2026-10-09 16:40:22'},
+      {t:'受理并分派',m:'陈思远 · 2026-10-09 17:00:00'},
+      {t:'处理完成',m:'陈思远 · 2026-10-12 11:05:47'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-09 16:40:22 · 来源：企业后台'},
+      {t:'受理',m:'陈思远 · 2026-10-09 17:00:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 陈思远 · 2026-10-09 17:01:30'},
+      {t:'结案',m:'陈思远 · 2026-10-12 11:05:47'}
+    ]
+  }),
+  mk({
+    no:'TS202610090002', cType:'个人', cName:'李慧敏', cSub:'主体 ID U-320019 · 独立开发者',
+    tType:'大咖', tName:'吴清源', tSub:'主体 ID D-19002 · 苏州清源环保',
+    project:'技术顾问服务', category:'合同纠纷', source:'人工录入', status:4, owner:'王审核', priority:'低',
+    createTime:'2026-10-09 10:05:31',
+    title:'顾问服务交付边界争议',
+    content:'双方对「季度技术顾问」是否包含现场驻场存在理解差异。',
+    demand:'按合同约定提供服务。',
+    solution:'经调阅合同原文，服务范围约定为「每月不超过 4 次远程支持」，未包含驻场；投诉方主张缺乏依据，工单予以驳回，并已提示双方通过补充协议明确服务边界。',
+    doneTime:'2026-10-10 17:22:10',
+    timeline:[
+      {t:'提交投诉工单',m:'李慧敏（人工录入）· 2026-10-09 10:05:31'},
+      {t:'受理并分派',m:'王审核 · 2026-10-09 10:40:00'},
+      {t:'驳回结案',m:'王审核 · 2026-10-10 17:22:10'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-09 10:05:31 · 来源：人工录入'},
+      {t:'受理',m:'王审核 · 2026-10-09 10:40:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 王审核 · 2026-10-09 10:41:00'},
+      {t:'结案（驳回）',m:'王审核 · 2026-10-10 17:22:10'}
+    ]
+  }),
+  mk({
+    no:'TS202610080001', cType:'企业', cName:'杭州星野网络技术有限公司', cSub:'主体 ID C-100285 · 联系人 林知微 137****9900',
+    tType:'个人', tName:'陆天成', tSub:'主体 ID U-918822 · 自由职业者',
+    project:'前端外包开发', category:'合同纠纷', source:'企业后台', status:1, owner:'—', priority:'高',
+    createTime:'2026-10-08 11:22:47',
+    title:'交付延期且拒绝验收',
+    content:'合同约定 9-30 交付，已延期 8 天，对方以「需求频繁变更」为由拒绝进入验收流程。',
+    demand:'按期交付并启动验收。',
+    files:[PDF('外包合同.pdf'),IMG('需求变更记录.png')],
+    timeline:[{t:'提交投诉工单',m:'林知微（企业后台）· 2026-10-08 11:22:47'}],
+    logs:[{t:'系统创建工单',m:'2026-10-08 11:22:47 · 来源：企业后台'}]
+  }),
+  mk({
+    no:'TS202610070004', cType:'个人', cName:'赵思彤', cSub:'主体 ID U-155233 · 在校大学生',
+    tType:'大咖', tName:'孙博远', tSub:'主体 ID D-45220 · 已认证',
+    project:'实习岗位内推', category:'虚假宣传', source:'APP 在线提交', status:3, owner:'李敏', priority:'低',
+    createTime:'2026-10-07 15:03:19',
+    title:'内推岗位与描述不符',
+    content:'大咖内推岗位为「算法实习生」，实际到岗为数据标注工作。',
+    demand:'按描述岗位安排入职。',
+    solution:'双方已协商一致，被投诉方改派真实匹配的算法实习岗位并补偿差额 1,800 元，工单办结。',
+    doneTime:'2026-10-09 09:41:52',
+    timeline:[
+      {t:'提交投诉工单',m:'赵思彤（APP 在线提交）· 2026-10-07 15:03:19'},
+      {t:'受理并分派',m:'李敏 · 2026-10-07 16:00:00'},
+      {t:'处理完成',m:'李敏 · 2026-10-09 09:41:52'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-07 15:03:19 · 来源：APP 在线提交'},
+      {t:'受理',m:'李敏 · 2026-10-07 16:00:00'},
+      {t:'结案',m:'李敏 · 2026-10-09 09:41:52'}
+    ]
+  }),
+  mk({
+    no:'TS202610060003', cType:'企业', cName:'南京博远智能装备有限公司', cSub:'主体 ID C-100282 · 联系人 孙博远 158****3390',
+    tType:'机构', tName:'南粤人才服务中心', tSub:'主体 ID O-0129 · 民办非企业',
+    project:'叉车司机技能培训', category:'乱收费', source:'客服热线', status:2, owner:'孙倩', priority:'中',
+    createTime:'2026-10-06 09:40:15',
+    title:'培训后被要求二次付费复训',
+    content:'取证未通过被要求再交 800 元复训费，协议中并无此项约定。',
+    demand:'退还复训费用。',
+    files:[PDF('培训协议.pdf')],
+    timeline:[
+      {t:'提交投诉工单',m:'孙博远（客服热线）· 2026-10-06 09:40:15'},
+      {t:'受理并分派',m:'孙倩 · 2026-10-06 10:15:00'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-06 09:40:15 · 来源：客服热线'},
+      {t:'受理',m:'孙倩 · 2026-10-06 10:15:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 孙倩 · 2026-10-06 10:16:20'}
+    ]
+  }),
+  mk({
+    no:'TS202610050002', cType:'机构', cName:'华南就业促进中心', cSub:'主体 ID O-0338 · 民办非企业',
+    tType:'大咖', tName:'周雯', tSub:'主体 ID D-60431 · 已认证',
+    project:'就业指导志愿项目', category:'服务态度', source:'人工录入', status:1, owner:'—', priority:'低',
+    createTime:'2026-10-05 14:18:29',
+    title:'志愿指导活动缺席',
+    content:'约定于 10-04 参与的志愿指导活动，被投诉人未到场也未请假。',
+    demand:'说明情况并安排补场。',
+    files:[],
+    timeline:[{t:'提交投诉工单',m:'华南就业促进中心（人工录入）· 2026-10-05 14:18:29'}],
+    logs:[{t:'系统创建工单',m:'2026-10-05 14:18:29 · 来源：人工录入'}]
+  }),
+  mk({
+    no:'TS202610040001', cType:'个人', cName:'孙可欣', cSub:'主体 ID U-744520 · 职场新人',
+    tType:'大咖', tName:'钱荟', tSub:'主体 ID D-77213 · 上海市静安区',
+    project:'面试辅导服务', category:'拖单毁约', source:'APP 在线提交', status:3, owner:'陈思远', priority:'低',
+    createTime:'2026-10-04 10:11:03',
+    title:'辅导排期多次变更',
+    content:'三次变更辅导时间，均未提前 24 小时告知。',
+    demand:'稳定服务排期。',
+    solution:'被投诉人已致歉并按平台规则补偿 150 元服务费，平台已为其排期稳定性设置提醒，工单办结。',
+    doneTime:'2026-10-05 17:36:20',
+    timeline:[
+      {t:'提交投诉工单',m:'孙可欣（APP 在线提交）· 2026-10-04 10:11:03'},
+      {t:'受理并分派',m:'陈思远 · 2026-10-04 11:00:00'},
+      {t:'处理完成',m:'陈思远 · 2026-10-05 17:36:20'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-04 10:11:03 · 来源：APP 在线提交'},
+      {t:'受理',m:'陈思远 · 2026-10-04 11:00:00'},
+      {t:'结案',m:'陈思远 · 2026-10-05 17:36:20'}
+    ]
+  }),
+  mk({
+    no:'TS202610030006', cType:'企业', cName:'广州匠造家居定制有限公司', cSub:'主体 ID C-100278 · 联系人 梁匠 136****0021',
+    tType:'机构', tName:'启航职业培训学校', tSub:'主体 ID O-0512 · 合作机构',
+    project:'木工岗位定向培养', category:'违规招聘', source:'企业后台', status:5, owner:'赵晓彤', priority:'低',
+    createTime:'2026-10-03 16:52:44',
+    title:'定向培养岗位超范围用工',
+    content:'培养学员被安排至非约定岗位从事高空作业，存在用工合规风险。',
+    demand:'立即调整岗位。',
+    solution:'（工单已由投诉方主动撤回）',
+    remark:'企业内部已完成岗位调整，投诉方于 2026-10-04 申请撤回。',
+    doneTime:'2026-10-04 11:26:18',
+    timeline:[
+      {t:'提交投诉工单',m:'梁匠（企业后台）· 2026-10-03 16:52:44'},
+      {t:'投诉方撤回',m:'梁匠 · 2026-10-04 11:26:18'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-03 16:52:44 · 来源：企业后台'},
+      {t:'撤回',m:'梁匠 · 2026-10-04 11:26:18'}
+    ]
+  }),
+  mk({
+    no:'TS202610020005', cType:'大咖', cName:'林知微', cSub:'主体 ID D-20381 · 已认证',
+    tType:'企业', tName:'武汉光谷芯动半导体有限公司', tSub:'主体 ID C-100277 · 联系人 郑芯 180****4412',
+    project:'技术尽调服务', category:'服务态度', source:'APP 在线提交', status:1, owner:'—', priority:'中',
+    createTime:'2026-10-02 11:09:37',
+    title:'尽调报告初稿延迟且未告知',
+    content:'约定 9-28 提交初稿，实际 10-01 才提交，且未提前告知延期。',
+    demand:'后续交付严格按节点执行。',
+    files:[PDF('服务确认单.pdf')],
+    timeline:[{t:'提交投诉工单',m:'林知微（APP 在线提交）· 2026-10-02 11:09:37'}],
+    logs:[{t:'系统创建工单',m:'2026-10-02 11:09:37 · 来源：APP 在线提交'}]
+  }),
+  mk({
+    no:'TS202610010004', cType:'个人', cName:'郭振宇', cSub:'主体 ID U-203318 · 待业',
+    tType:'机构', tName:'华南就业促进中心', cSub:'主体 ID O-0338 · 民办非企业',
+    project:'就业帮扶计划', category:'服务态度', source:'客服热线', status:2, owner:'李敏', priority:'低',
+    createTime:'2026-10-01 09:25:12',
+    title:'帮扶岗位未按承诺安排',
+    content:'承诺的公益岗位未安排，被要求自行寻找。',
+    demand:'按帮扶协议安排岗位。',
+    files:[PDF('帮扶协议.pdf')],
+    timeline:[
+      {t:'提交投诉工单',m:'郭振宇（客服热线）· 2026-10-01 09:25:12'},
+      {t:'受理并分派',m:'李敏 · 2026-10-01 10:00:00'}
+    ],
+    logs:[
+      {t:'系统创建工单',m:'2026-10-01 09:25:12 · 来源：客服热线'},
+      {t:'受理',m:'李敏 · 2026-10-01 10:00:00'},
+      {t:'状态流转',m:'待处理 → 处理中 · 李敏 · 2026-10-01 10:01:40'}
+    ]
+  })
+];
+DATA.forEach(d=>{ if(!d.logs.length) d.logs=[{t:'系统创建工单',m:d.createTime+' · 来源：'+d.source}]; });
+
+/* =======================================================================
+   列配置
+======================================================================= */
+const CK_W = 44;
+const COLS = [
+  {k:'no',         t:'投诉单号',  w:162, fix:'l', show:true,  sort:false},
+  {k:'cName',      t:'投诉人',    w:196, fix:'l', show:true,  sort:false},
+  {k:'tName',      t:'被投诉人',  w:196, fix:null, show:true, sort:false},
+  {k:'project',    t:'项目',      w:214, fix:null, show:true, sort:false},
+  {k:'category',   t:'分类',      w:116, fix:null, show:true, sort:false},
+  {k:'source',     t:'来源',      w:118, fix:null, show:true, sort:false},
+  {k:'status',     t:'状态',      w:100, fix:null, show:true, sort:false},
+  {k:'owner',      t:'处理人',    w:104, fix:null, show:true, sort:false},
+  {k:'createTime', t:'创建时间',  w:156, fix:null, show:true, sort:true },
+  {k:'ops',        t:'操作',      w:230, fix:'r', show:true,  sort:false, lock:true}
+];
+const visCols = ()=> COLS.filter(c=>c.show);
+
+/* 固定左列的累计偏移量，随「列设置」实时变化，thead 与 tbody 共用同一份计算 */
+function stickyOffsets(){
+  const map = {}; let left = CK_W;
+  visCols().forEach(c=>{
+    if(c.fix==='l'){ map[c.k] = left; left += c.w; }
+  });
+  return map;
+}
+
+/* =======================================================================
+   状态
+======================================================================= */
+let curTab='all', rows=[], filtered=[], checked=new Set();
+let page=1, pageSize=10, sortKey='createTime', sortDir='desc', role='admin';
+let curNo=null;
+
+const $  = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const nowStr = ()=>{ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const TODAY = '2026-10-19';
+const perm = ()=> ROLE_PERM[role];
+const need = p =>{ if(!perm()[p]){ toast('当前角色「'+ROLE_NAME[role]+'」无此操作权限'); return false; } return true; };
+
+/* =======================================================================
+   统计卡片
+======================================================================= */
+function hoursBetween(a,b){
+  const pa=a.replace(/-/g,'/'), pb=b.replace(/-/g,'/');
+  return Math.abs(new Date(pb)-new Date(pa))/3600000;
+}
+function renderStats(){
+  const pending = DATA.filter(d=>d.status===1).length;
+  const today   = DATA.filter(d=>d.createTime.slice(0,10)===TODAY).length;
+  const done    = DATA.filter(d=>[3,4,5].includes(d.status) && d.doneTime);
+  const week    = done.filter(d=>d.doneTime.slice(0,10)>='2026-10-13').length;
+  const avg     = done.length ? done.reduce((s,d)=>s+hoursBetween(d.createTime,d.doneTime),0)/done.length : 0;
+
+  $('stPending').innerHTML = pending + '<small>单</small>';
+  $('stPendingFoot').innerHTML =
+    `<span class="trend up">▲ ${pending}</span> 需在 24 小时内首次响应` +
+    `<span class="tag blue" style="margin-left:auto">处理中 ${DATA.filter(d=>d.status===2).length}</span>`;
+
+  $('stToday').innerHTML = today + '<small>单</small>';
+  $('stTodayFoot').innerHTML =
+    `<span class="trend up">▲ ${today}</span> 较昨日 <span class="trend flat">持平 0</span>`;
+
+  $('stWeek').innerHTML = week + '<small>单</small>';
+  $('stWeekFoot').innerHTML =
+    `完成率 <b style="color:var(--green)">${DATA.length?Math.round(week/(week+pending)*100):0}%</b> · 驳回 ${done.filter(d=>d.status===4).length} 单`;
+
+  $('stAvg').innerHTML = (avg<1?avg.toFixed(1):Math.round(avg)) + '<small>小时</small>';
+  $('stAvgFoot').innerHTML = avg<24
+    ? `<span class="trend down">▼ 优于 SLA（24h）</span> 结案 ${done.length} 单`
+    : `<span class="trend up">▲ 超 SLA（24h）</span> 结案 ${done.length} 单`;
+
+  const nav = pending;
+  const nb = $('navBadge');
+  nb.textContent = nav; nb.style.display = nav ? '' : 'none';
+}
+
+/* =======================================================================
+   标签页
+======================================================================= */
+function renderTabs(){
+  const counts={all:DATA.length};
+  STATUS.forEach(s=>counts[s.k]=DATA.filter(d=>d.status===s.k).length);
+  const items=[['all','全部',counts.all]].concat(STATUS.map(s=>[s.k,s.t,counts[s.k]]));
+  $('tabs').innerHTML = items.map(([k,t,c])=>
+    `<div class="tab ${String(k)===String(curTab)?'active':''}" data-k="${k}">${t}<span class="cnt">${c}</span></div>`).join('');
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.onclick = ()=>{ curTab = el.dataset.k; page=1; syncTabs(); applyFilter(); };
+  });
+}
+function syncTabs(){
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.classList.toggle('active', el.dataset.k===String(curTab));
+  });
+  $('f-status').value = curTab==='all'?'':String(curTab);
+}
+
+/* =======================================================================
+   表头 / 表体
+======================================================================= */
+function renderHead(){
+  const list = visCols();
+  const map = stickyOffsets();
+  const colTags = ['<col style="width:'+CK_W+'px">'];
+  let ths = `<th class="fx-l" style="left:0;min-width:${CK_W}px;text-align:center">
+      <input type="checkbox" id="ckAll"></th>`;
+
+  list.forEach(c=>{
+    const cls   = c.fix==='l' ? 'fx-l' : (c.fix==='r' ? 'fx-r' : '');
+    const isSorted = c.k===sortKey;
+    const stickyStyle = c.fix==='l' ? `left:${map[c.k]}px;` : '';
+    ths += `<th class="${cls}${c.sort?' sortable':''}${isSorted?' sorted':''}" data-k="${c.k}" style="width:${c.w}px;min-width:${c.w}px;${stickyStyle}">
+      ${c.t}${c.sort?`<span class="sort-ico">${isSorted?(sortDir==='desc'?'▼':'▲'):'⇅'}</span>`:''}</th>`;
+    colTags.push(`<col style="width:${c.w}px;">`);
+  });
+
+  $('cols').innerHTML = colTags.join('');
+  $('headRow').innerHTML = ths;
+  $('mainTable').style.minWidth = (CK_W + list.reduce((s,c)=>s+c.w,0)) + 'px';
+
+  $('headRow').querySelectorAll('th.sortable').forEach(th=>{
+    th.onclick = ()=>{
+      const k = th.dataset.k;
+      if(sortKey===k) sortDir = sortDir==='desc'?'asc':'desc';
+      else { sortKey=k; sortDir = (k==='createTime')?'desc':'asc'; }
+      applyFilter(true);
+      toast('已按'+COLS.find(c=>c.k===k).t+(sortDir==='desc'?'倒序':'正序')+'排列');
+    };
+  });
+  const ck = $('ckAll');
+  ck.checked = filtered.length>0 && filtered.every(d=>checked.has(d.no));
+  ck.indeterminate = !ck.checked && filtered.some(d=>checked.has(d.no));
+  ck.onchange = e=>{
+    filtered.forEach(d=> e.target.checked ? checked.add(d.no) : checked.delete(d.no));
+    renderTable();
+  };
+}
+
+function prioHtml(p){
+  const lv = p==='高'?3 : p==='中'?2 : 1;
+  return `<div class="prio p${lv}">${'<i></i>'.repeat(lv)}<span style="margin-left:3px">${p}</span></div>`;
+}
+function fileIco(t){ return t==='pdf'?'📄':t==='vid'?'🎬':'🖼'; }
+
+function rowHtml(d){
+  const s = stOf(d.status);
+  const map = stickyOffsets();
+  const cell = (k,html,cls) => {
+    const c = COLS.find(x=>x.k===k);
+    if(!c.show) return '';
+    const st = c.fix==='l' ? `position:sticky;left:${map[k]}px;` : (c.fix==='r' ? 'position:sticky;right:0;' : '');
+    return `<td class="${(c.fix?c.fix==='l'?'fx-l':'fx-r':'')}${cls?' '+cls:''}" style="${st}min-width:${c.w}px">${html}</td>`;
+  };
+  return `<tr class="${checked.has(d.no)?'checked':''}" data-no="${d.no}">
+    <td class="fx-l" style="left:0;min-width:${CK_W}px;text-align:center"><input type="checkbox" class="ck" ${checked.has(d.no)?'checked':''}></td>
+    ${cell('no',`<span class="no" data-act="view">${d.no}</span>`)}
+    ${cell('cName',`<div class="party"><div class="p-name"><i class="role-dot ${ROLECLS[d.cType]||'r-user'}"></i>${d.cName}</div><div class="p-sub">${d.cSub}</div></div>`)}
+    ${cell('tName',`<div class="party"><div class="p-name"><i class="role-dot ${ROLECLS[d.tType]||'r-user'}"></i>${d.tName}</div><div class="p-sub">${d.tSub}</div></div>`)}
+    ${cell('project',`<div class="prj"><div class="prj-name" title="${d.project}">${d.project}</div></div>`)}
+    ${cell('category',`<span class="tag blue">${d.category}</span>`)}
+    ${cell('source',`<span class="tag">${d.source}</span>`)}
+    ${cell('status',`<span class="status ${s.c}">${s.t}</span>`)}
+    ${cell('owner',`<span style="font-size:13px">${d.owner}</span>`)}
+    ${cell('createTime',`<span class="mono">${d.createTime}</span>`)}
+    ${cell('ops',`<div class="ops">
+        <button class="link" data-act="view">查看</button>
+        ${d.status===1?'<button class="link" data-act="handle">处理</button>':''}
+        <button class="link" data-act="assign" ${perm().assign?'':'disabled'}>分配</button>
+        ${(d.status===1||d.status===2)?`<button class="link gray" data-act="revoke" ${perm().revoke?'':'disabled'}>撤回</button>`:''}
+        <button class="link gray" data-act="edit" ${perm().edit?'':'disabled'}>编辑</button>
+        <button class="link red" data-act="del" ${perm().del?'':'disabled'}>删除</button>
+      </div>`)}
+  </tr>`;
+}
+
+function renderTable(){
+  const tb = $('tbody');
+  const totalPages = Math.max(1, Math.ceil(filtered.length/pageSize));
+  if(page>totalPages) page = totalPages;
+  const start = (page-1)*pageSize;
+  rows = filtered.slice(start, start+pageSize);
+
+  $('total').textContent = filtered.length;
+
+  if(!filtered.length){
+    tb.innerHTML = `<tr><td colspan="${visCols().length+1}" style="padding:0">
+      <div class="empty"><span class="e-ico">🗃️</span><b>暂无符合条件的投诉工单</b>
+      当前筛选条件下没有匹配数据，可清空条件后重试<div class="e-act"><button class="btn btn-sm" onclick="document.getElementById('btn-reset').click()">重置筛选条件</button></div></div></td></tr>`;
+  }else{
+    tb.innerHTML = rows.map(rowHtml).join('');
+    bindRows();
+  }
+  renderPager(totalPages);
+  renderSelTip();
+}
+
+function bindRows(){
+  document.querySelectorAll('#tbody tr[data-no]').forEach(tr=>{
+    const no = tr.dataset.no;
+    const d = DATA.find(x=>x.no===no);
+    tr.querySelector('.ck').onchange = e=>{
+      e.target.checked ? checked.add(no) : checked.delete(no);
+      tr.classList.toggle('checked', e.target.checked);
+      renderHead(); renderSelTip();
+    };
+    tr.querySelectorAll('[data-act]').forEach(b=>{
+      b.onclick = e=>{
+        e.stopPropagation();
+        const act = b.dataset.act;
+        if(b.disabled) return;
+        if(act==='view')   return openDrawer(d);
+        if(act==='handle'){ if(!need('handle')) return; return openHandle(d); }
+        if(act==='assign'){ if(!need('assign')) return; return openAssign(d); }
+        if(act==='revoke'){ if(!need('revoke')) return; return openRevoke(d); }
+        if(act==='edit')   { if(!need('edit'))   return; return openForm('edit',d); }
+        if(act==='del')    { if(!need('del'))    return; return openDelete(d); }
+      };
+    });
+  });
+}
+
+function renderSelTip(){
+  const tip = $('selTip');
+  tip.style.display = checked.size ? 'inline-block' : 'none';
+  tip.textContent = `已选择 ${checked.size} 条投诉单`;
+  const b = $('btn-batch');
+  b.disabled = checked.size===0 || !perm().assign;
+  if(checked.size && !perm().assign) b.title = '当前角色无分配权限';
+}
+
+/* =======================================================================
+   分页
+======================================================================= */
+function pageList(cur,total){
+  const out=[];
+  const add = p => out.push(p);
+  if(total<=7){ for(let i=1;i<=total;i++) add(i); return out; }
+  add(1);
+  let s=Math.max(2,cur-1), e=Math.min(total-1,cur+1);
+  if(cur<=3){ s=2; e=4; }
+  if(cur>=total-2){ s=total-3; e=total-1; }
+  if(s>2) add('…');
+  for(let i=s;i<=e;i++) add(i);
+  if(e<total-1) add('…');
+  add(total);
+  return out;
+}
+function renderPager(totalPages){
+  const list = $('pgList');
+  list.innerHTML = pageList(page,totalPages).map(p=> p==='…'
+    ? '<button class="pg" disabled>…</button>'
+    : `<button class="pg ${p===page?'active':''}" data-p="${p}">${p}</button>`).join('');
+  list.querySelectorAll('.pg[data-p]').forEach(b=>{
+    b.onclick = ()=>goPage(Number(b.dataset.p));
+  });
+  $('pgPrev').disabled = page<=1;
+  $('pgFirst').disabled = page<=1;
+  $('pgNext').disabled = page>=totalPages;
+  $('pgLast').disabled = page>=totalPages;
+  const s = filtered.length ? (page-1)*pageSize+1 : 0;
+  const e = Math.min(page*pageSize, filtered.length);
+  $('pgInfo').innerHTML = `第 <b>${s}-${e}</b> 条 / 共 ${totalPages} 页`;
+}
+function goPage(p){
+  const tw = $('tableWrap');
+  const winY = window.scrollY, tblTop = tw.scrollTop;
+  page = p;
+  renderTable();
+  // 页码切换保持滚动位置
+  requestAnimationFrame(()=>{ window.scrollTo(0,winY); tw.scrollTop = tblTop; });
+}
+
+/* =======================================================================
+   筛选
+======================================================================= */
+function applyFilter(keepSort){
+  const no      = $('f-no').value.trim();
+  const cType   = $('f-cType').value, cName = $('f-cName').value.trim();
+  const tType   = $('f-tType').value, tName = $('f-tName').value.trim();
+  const project = $('f-project').value.trim();
+  const cat     = $('f-cat').value;
+  const src     = $('f-src').value;
+  const st      = $('f-status').value;
+  const from    = $('f-from').value, to = $('f-to').value;
+
+  filtered = DATA.filter(d=>
+    (!no      || d.no.toLowerCase().includes(no.toLowerCase())) &&
+    (!cType   || d.cType===cType) &&
+    (!cName   || d.cName.includes(cName) || d.cSub.includes(cName)) &&
+    (!tType   || d.tType===tType) &&
+    (!tName   || d.tName.includes(tName) || d.tSub.includes(tName)) &&
+    (!project || d.project.includes(project)) &&
+    (!cat     || d.category===cat) &&
+    (!src     || d.source===src) &&
+    (st===''   || d.status===Number(st)) &&
+    (curTab==='all' || d.status===Number(curTab)) &&
+    (!from    || d.createTime.slice(0,10)>=from) &&
+    (!to      || d.createTime.slice(0,10)<=to)
+  );
+
+  const dir = sortDir==='desc'?-1:1;
+  filtered.sort((a,b)=>{
+    const x=a[sortKey], y=b[sortKey];
+    if(typeof x==='number') return (x-y)*dir;
+    return String(x).localeCompare(String(y),'zh-CN')*dir;
+  });
+
+  if(!keepSort) page = 1;
+  renderHead(); renderTable();
+}
+
+function refreshAll(){ renderStats(); renderTabs(); applyFilter(); }
+
+/* =======================================================================
+   抽屉详情（三栏）
+======================================================================= */
+function openDrawer(d){
+  curNo = d.no;
+  const s = stOf(d.status);
+  $('dTitle').textContent = d.title;
+  $('dSub').innerHTML = `
+    <span class="status ${s.c}">${s.t}</span>
+    <span>投诉单号：<span class="mono">${d.no}</span></span>
+    <span>分类：<span class="tag blue">${d.category}</span></span>
+    <span>来源：${d.source}</span>`;
+
+  $('dBody').innerHTML = `
+    <div class="anchor">
+      <span data-go="s1">① 基础信息</span>
+      <span data-go="s2">② 投诉内容与证据</span>
+      <span data-go="s3">③ 处理记录</span>
+    </div>
+
+    <!-- ① 基础信息 -->
+    <div class="sec" id="s1">
+      <div class="sec-title"><span class="st-num">1</span>基础信息</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">投诉单号（complaint_no）</div><div class="v mono strong">${d.no}</div></div>
+        <div class="kv"><div class="k">投诉状态（status · 枚举 ${d.status}）</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+        <div class="kv"><div class="k">投诉方类型（complainant_type）</div><div class="v"><span class="tag blue">${d.cType}</span></div></div>
+        <div class="kv"><div class="k">投诉方名称（complainant_name）</div><div class="v strong">${d.cName}</div></div>
+        <div class="kv full"><div class="k">投诉方联系方式 / 主体标识</div><div class="v">${d.cSub}</div></div>
+        <div class="kv"><div class="k">被投诉方类型（respondent_type）</div><div class="v"><span class="tag">${d.tType}</span></div></div>
+        <div class="kv"><div class="k">被投诉方名称（respondent_name）</div><div class="v strong">${d.tName}</div></div>
+        <div class="kv full"><div class="k">被投诉方联系方式 / 主体标识</div><div class="v">${d.tSub}</div></div>
+        <div class="kv full"><div class="k">关联项目（project_name）</div><div class="v strong">${d.project}</div></div>
+        <div class="kv"><div class="k">投诉分类（category · 字典 complaint_category）</div><div class="v"><span class="tag blue">${d.category}</span></div></div>
+        <div class="kv"><div class="k">投诉来源（source）</div><div class="v"><span class="tag">${d.source}</span></div></div>
+        <div class="kv"><div class="k">优先级（priority）</div><div class="v">${prioHtml(d.priority)}</div></div>
+        <div class="kv"><div class="k">当前处理人（handler_name）</div><div class="v strong">${d.owner}</div></div>
+      </div>
+      <div class="sec-title" style="margin-top:18px">状态流转时间线</div>
+      <div class="timeline">
+        ${d.timeline.map(t=>`<div class="tl-item"><div class="t">${t.t}</div><div class="m">${t.m}</div></div>`).join('')}
+        ${d.doneTime?`<div class="tl-item"><div class="t">工单归档（is_archived = 1）</div><div class="m">系统自动 · ${d.doneTime}</div></div>`:''}
+      </div>
+    </div>
+
+    <!-- ② 投诉内容与证据 -->
+    <div class="sec" id="s2">
+      <div class="sec-title"><span class="st-num">2</span>投诉内容与证据</div>
+      <div class="grid2">
+        <div class="kv full"><div class="k">投诉标题（title）</div><div class="v strong">${d.title}</div></div>
+        <div class="kv full"><div class="k">投诉内容全文（content）</div><div class="v" style="line-height:1.85">${d.content}</div></div>
+        <div class="kv full"><div class="k">投诉诉求 / 期望解决方式（demand）</div><div class="v" style="line-height:1.85">${d.demand||'—'}</div></div>
+        <div class="kv full">
+          <div class="k">证据附件（attachments · 共 ${d.files.length} 个）</div>
+          ${d.files.length ? `<div class="files">${d.files.map(f=>`
+            <div class="file">
+              <div class="f-ico ${f.t}">${fileIco(f.t)}</div>
+              <div class="f-txt">
+                <div class="f-name" title="${f.n}">${f.n}</div>
+                <div class="f-meta">${f.s} · /oss/complaint/${d.no}/</div>
+              </div>
+            </div>`).join('')}</div>`
+          : `<div class="v" style="color:var(--muted)">投诉方未上传附件</div>`}
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 处理记录 -->
+    <div class="sec" id="s3">
+      <div class="sec-title"><span class="st-num">3</span>处理记录</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">处理人（handler_name）</div><div class="v strong">${d.owner}</div></div>
+        <div class="kv"><div class="k">处理完成时间（finish_time）</div><div class="v mono">${d.doneTime||'—'}</div></div>
+        <div class="kv full ${d.solution?'':'warn'}" style="${d.solution?'':'background:var(--gray-bg);border-color:var(--line)'}">
+          <div class="k">解决方案（solution）</div><div class="v">${d.solution||'尚未填写解决方案，请在「处理」中提交'}</div></div>
+        <div class="kv full" style="background:var(--gray-bg);border-color:var(--line)">
+          <div class="k">内部备注（remark · 仅平台内部可见）</div><div class="v">${d.remark||'—'}</div></div>
+      </div>
+      <div class="sec-title" style="margin-top:18px">操作日志</div>
+      <div class="timeline">
+        ${d.logs.slice().reverse().map(l=>`<div class="tl-item mute"><div class="t">${l.t}</div><div class="m">${l.m}</div></div>`).join('')}
+      </div>
+    </div>`;
+
+  const foot = $('dFoot');
+  foot.innerHTML = `
+    <span style="font-size:12px;color:var(--muted)">工单 ${d.no} · 处理人 ${d.owner}</span>
+    <div class="spacer"></div>
+    <button class="btn" id="fClose">关闭</button>
+    ${d.status===1?`<button class="btn" id="fAssign">分配处理人</button><button class="btn btn-primary" id="fHandle">✓ 开始处理</button>`:''}
+    ${d.status===2?`<button class="btn" id="fAssign2">转交</button><button class="btn btn-primary" id="fHandle2">✓ 提交处理结果</button>`:''}
+    ${[3,4,5].includes(d.status)?`<button class="btn" id="fEdit2">编辑工单</button>`:''}`;
+  $('fClose').onclick = closeDrawer;
+  const fa=$('fAssign')||$('fAssign2'), fh=$('fHandle')||$('fHandle2'), fe=$('fEdit2');
+  if(fa) fa.onclick = ()=>openAssign(d);
+  if(fh) fh.onclick = ()=>{ if(need('handle')) openHandle(d); };
+  if(fe) fe.onclick = ()=>{ if(need('edit')) { closeDrawer(); openForm('edit', d); } };
+
+  $('dBody').scrollTop = 0;
+  $('dBody').querySelectorAll('.anchor span').forEach(el=>{
+    el.onclick = ()=> $('dBody').querySelector('#'+el.dataset.go).scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  $('mask').classList.add('show');
+  $('drawer').classList.add('show');
+}
+function closeDrawer(){
+  $('mask').classList.remove('show');
+  $('drawer').classList.remove('show');
+}
+
+/* =======================================================================
+   弹窗基座
+======================================================================= */
+function openModal(opt){
+  $('mTitle').textContent = opt.title;
+  const tag = $('mTag');
+  if(opt.tag){ tag.style.display=''; tag.textContent = opt.tag; } else tag.style.display='none';
+  $('mBody').innerHTML = opt.body;
+  $('mFoot').innerHTML = '';
+  const wrap = $('modal');
+  wrap.style.width = (opt.width||520)+'px';
+  $('mask').classList.add('show');
+  wrap.classList.add('show');
+  $('mBody').scrollTop = 0;
+  if(opt.after) opt.after();
+  return wrap;
+}
+function closeModal(){
+  $('modal').classList.remove('show');
+  if(!$('drawer').classList.contains('show')) $('mask').classList.remove('show');
+}
+function footBtns(list){
+  const f = $('mFoot');
+  f.innerHTML = '';
+  list.forEach(([txt,cls,fn,dis])=>{
+    const b=document.createElement('button');
+    b.className='btn '+(cls||''); b.textContent=txt; b.disabled=!!dis;
+    b.onclick=fn;
+    f.appendChild(b);
+  });
+  return f;
+}
+
+/* =======================================================================
+   G. 新建 / 编辑弹窗
+======================================================================= */
+const F_TYPES = ['企业','大咖','机构','个人'];
+const F_CATS  = CATS, F_SRCS = SRCS, F_OWNERS = OWNERS;
+
+function openForm(mode, d){
+  const isNew = mode==='new';
+  const v = d || {
+    no:'', cType:'企业', cName:'', cSub:'', tType:'大咖', tName:'', tSub:'',
+    project:'', category:'服务态度', source:'APP 在线提交', owner:'',
+    priority:'中', title:'', content:'', demand:'', remark:''
+  };
+  openModal({
+    title: isNew ? '新建投诉工单' : '编辑投诉工单',
+    tag: isNew ? '新建' : '编辑',
+    width: 880,
+    body: `
+      <div class="fs">
+        <div class="fs-h">投诉方信息<span class="fs-x">complainant_*</span></div>
+        <div class="fs-b">
+          <div class="field"><label class="req">投诉人类型</label>
+            <select class="ctrl" id="fo-cType">${F_TYPES.map(t=>`<option ${v.cType===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label class="req">投诉人名称</label>
+            <input class="ctrl" id="fo-cName" placeholder="企业 / 大咖 / 机构 / 个人名称" value="${v.cName}"></div>
+          <div class="field"><label>投诉人联系电话</label>
+            <input class="ctrl" id="fo-cTel" placeholder="手机号或座机"></div>
+          <div class="field"><label>投诉人主体 ID</label>
+            <input class="ctrl" id="fo-cId" placeholder="如 C-100286 / U-882140"></div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fs-h">被投诉方信息<span class="fs-x">respondent_*</span></div>
+        <div class="fs-b">
+          <div class="field"><label class="req">被投诉人类型</label>
+            <select class="ctrl" id="fo-tType">${F_TYPES.map(t=>`<option ${v.tType===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label class="req">被投诉人名称</label>
+            <input class="ctrl" id="fo-tName" placeholder="企业 / 大咖 / 机构 / 个人名称" value="${v.tName}"></div>
+          <div class="field"><label>被投诉人联系电话</label>
+            <input class="ctrl" id="fo-tTel" placeholder="手机号或座机"></div>
+          <div class="field"><label>被投诉人主体 ID</label>
+            <input class="ctrl" id="fo-tId" placeholder="如 D-20381 / O-0512"></div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fs-h">项目与诉求<span class="fs-x">project · category · demand</span></div>
+        <div class="fs-b">
+          <div class="field full"><label class="req">关联项目</label>
+            <input class="ctrl" id="fo-project" placeholder="搜索并选择关联项目名称" value="${v.project}"></div>
+          <div class="field"><label class="req">投诉分类</label>
+            <select class="ctrl" id="fo-cat">${F_CATS.map(t=>`<option ${v.category===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label class="req">投诉来源</label>
+            <select class="ctrl" id="fo-src">${F_SRCS.map(t=>`<option ${v.source===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label>优先级</label>
+            <select class="ctrl" id="fo-prio">${['高','中','低'].map(t=>`<option ${v.priority===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="field"><label>期望完成时间</label>
+            <input class="ctrl" type="date" id="fo-deadline"></div>
+          <div class="field full"><label class="req">投诉标题</label>
+            <input class="ctrl" id="fo-title" maxlength="60" placeholder="一句话概括投诉事项" value="${v.title}">
+            <div class="counter" style="text-align:left"><span id="foTitleCnt">${v.title.length}</span> / 60</div></div>
+          <div class="field full"><label class="req">投诉内容</label>
+            <textarea class="ctrl" id="fo-content" style="min-height:96px" placeholder="请详细描述投诉事实、发生时间、涉及的沟通记录等">${v.content}</textarea></div>
+          <div class="field full"><label>投诉诉求</label>
+            <textarea class="ctrl" id="fo-demand" style="min-height:72px" placeholder="期望的解决方式与结果">${v.demand||''}</textarea></div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fs-h">证据上传<span class="fs-x">attachments</span></div>
+        <div class="fs-b">
+          <div class="field full">
+            <div class="upload" id="fo-upload"><span class="u-ico">⬆</span>点击选择文件或拖拽到此处上传<br><span style="font-size:11px">支持 jpg / png / pdf / mp4，单个不超过 20MB，最多 10 个</span></div>
+            <div class="flist" id="fo-flist">
+              ${(v.files||[]).map((f,i)=>`<span class="fchip" data-i="${i}">${fileIco(f.t)} ${f.n}<span class="fc-x">✕</span></span>`).join('')}
+            </div>
+            <div class="helper">演示环境点击上传区将模拟添加附件，实际接入对象存储后自动回填 URL。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fs">
+        <div class="fs-h">内部信息<span class="fs-x">internal_only</span></div>
+        <div class="fs-b">
+          <div class="field"><label>投诉单号</label>
+            <input class="ctrl ro" id="fo-no" value="${isNew?'系统自动生成':v.no}" readonly></div>
+          <div class="field"><label>指派处理人</label>
+            <select class="ctrl" id="fo-owner"><option value="">暂不指派</option>${F_OWNERS.map(o=>`<option ${v.owner===o?'selected':''}>${o}</option>`).join('')}</select></div>
+          <div class="field full"><label>内部备注</label>
+            <textarea class="ctrl" id="fo-remark" style="min-height:72px" placeholder="仅平台内部可见的处理提示">${v.remark||''}</textarea></div>
+          <div class="field full"><label>通知方式</label>
+            <div class="quick" style="margin-top:0">
+              <span style="cursor:default">站内信</span><span style="cursor:default">短信</span><span style="cursor:default">企业微信</span><span style="cursor:default">邮件</span>
+            </div>
+            <div class="helper">提交后系统按所选方式向投诉方与被投诉方推送工单通知。</div>
+          </div>
+        </div>
+      </div>`,
+    after(){
+      const t=$('fo-title');
+      t.addEventListener('input',()=>{ $('foTitleCnt').textContent = t.value.length; });
+      $('fo-upload').onclick = ()=>{
+        const names=['现场照片-补充.jpg','沟通记录截图.png','合同扫描件.pdf','通话录音.mp4'];
+        const n = names[Math.floor(Math.random()*names.length)];
+        const t2 = n.endsWith('.pdf')?'pdf':n.endsWith('.mp4')?'vid':'img';
+        const chip=document.createElement('span');
+        chip.className='fchip';
+        chip.innerHTML = `${fileIco(t2)} ${n}<span class="fc-x">✕</span>`;
+        chip.querySelector('.fc-x').onclick = ()=>chip.remove();
+        $('fo-flist').appendChild(chip);
+        toast('已添加附件：'+n);
+      };
+      $('fo-flist').querySelectorAll('.fchip').forEach(c=>{
+        c.querySelector('.fc-x').onclick = ()=>c.remove();
+      });
+      footBtns([
+        ['取消','',closeModal],
+        [isNew?'创建工单':'保存修改','btn-primary',submitForm]
+      ]);
+    }
+  });
+
+  function submitForm(){
+    const cName=$('fo-cName').value.trim(), tName=$('fo-tName').value.trim();
+    const title=$('fo-title').value.trim(), content=$('fo-content').value.trim();
+    const marks=[];
+    [['fo-cName',cName],['fo-tName',tName],['fo-title',title],['fo-content',content]].forEach(([id,val])=>{
+      const el=$(id); el.classList.toggle('invalid', !val); if(!val) marks.push(el);
+    });
+    if(marks.length){ toast('请完整填写必填项'); marks[0].focus(); return; }
+
+    const files = [...$('fo-flist').children].map(ch=>{
+      const nm = ch.textContent.replace('✕','').trim();
+      return {n:nm, t:nm.endsWith('.pdf')?'pdf':nm.endsWith('.mp4')?'vid':'img', s:(0.6+Math.random()*3).toFixed(1)+' MB'};
+    });
+    const payload = {
+      cType:$('fo-cType').value, cName,
+      cSub:($('fo-cId').value.trim()||'—')+' · 联系人 '+(cName.slice(0,3))+' '+( $('fo-cTel').value.trim()||'—'),
+      tType:$('fo-tType').value, tName,
+      tSub:($('fo-tId').value.trim()||'—'),
+      project:$('fo-project').value.trim()||'未关联项目',
+      category:$('fo-cat').value, source:$('fo-src').value,
+      priority:$('fo-prio').value, owner:$('fo-owner').value||'—',
+      title, content, demand:$('fo-demand').value.trim(), remark:$('fo-remark').value.trim(),
+      files
+    };
+
+    if(isNew){
+      const seq = String(DATA.length+1).padStart(3,'0');
+      const no = 'TS'+TODAY.replace(/-/g,'')+seq;
+      DATA.unshift(mk(Object.assign({
+        no, status:1, createTime: nowStr(), doneTime:'',
+        timeline:[{t:'提交投诉工单',m:'陈思远（人工录入）· '+nowStr()}],
+        logs:[{t:'系统创建工单',m:nowStr()+' · 来源：'+payload.source}]
+      }, payload)));
+      closeModal(); refreshAll(); toast('投诉工单已创建：'+no);
+    }else{
+      Object.assign(d, payload);
+      d.logs.push({t:'编辑工单',m:'陈思远 · '+nowStr()});
+      closeModal(); refreshAll(); toast('已保存修改：'+d.no);
+    }
+  }
+}
+
+/* =======================================================================
+   处理（提交处理结果）
+======================================================================= */
+function openHandle(d){
+  openModal({
+    title:'处理投诉工单', tag:'处理', width:560,
+    body:`
+      <p>工单 <span class="mono">${d.no}</span> · <b>${d.title}</b></p>
+      <div class="fs">
+        <div class="fs-h">处理结论</div>
+        <div class="fs-b" style="grid-template-columns:1fr 1fr">
+          <div class="field"><label class="req">处理结果</label>
+            <select class="ctrl" id="ho-result">
+              <option value="3">已完成（投诉成立，已解决）</option>
+              <option value="4">已驳回（投诉不成立）</option>
+            </select></div>
+          <div class="field"><label>处理人</label>
+            <input class="ctrl ro" value="${d.owner==='—'?ROLE_NAME[role]:d.owner}" readonly></div>
+          <div class="field full"><label class="req">解决方案（solution）</label>
+            <textarea class="ctrl" id="ho-sol" maxlength="500" placeholder="请填写处理过程、解决方案及双方达成的一致意见"></textarea>
+            <div class="counter"><span id="hoCnt">0</span> / 500</div></div>
+          <div class="field full"><label>内部备注（仅内部可见）</label>
+            <textarea class="ctrl" id="ho-remark" style="min-height:70px" placeholder="如需同步风控、机构考核等信息可在此填写"></textarea></div>
+          <div class="field full"><label class="req">处理人承诺完成时间</label>
+            <input class="ctrl" type="date" id="ho-date"></div>
+        </div>
+      </div>`,
+    after(){
+      const t=$('ho-sol');
+      t.oninput = ()=>{ $('hoCnt').textContent=t.value.length; };
+      footBtns([
+        ['取消','',closeModal],
+        ['提交处理结果','btn-primary',()=>{
+          const sol=$('ho-sol').value.trim();
+          if(!sol){ toast('请填写解决方案'); t.focus(); t.classList.add('invalid'); return; }
+          if(!$('ho-date').value){ toast('请选择承诺完成时间'); return; }
+          const ns = Number($('ho-result').value);
+          d.status=ns; d.solution=sol; d.remark=$('ho-remark').value.trim()||d.remark;
+          if(d.owner==='—') d.owner='陈思远';
+          d.doneTime = nowStr();
+          d.timeline.push({t:ns===3?'处理完成':'驳回结案',m:`${d.owner} · ${d.doneTime}`});
+          d.logs.push({t:'状态流转',m:`${stOf(1).t} → ${stOf(ns).t} · ${d.owner} · ${d.doneTime}`});
+          closeModal(); closeDrawer(); refreshAll();
+          toast(`工单 ${d.no} 已${ns===3?'办结':'驳回'}`);
+        }]
+      ]);
+    }
+  });
+}
+
+/* =======================================================================
+   分配 / 转交
+======================================================================= */
+function openAssign(d, batch){
+  const multi = batch ? batch.length : 0;
+  openModal({
+    title: multi ? `批量分配处理人（${multi} 条）` : '分配 / 转交处理人',
+    tag:'分配', width:520,
+    body:`
+      <p>${multi
+        ? `已选择 <b>${multi}</b> 条投诉单，将统一指派给同一名处理人。`
+        : `工单 <span class="mono">${d.no}</span> 当前处理人：<b>${d.owner}</b>，可在此转交给其他同事。`}</p>
+      <div class="fs">
+        <div class="fs-h">处理人</div>
+        <div class="fs-b" style="grid-template-columns:1fr 1fr">
+          <div class="field"><label class="req">新处理人</label>
+            <select class="ctrl" id="ao-owner"><option value="">请选择</option>${F_OWNERS.map(o=>`<option>${o}</option>`).join('')}</select></div>
+          <div class="field"><label>工单优先级</label>
+            <select class="ctrl" id="ao-prio"><option>高</option><option selected>中</option><option>低</option></select></div>
+          <div class="field full"><label>${multi?'分配说明':'转交原因'}</label>
+            <textarea class="ctrl" id="ao-reason" style="min-height:78px" maxlength="200" placeholder="${multi?'可填写批量分配的统一说明':'请说明转交原因，便于后续追溯'}"></textarea></div>
+        </div>
+      </div>`,
+    after(){
+      footBtns([
+        ['取消','',closeModal],
+        ['确认分配','btn-primary',()=>{
+          const ow=$('ao-owner').value;
+          if(!ow){ toast('请选择处理人'); return; }
+          const t=nowStr(), reason=$('ao-reason').value.trim();
+          if(multi){
+            batch.forEach(no=>{
+              const x=DATA.find(y=>y.no===no);
+              if(!x) return;
+              x.owner=ow; x.priority=$('ao-prio').value;
+              x.timeline.push({t:'批量分配处理人',m:`${reason?reason+' · ':''}${ow} · ${t}`});
+              x.logs.push({t:'分配处理人',m:`${ow} · ${t}`});
+              if(x.status===1){ x.timeline.push({t:'受理',m:`${ow} · ${t}`}); x.status=2; }
+            });
+            checked.clear();
+            closeModal(); refreshAll();
+            toast(`已批量分配 ${batch.length} 条投诉单给 ${ow}`);
+          }else{
+            d.owner=ow; d.priority=$('ao-prio').value;
+            d.timeline.push({t:'分配 / 转交处理人',m:`${reason?reason+' · ':''}${ow} · ${t}`});
+            d.logs.push({t:'转交处理人',m:`${ow} · ${t}`});
+            closeModal(); closeDrawer(); refreshAll();
+            toast('已转交给：'+ow);
+          }
+        }]
+      ]);
+    }
+  });
+}
+
+/* =======================================================================
+   撤回（二次确认 + 原因）
+======================================================================= */
+function openRevoke(d){
+  openModal({
+    title:'撤回投诉工单', tag:'二次确认', width:520,
+    body:`
+      <p>确认撤回工单 <span class="mono">${d.no}</span>（${d.title}）？撤回后该工单将标记为「已撤回」，不再进入待处理统计，投诉方可重新提交。</p>
+      <div style="margin-top:12px"><label class="req" style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px">撤回原因</label>
+        <textarea class="ctrl" id="ro-reason" maxlength="200" placeholder="请填写撤回原因（必填，将写入操作日志）"></textarea>
+        <div class="counter"><span id="roCnt">0</span> / 200</div></div>
+      <div class="quick" id="ro-quick">
+        <span>投诉方主动申请撤回</span><span>双方已自行达成和解</span><span>重复投诉，与已有工单合并</span><span>投诉信息填写有误</span>
+      </div>
+      <label class="chkline"><input type="checkbox" id="ro-ck"><span>我已知悉撤回操作为终态操作，如需继续处理需重新创建投诉工单。</span></label>`,
+    after(){
+      const t=$('ro-reason');
+      t.oninput=()=>{ $('roCnt').textContent=t.value.length; };
+      $('ro-quick').querySelectorAll('span').forEach(el=>{
+        el.onclick=()=>{ t.value=el.textContent+'。'; t.dispatchEvent(new Event('input')); };
+      });
+      footBtns([
+        ['取消','',closeModal],
+        ['确认撤回','btn-danger',()=>{
+          const reason=t.value.trim();
+          if(!reason){ toast('请填写撤回原因'); t.focus(); t.classList.add('invalid'); return; }
+          if(!$('ro-ck').checked){ toast('请勾选二次确认后再提交'); return; }
+          const ts=nowStr();
+          d.status=5; d.doneTime=ts; d.remark=reason;
+          d.timeline.push({t:'工单撤回',m:`${reason} · ${ROLE_NAME[role]} · ${ts}`});
+          d.logs.push({t:'撤回工单',m:`${reason} · ${ts}`});
+          closeModal(); closeDrawer(); refreshAll();
+          toast('工单 '+d.no+' 已撤回');
+        }]
+      ]);
+    }
+  });
+}
+
+/* =======================================================================
+   删除（软删 + 二次确认）
+======================================================================= */
+function openDelete(d){
+  openModal({
+    title:'删除投诉工单', tag:'软删除', width:520,
+    body:`
+      <p>确认删除工单 <span class="mono">${d.no}</span>（${d.title}）？</p>
+      <p style="color:var(--red);background:var(--red-bg);border:1px solid #F7D4D5;border-radius:9px;padding:10px 12px;margin-top:12px">
+        该操作为<b>软删除</b>：仅将 <span class="mono">is_deleted</span> 置为 1，记录不再出现在列表与统计中，数据可在「回收站」中追溯恢复，请谨慎操作。
+      </p>
+      <label class="chkline"><input type="checkbox" id="do-ck"><span>我已确认删除该投诉工单及其关联证据文件索引。</span></label>`,
+    after(){
+      footBtns([
+        ['取消','',closeModal],
+        ['确认删除','btn-danger',()=>{
+          if(!$('do-ck').checked){ toast('请勾选二次确认后再删除'); return; }
+          const i = DATA.findIndex(x=>x.no===d.no);
+          if(i>-1) DATA.splice(i,1);
+          checked.delete(d.no);
+          closeModal(); closeDrawer(); refreshAll();
+          toast('已删除（软删除）：'+d.no);
+        }]
+      ]);
+    }
+  });
+}
+
+/* =======================================================================
+   列设置浮层
+======================================================================= */
+function renderColPop(){
+  $('colPop').innerHTML = `
+    <div class="pop-t"><span>显示列</span><a id="colReset">恢复默认</a></div>
+    ${COLS.filter(c=>!c.lock).map(c=>`
+      <label class="${c.lock?'dis':''}"><input type="checkbox" data-k="${c.k}" ${c.show?'checked':''} ${c.lock?'disabled':''}> ${c.t}</label>`).join('')}
+    ${COLS.filter(c=>c.lock).map(c=>`<label class="dis"><input type="checkbox" checked disabled> ${c.t}<span style="margin-left:auto;font-size:11px">固定</span></label>`).join('')}`;
+  $('colPop').querySelectorAll('input[data-k]').forEach(cb=>{
+    cb.onchange = ()=>{
+      const c = COLS.find(x=>x.k===cb.dataset.k);
+      c.show = cb.checked;
+      applyFilter(true);
+      renderColPop();
+    };
+  });
+  $('colReset').onclick = ()=>{
+    COLS.forEach(c=>c.show=true);
+    applyFilter(true); renderColPop(); toast('列设置已恢复默认');
+  };
+}
+
+/* =======================================================================
+   权限提示
+======================================================================= */
+function renderPerm(){
+  const p=perm(), miss=[];
+  if(!p.export) miss.push('导出');
+  if(!p.create) miss.push('新建');
+  if(!p.edit)   miss.push('编辑');
+  if(!p.del)    miss.push('删除');
+  $('permTip').innerHTML = miss.length
+    ? `当前角色「${ROLE_NAME[role]}」受限：<span style="color:var(--orange)">${miss.join(' / ')}</span> 不可用`
+    : `当前角色「${ROLE_NAME[role]}」拥有全部操作权限`;
+  $('btn-export').disabled = !p.export;
+  $('btn-add').disabled    = !p.create;
+  applyFilter(true);
+}
+
+/* =======================================================================
+   交互绑定
+======================================================================= */
+$('btn-fold').onclick = ()=>{
+  const f=$('filters'), folded=f.classList.toggle('folded');
+  $('btn-fold').textContent = folded ? '展开 ⌄' : '收起 ⌃';
+  setTimeout(()=>{ const tw=$('tableWrap'); tw.style.maxHeight = folded ? 'calc(100vh - 290px)' : 'calc(100vh - 356px)'; },0);
+};
+$('btn-reset').onclick = ()=>{
+  ['f-no','f-cType','f-cName','f-tType','f-tName','f-project','f-cat','f-src','f-status','f-from','f-to'].forEach(i=>$(i).value='');
+  curTab='all'; page=1; syncTabs(); applyFilter(); toast('筛选条件已重置');
+};
+$('btn-search').onclick = ()=>{
+  page=1; applyFilter(); toast('查询完成，共 '+filtered.length+' 条投诉单');
+};
+$('btn-add').onclick = ()=>{ if(!need('create')) return; openForm('new'); };
+$('btn-export').onclick = ()=>{
+  if(!need('export')) return;
+  toast(`已导出当前 ${filtered.length} 条投诉单为 Excel（操作人：${ROLE_NAME[role]}）`);
+};
+$('btn-refresh').onclick = ()=>{ refreshAll(); toast('数据已刷新'); };
+$('btn-batch').onclick = ()=>{
+  if(!need('assign')) return;
+  if(!checked.size){ toast('请先勾选需要分配的投诉单'); return; }
+  openAssign(null,[...checked]);
+};
+$('btn-cols').onclick = e=>{ e.stopPropagation(); $('colPop').classList.toggle('show'); };
+document.addEventListener('click', e=>{ if(!e.target.closest('.wrap-rel')) $('colPop').classList.remove('show'); });
+$('roleSel').onchange = e=>{ role=e.target.value; renderPerm(); toast('已切换角色：'+ROLE_NAME[role]); };
+$('pageSize').onchange = e=>{ pageSize=Number(e.target.value); page=1; goPage(1); };
+$('pgFirst').onclick = ()=>goPage(1);
+$('pgPrev').onclick  = ()=>goPage(Math.max(1,page-1));
+$('pgNext').onclick  = ()=>goPage(page+1);
+$('pgLast').onclick  = ()=>goPage(Math.max(1,Math.ceil(filtered.length/pageSize)));
+
+$('mask').onclick = ()=>{ closeModal(); closeDrawer(); };
+$('dClose').onclick = closeDrawer;
+$('mX').onclick = closeModal;
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeDrawer(); } });
+
+/* 菜单切换 */
+const PAGES = {
+  company:   {name:'企业',       desc:'企业档案与认证审核。'},
+  contact:   {name:'企业联系人', desc:'企业下联系人、账号与权限管理。'},
+  daka:      {name:'大咖',       desc:'专家 / 牛人档案、认证与服务记录管理。'},
+  career:    {name:'职业规划',   desc:'职业测评题库、规划方案模板与结果统计。'},
+  job:       {name:'岗位管理',   desc:'岗位发布、上下架与违规审核。'},
+  project:   {name:'项目大厅',   desc:'项目需求发布、撮合进度与结算状态。'},
+  course:    {name:'就业课程',   desc:'课程、班级、学员与学习进度管理。'},
+  org:       {name:'机构管理',   desc:'合作机构入驻资料与资质审核。'},
+  apply:     {name:'申请管理',   desc:'入驻、认证、开票等各类申请的统一审批。'},
+  complaint: {name:'投诉处理',   desc:'用户投诉工单受理、流转与结案（当前页）。'},
+  sysconf:   {name:'系统配置',   desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
+  dict:      {name:'字典管理',   desc:'company_type / staff_size / area 等字典枚举值维护。'}
+};
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.onclick = ()=>{
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const p = el.dataset.page, meta = PAGES[p] || {name:'—',desc:''};
+    $('crumbNow').textContent = meta.name;
+    const isCp = p === 'complaint';
+    $('page-complaint').style.display = isCp ? 'block' : 'none';
+    const ph = $('page-ph');
+    ph.style.display = isCp ? 'none' : 'block';
+    if(!isCp){ $('ph-title').textContent = meta.name; $('ph-desc').textContent = meta.desc; }
+  };
+});
+
+/* toast */
+let toastTimer;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+/* 初始化 */
+renderColPop();
+renderPerm();
+refreshAll();
+</script>
+</body>
+</html>
