@@ -541,6 +541,13 @@
   </div>
 </aside>
 
+<!-- ============ 抽屉：规划详情 ============ -->
+<aside class="drawer" id="dDrawer">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
 <!-- ============ 通用弹窗 ============ -->
 <div class="modal" id="modal">
   <div class="m-head" id="mTitle"></div>
@@ -840,7 +847,130 @@ function updateSelTip(){
   tip.textContent = `已选择 ${checked.size} 条规划记录`;
 }
 
-function goDetail(id){ location.href = '04b-职业规划-详情.html?id=' + encodeURIComponent(id); }
+/* ---------------- 抽屉：规划详情 ---------------- */
+let dCurId = null;
+
+function goDetail(id){
+  dCurId = id;
+  renderDetail();
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('dDrawer').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('dDrawer').classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+function renderDetail(){
+  const d = DATA.find(x=>x.id===dCurId);
+  if(!d) return;
+  const s = stOf(d.status), mb = mbtiDesc(d.mbti);
+  const score = d.match==null ? 0 : d.match;
+  const color = d.match>=88 ? '#12A150' : (d.match<75 ? '#F59E0B' : '#1B62F5');
+  const timeText = d.time==='—' ? '2026-10-19 17:52' : d.time;
+  const chips = a => `<div class="chips">${a.map(k=>`<span class="chip blue">${k}</span>`).join('')}</div>`;
+
+  document.getElementById('dHead').innerHTML = `
+    <div style="min-width:0">
+      <div class="d-title">${d.name} · ${d.course || '未匹配课程'}</div>
+      <div class="d-sub">
+        <span class="status ${s.c}">${s.t}</span>
+        <span>规划单号 <span class="mono">${d.id}</span></span>
+        <span>手机号 <span class="mono">${d.phone}</span></span>
+        <span>更新于 ${timeText}</span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>`;
+
+  const result = d.course ? `
+    <div class="score-card">
+      <div class="ring" style="background:conic-gradient(${color} ${score*3.6}deg,#DCE8FB 0)">
+        <div class="hole"></div>
+        <div class="num"><b>${score}</b><small>匹配度 %</small></div>
+      </div>
+      <div class="sc-main">
+        <div class="t">${d.course}</div>
+        <div class="s"><span>${d.org}</span><span>${d.match>=88?'高匹配方向':'可培养方向'}</span><span>系统生成 · ${d.planner}</span></div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">课程名称 · course_name</div><div class="v strong">${d.course}</div></div>
+      <div class="kv"><div class="k">合作机构 · org_id</div><div class="v">${d.org}</div></div>
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v"><b>${d.match}%</b> <span style="font-size:11px;color:var(--muted)">技能40 · 专业20 · 项目20 · 性格10 · 爱好10</span></div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+      <div class="kv full"><div class="k">推荐理由 · reason</div><div class="v"><ul class="reason" style="margin-top:4px">${d.reason.map(r=>`<li>${r}</li>`).join('')}</ul></div></div>
+    </div>` : `
+    <div class="note-box ${d.status===3?'warn':''}">
+      ${d.status===0
+        ? '<b>尚未生成推荐。</b>学员已提交基础信息，可点击「生成推荐」由系统匹配课程，或手动指定课程与机构。'
+        : `<b>推荐失败。</b>${d.failReason || '现有课程方向的匹配度均低于 60%，暂无合适课程。'}`}
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v">—</div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+    </div>`;
+
+  document.getElementById('dBody').innerHTML = `
+    <div class="sec" style="margin-top:16px">
+      <div class="sec-title">推荐结果<span class="side">系统按 5 个维度加权生成</span></div>
+      ${result}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">学员基础信息<span class="side">手机号为学员唯一身份（UNIQUE）</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">姓名 · name</div><div class="v strong">${d.name}</div></div>
+        <div class="kv"><div class="k">手机号 · mobile（唯一）</div><div class="v mono">${d.phone}</div></div>
+        <div class="kv"><div class="k">最高学历 · education</div><div class="v">${d.edu}</div></div>
+        <div class="kv"><div class="k">专业 · major</div><div class="v">${d.major}</div></div>
+        <div class="kv"><div class="k">毕业年份 · grad_year</div><div class="v">${d.grad} 届</div></div>
+        <div class="kv"><div class="k">现居城市 · city</div><div class="v">${d.city}</div></div>
+        <div class="kv"><div class="k">规划单号 · plan_no</div><div class="v mono">${d.id}</div></div>
+        <div class="kv"><div class="k">提交时间 · create_time</div><div class="v mono">${timeText}</div></div>
+        <div class="kv"><div class="k">规划师 · planner</div><div class="v">${d.planner}</div></div>
+        <div class="kv"><div class="k">备注 · remark</div><div class="v">${d.closeReason ? `<span style="color:#B03337">${d.closeReason}</span>` : '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">能力与输入画像<span class="side">匹配打分的主要依据</span></div>
+      <div class="grid2">
+        <div class="kv full"><div class="k">技能关键词 · skills</div><div class="v">${chips(d.skills)}</div></div>
+        <div class="kv full"><div class="k">实习经历 · internship</div><div class="v">${d.intern}</div></div>
+        <div class="kv full"><div class="k">项目经验 · project</div><div class="v">${d.project}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">性格与爱好<span class="side">辅助匹配条件，不构成硬性门槛</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">MBTI 类型</div><div class="v"><span class="mbti" style="font-size:12px;padding:2px 7px">${d.mbti}</span></div></div>
+        <div class="kv"><div class="k">四维 · 性格维度</div><div class="v">${mb.text}</div></div>
+        <div class="kv full"><div class="k">性格解读</div><div class="v">${mb.tip}</div></div>
+        <div class="kv full"><div class="k">爱好 · hobbies</div><div class="v">${chips(d.hobbies)}</div></div>
+      </div>
+    </div>`;
+
+  let btns = '';
+  if(d.status===0)      btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">生成推荐</button>';
+  else if(d.status===1) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aPush">推送合作机构</button>';
+  else if(d.status===2) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aEnroll">查看报名信息</button>';
+  else if(d.status===3) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">重新生成推荐</button>';
+  else                  btns = '<button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aRestore">恢复记录</button>';
+
+  document.getElementById('dFoot').innerHTML = `<span class="tip">当前状态：${s.t}</span><div class="spacer"></div>${btns}`;
+
+  const on = (i,fn)=>{ const el = document.getElementById(i); if(el) el.onclick = fn; };
+  document.getElementById('dClose').onclick = closeDetail;
+  on('aClose', ()=>{ closeDetail(); openClose(d.id); });
+  on('aEdit', ()=>{ closeDetail(); openEdit(d.id); });
+  on('aGen', ()=>{ closeDetail(); openEdit(d.id, true); });
+  on('aPush', ()=>{ d.status=2; d.time='2026-10-20 10:20'; renderDetail(); refresh(); toast('已推送至 '+d.org+'，等待机构确认'); });
+  on('aEnroll', ()=>toast('打开就业课程 · 报名记录：'+d.id));
+  on('aRestore', ()=>{ d.status=1; d.closeReason=''; renderDetail(); refresh(); toast('已恢复记录：'+d.name); });
+}
+
 
 /* ---------------- 筛选 ---------------- */
 function applyFilter(){
@@ -899,6 +1029,7 @@ function mbtiDesc(m){
 function closeOverlays(){
   document.getElementById('mask').classList.remove('show');
   document.getElementById('cfgDrawer').classList.remove('show');
+  document.getElementById('dDrawer').classList.remove('show');
 }
 
 /* ---------------- 弹窗：调整推荐 ---------------- */
@@ -1144,8 +1275,8 @@ initSelects(); renderTabs(); applyFilter();
 <script>
 /* 原型串联：左侧菜单跳转（按目录顺序自动注入；站内项与原生链接不拦截） */
 (function(){
-  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',daka:'03-大咖.html',career:'04a-职业规划.html',job:'05-岗位管理.html',project:'06-项目大厅.html',course:'07-就业课程与机构管理.html',org:'07-就业课程与机构管理.html',apply:'08-申请管理.html',complaint:'09-投诉处理.html',sysconf:'10-系统配置.html',dict:'11-字典管理.html'};
-  var SELF='04a-职业规划.html';
+  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',daka:'03-大咖.html',career:'04-职业规划.html',job:'05-岗位管理.html',project:'06-项目大厅.html',course:'07-就业课程与机构管理.html',org:'07-就业课程与机构管理.html',apply:'08-申请管理.html',complaint:'09-投诉处理.html',sysconf:'10-系统配置.html',dict:'11-字典管理.html'};
+  var SELF='04-职业规划.html';
   document.addEventListener('click',function(e){
     var el=(e.target&&e.target.closest)?e.target.closest('.nav-item'):null;
     if(!el) return;
