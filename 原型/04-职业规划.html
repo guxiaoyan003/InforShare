@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>规划详情（表格版） - 运营管理平台</title>
+<title>职业规划 - 运营管理平台</title>
 <style>
-
   :root{
     --blue-700:#0F4BD8;
     --blue-600:#1B62F5;
@@ -135,6 +134,7 @@
     padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
   }
   tbody td{padding:11px 14px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  tbody tr{cursor:pointer}
   tbody tr:hover{background:#F8FBFF}
   tbody tr.checked{background:var(--blue-50)}
   .lk{cursor:pointer}
@@ -348,70 +348,11 @@
   @media (max-width:1280px){
     .filters{grid-template-columns:repeat(2,1fr)}
   }
-
-  /* ---------- 详情页 ---------- */
-  .back-link{color:var(--blue-600);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-bottom:14px}
-  .back-link:hover{text-decoration:underline}
-  .big-head{
-    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);
-    padding:16px 20px;display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap;
-  }
-  .big-head .ava{
-    width:52px;height:52px;border-radius:15px;flex:0 0 auto;
-    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;
-    box-shadow:0 6px 16px rgba(27,98,245,.28);
-  }
-  .big-head h1{font-size:19px;font-weight:700;display:inline-block;margin-right:10px}
-  .big-head .hh-sub{font-size:12px;color:var(--muted);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .big-head .spacer{flex:1}
-  .big-head .acts{display:flex;gap:10px;flex-wrap:wrap}
-  .detail-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px;align-items:start}
-  .card-head{padding:14px 20px;border-bottom:1px solid var(--line);font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .card-head::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
-  .card-head .side{font-size:11px;font-weight:400;color:var(--muted);margin-left:auto}
-  .card-body{padding:16px 20px 20px}
-  .card{margin-bottom:16px}
-  .ring.lg{width:96px;height:96px}
-  .ring.lg .hole{inset:9px}
-  .ring.lg .num b{font-size:26px}
-  .side-card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);margin-bottom:16px;overflow:hidden}
-  .side-card .sc-head{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .side-card .sc-head::before{content:"";width:3px;height:13px;border-radius:2px;background:var(--blue-600)}
-  .side-card .sc-body{padding:12px 16px 14px}
-  .side-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px dashed #F0F3F8}
-  .side-row:last-child{border-bottom:none}
-  .side-row .k{color:var(--muted);flex:0 0 auto}
-  .side-row .v{font-weight:600;text-align:right;word-break:break-all}
-  .act-btn{width:100%;justify-content:center;margin-bottom:8px}
-  .act-btn:last-child{margin-bottom:0}
-  @media (max-width:1360px){ .detail-grid{grid-template-columns:1fr} }
-
-
-  /* ---------- 详情简版：表格化 ---------- */
-  .detail-grid{grid-template-columns:1fr}
-  .info-table{width:100%;min-width:0;table-layout:auto;border-collapse:collapse;font-size:13px}
-  .info-table td{border:1px solid var(--line);padding:9px 12px;vertical-align:middle;line-height:1.65}
-  .info-table tr td:first-child{border-left:none}
-  .info-table tr td:last-child{border-right:none}
-  .info-table tr:first-child td{border-top:none}
-  .info-table td.k{background:#F8FAFF;color:var(--muted);font-size:12px;width:96px;white-space:nowrap}
-  .info-table td.v{color:var(--text);word-break:break-word}
-  .info-table td.v.strong{font-weight:600}
-  .info-table td.v .mono{font-size:12px}
-  .info-table .reason{margin:0}
-  .card-body.flush{padding:0}
-  .score-card.compact{padding:14px 16px;margin:14px 16px}
-  .ring.md{width:74px;height:74px}
-  .ring.md .hole{inset:7px}
-  .ring.md .num b{font-size:20px}
-  .ring.md .num small{font-size:9.5px;margin-top:3px}
-
 </style>
 </head>
 <body>
-
 <div class="layout">
+  <!-- ============ 侧边栏 ============ -->
   <aside class="sidebar">
     <div class="logo">
       <div class="logo-mark">大咖</div>
@@ -422,8 +363,8 @@
         <div class="nav-group-title">基本信息</div>
         <a class="nav-item" href="01-企业管理.html">企业<span class="badge">42</span></a>
         <div class="nav-item" data-page="contact">企业联系人</div>
-        <div class="nav-item" data-page="daka" title="该页面暂无原型">大咖</div>
-        <a class="nav-item active" href="03a-职业规划.html">职业规划</a>
+        <div class="nav-item" data-page="daka">大咖</div>
+        <div class="nav-item active" data-page="career">职业规划</div>
         <div class="nav-item" data-page="job">岗位管理</div>
         <div class="nav-item" data-page="project">项目大厅</div>
         <div class="nav-item" data-page="course">就业课程</div>
@@ -446,35 +387,128 @@
     </div>
   </aside>
 
+  <!-- ============ 主体 ============ -->
   <div class="main">
     <header class="topbar">
-      <div class="crumb">基本信息 / <a class="link-goto" href="03a-职业规划.html">职业规划</a> / <b>规划详情</b></div>
+      <div class="crumb">基本信息 / <b id="crumbNow">职业规划</b></div>
       <div class="spacer"></div>
     </header>
 
     <div class="content">
-      <div id="page-detail">
-        <div class="back-link" id="back">← 返回职业规划列表</div>
-        <div class="big-head">
-          <div class="ava" id="hAva">—</div>
-          <div style="min-width:0">
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <h1 id="hName">—</h1>
-              <span class="status" id="hStatus">—</span>
-              <span class="chip blue" id="hMbti">—</span>
+      <section id="page-career">
+        <div class="card">
+          <div class="tabs" id="tabs"></div>
+
+          <div class="filters">
+            <div class="field">
+              <label>姓名 / 手机号</label>
+              <input class="ctrl" id="f-kw" placeholder="支持姓名或手机号后四位">
             </div>
-            <div class="hh-sub">
-              <span id="hTime">—</span>
+            <div class="field">
+              <label>推荐课程</label>
+              <select class="ctrl" id="f-course"><option value="">全部课程</option></select>
+            </div>
+            <div class="field">
+              <label>合作机构</label>
+              <select class="ctrl" id="f-org"><option value="">全部机构</option></select>
+            </div>
+            <div class="field">
+              <label>最高学历</label>
+              <select class="ctrl" id="f-edu">
+                <option value="">全部</option>
+                <option>大专</option><option>本科</option><option>硕士</option><option>博士</option><option>中专及以下</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>现居城市</label>
+              <select class="ctrl" id="f-city">
+                <option value="">全部</option>
+                <option>深圳市</option><option>广州市</option><option>杭州市</option><option>南京市</option>
+                <option>成都市</option><option>武汉市</option><option>上海市</option><option>北京市</option>
+                <option>西安市</option><option>苏州市</option><option>佛山市</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>MBTI</label>
+              <select class="ctrl" id="f-mbti">
+                <option value="">全部</option>
+                <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
+                <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
+                <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
+                <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>匹配度</label>
+              <select class="ctrl" id="f-match">
+                <option value="">全部</option>
+                <option value="90">90% 及以上</option>
+                <option value="80">80% - 89%</option>
+                <option value="70">70% - 79%</option>
+                <option value="low">70% 以下</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>推荐状态</label>
+              <select class="ctrl" id="f-status">
+                <option value="">全部</option>
+                <option value="0">待推荐</option>
+                <option value="1">已推荐</option>
+                <option value="2">已报名</option>
+                <option value="3">推荐失败</option>
+                <option value="4">已关闭</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="btn" id="btn-reset">重置</button>
+              <button class="btn btn-primary" id="btn-search">查询</button>
             </div>
           </div>
-          <div class="spacer"></div>
-          <div class="acts" id="hActions"></div>
-        </div>
 
-        <div class="detail-grid">
-          <div id="mainCol"></div>
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btn-add">＋ 新增规划</button>
+            <button class="btn" id="btn-export">⬇ 导出 Excel</button>
+            <button class="btn" id="btn-batch">批量推送机构</button>
+            <span class="sel-tip" id="selTip" style="display:none"></span>
+            <div class="spacer"></div>
+            <span class="hint"><i></i>推荐课程与爱好选项由「就业课程 · 字典管理」维护</span>
+            <button class="btn" id="btn-config">推荐规则配置</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:44px"><input type="checkbox" id="ckAll"></th>
+                  <th style="width:116px">规划单号</th>
+                  <th style="width:150px">学员</th>
+                  <th style="width:160px">学历 / 专业</th>
+                  <th style="width:140px">技能关键词</th>
+                  <th style="width:118px">爱好</th>
+                  <th style="width:180px">推荐课程</th>
+                  <th style="width:100px">匹配度</th>
+                  <th style="width:124px">合作机构</th>
+                  <th style="width:104px">状态</th>
+                  <th style="width:140px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager">
+            <span>共 <b id="total">0</b> 条 · 每页 10 条</span>
+            <div class="spacer"></div>
+            <button class="pg">‹</button>
+            <button class="pg active">1</button>
+            <button class="pg">2</button>
+            <button class="pg">3</button>
+            <button class="pg">…</button>
+            <button class="pg">28</button>
+            <button class="pg">›</button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <section id="page-ph" style="display:none">
         <div class="placeholder"><b id="ph-title">—</b><span id="ph-desc">—</span></div>
@@ -484,11 +518,43 @@
 </div>
 
 <div class="mask" id="mask"></div>
+
+<!-- ============ 抽屉：推荐规则配置 ============ -->
+<aside class="drawer wide" id="cfgDrawer">
+  <div class="d-head">
+    <div>
+      <div class="d-title">推荐规则配置</div>
+      <div class="d-sub">
+        <span>课程方向 10 个 · 合作机构 10 家</span>
+        <span>·</span>
+        <span>爱好选项与字典 <span class="mono">hobby</span> 同步</span>
+      </div>
+    </div>
+    <button class="d-close" id="cfgClose">✕</button>
+  </div>
+  <div class="d-body" id="cfgBody"></div>
+  <div class="d-foot">
+    <span class="tip">课程由合作机构入驻后维护，下架课程不再参与新推荐</span>
+    <div class="spacer"></div>
+    <button class="btn" id="cfgAdd">＋ 新增课程方向</button>
+    <button class="btn btn-primary" id="cfgDone">完成</button>
+  </div>
+</aside>
+
+<!-- ============ 抽屉：规划详情 ============ -->
+<aside class="drawer" id="dDrawer">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 通用弹窗 ============ -->
 <div class="modal" id="modal">
   <div class="m-head" id="mTitle"></div>
   <div class="m-body" id="mBody"></div>
   <div class="m-foot" id="mFoot"></div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -647,6 +713,299 @@ const DATA = [
   }
 ];
 
+/* ---------------- 工具 ---------------- */
+function money(){}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function matchCls(n){ return n>=88 ? 'high' : (n<75 ? 'low' : ''); }
+
+/* ---------------- 渲染：页签 ---------------- */
+let curTab = 'all', rows = DATA.slice(), checked = new Set(), curId = null;
+
+function renderTabs(){
+  const counts = {all:DATA.length};
+  STATUS.forEach(s=>counts[s.k] = DATA.filter(d=>d.status===s.k).length);
+  const items = [['all','全部',counts.all]].concat(STATUS.map(s=>[s.k,s.t,counts[s.k]]));
+  document.getElementById('tabs').innerHTML = items.map(([k,t,c])=>
+    `<div class="tab ${k===curTab?'active':''}" data-k="${k}">${t}<span class="cnt">${c}</span></div>`).join('');
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.onclick = ()=>{ curTab = el.dataset.k==='all'?'all':Number(el.dataset.k); syncTabs(); applyFilter(); };
+  });
+}
+function syncTabs(){
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.classList.toggle('active', (el.dataset.k==='all'?'all':Number(el.dataset.k))===curTab);
+  });
+  const f = document.getElementById('f-status');
+  if(f) f.value = curTab==='all'?'':String(curTab);
+}
+
+/* ---------------- 渲染：下拉选项 ---------------- */
+function initSelects(){
+  const fc = document.getElementById('f-course');
+  COURSES.forEach(c=>{ const o=document.createElement('option'); o.textContent=c.name; fc.appendChild(o); });
+  const fo = document.getElementById('f-org');
+  ORGS.forEach(o=>{ const op=document.createElement('option'); op.textContent=o; fo.appendChild(op); });
+}
+
+/* ---------------- 渲染：表格 ---------------- */
+function renderTable(){
+  const tb = document.getElementById('tbody');
+  document.getElementById('total').textContent = rows.length;
+  if(!rows.length){
+    tb.innerHTML = `<tr><td colspan="11"><div class="empty"><span class="e-ico">🧭</span>没有符合条件的规划记录，试试调整筛选条件</div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = rows.map(d=>{
+    const s = stOf(d.status);
+    const skillHtml = d.skills.slice(0,2).map(k=>`<span class="chip">${k}</span>`).join('') +
+      (d.skills.length>2 ? `<span class="chip more">+${d.skills.length-2}</span>` : '');
+    const hobbyHtml = d.hobbies.slice(0,1).map(k=>`<span class="chip blue">${k}</span>`).join('') +
+      (d.hobbies.length>1 ? `<span class="chip more">+${d.hobbies.length-1}</span>` : '');
+
+    let courseHtml = '';
+    if(d.course){
+      courseHtml = `<div class="course-cell">
+          <div class="cc-name">${d.course}</div>
+          <div class="cc-sub"><span class="ai">AI 推荐</span>${d.match>=88?'高匹配方向':'可培养方向'}</div>
+        </div>`;
+    }else if(d.status===0){
+      courseHtml = `<div class="cc-empty">待生成推荐<span>信息已提交，等待匹配</span></div>`;
+    }else{
+      courseHtml = `<div class="cc-empty">未匹配到课程<span>见推荐失败原因</span></div>`;
+    }
+
+    let matchHtml = '<span class="match"><span class="na">—</span></span>';
+    if(d.match!=null){
+      const c = matchCls(d.match);
+      matchHtml = `<div class="match"><span class="bar"><i class="${c}" style="width:${d.match}%"></i></span><span class="pct ${c}">${d.match}%</span></div>`;
+    }
+
+    let opHtml = '';
+    if(d.status===0){
+      opHtml = `<button class="link" data-act="view">详情</button><span class="sep"></span>
+                <button class="link" data-act="gen">生成推荐</button><span class="sep"></span>
+                <button class="link gray" data-act="close">关闭</button>`;
+    }else if(d.status===3){
+      opHtml = `<button class="link" data-act="view">详情</button><span class="sep"></span>
+                <button class="link" data-act="gen">重新生成</button><span class="sep"></span>
+                <button class="link gray" data-act="close">关闭</button>`;
+    }else{
+      opHtml = `<button class="link" data-act="view">详情</button><span class="sep"></span>
+                <button class="link" data-act="edit">调整</button><span class="sep"></span>
+                <button class="link gray" data-act="close">关闭</button>`;
+    }
+
+    return `<tr class="${checked.has(d.id)?'checked':''}" data-id="${d.id}">
+      <td><input type="checkbox" class="ck" data-id="${d.id}" ${checked.has(d.id)?'checked':''}></td>
+      <td class="col-id lk" data-go="${d.id}">${d.id}</td>
+      <td class="lk" data-go="${d.id}">
+        <div class="stu">
+          <div class="ava">${d.name.slice(0,1)}</div>
+          <div style="min-width:0">
+            <div class="n" style="display:flex;align-items:center;gap:4px;white-space:nowrap">${d.name}<span class="mbti" style="font-size:9.5px;padding:1px 4px">${d.mbti}</span></div>
+            <div class="p">${d.phone}</div>
+          </div>
+        </div>
+      </td>
+      <td><div class="edu-2">${d.edu} · ${d.major}<em>${d.grad} 届 · ${d.city}</em></div></td>
+      <td><div class="chips">${skillHtml}</div></td>
+      <td><div class="chips">${hobbyHtml}</div></td>
+      <td class="lk" data-go="${d.id}">${courseHtml}</td>
+      <td>${matchHtml}</td>
+      <td>${d.org ? `<div class="org">${d.org}</div>` : `<div class="org pending">${d.status===0?'待选定':'—'}</div>`}</td>
+      <td><span class="status ${s.c}">${s.t}</span><div class="cell-time">${d.time.split(' ').join('<br>')}</div></td>
+      <td><div class="ops">${opHtml}</div></td>
+    </tr>`;
+  }).join('');
+  bindRows();
+}
+
+function bindRows(){
+  document.querySelectorAll('#tbody tr').forEach(tr=>{
+    const id = tr.dataset.id;
+    if(!id) return;
+    const d = DATA.find(x=>x.id===id);
+    const q = a => tr.querySelector('[data-act="'+a+'"]');
+    if(q('view')) q('view').onclick = ()=>goDetail(id);
+    tr.querySelectorAll('[data-go]').forEach(el=>el.onclick = ()=>goDetail(id));
+    tr.onclick = e=>{ if(e.target.closest('button, input, a')) return; goDetail(id); };
+    if(q('edit')) q('edit').onclick = ()=>openEdit(id);
+    if(q('gen'))  q('gen').onclick  = ()=>openEdit(id, true);
+    if(q('close'))q('close').onclick= ()=>openClose(id);
+    tr.querySelector('.ck').onchange = e=>{
+      e.target.checked ? checked.add(id) : checked.delete(id);
+      tr.classList.toggle('checked', e.target.checked);
+      updateSelTip();
+    };
+  });
+  updateSelTip();
+}
+
+function updateSelTip(){
+  const tip = document.getElementById('selTip');
+  tip.style.display = checked.size ? 'inline-block' : 'none';
+  tip.textContent = `已选择 ${checked.size} 条规划记录`;
+}
+
+/* ---------------- 抽屉：规划详情 ---------------- */
+let dCurId = null;
+
+function goDetail(id){
+  dCurId = id;
+  renderDetail();
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('dDrawer').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('dDrawer').classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+function renderDetail(){
+  const d = DATA.find(x=>x.id===dCurId);
+  if(!d) return;
+  const s = stOf(d.status), mb = mbtiDesc(d.mbti);
+  const score = d.match==null ? 0 : d.match;
+  const color = d.match>=88 ? '#12A150' : (d.match<75 ? '#F59E0B' : '#1B62F5');
+  const timeText = d.time==='—' ? '2026-10-19 17:52' : d.time;
+  const chips = a => `<div class="chips">${a.map(k=>`<span class="chip blue">${k}</span>`).join('')}</div>`;
+
+  document.getElementById('dHead').innerHTML = `
+    <div style="min-width:0">
+      <div class="d-title">${d.name} · ${d.course || '未匹配课程'}</div>
+      <div class="d-sub">
+        <span class="status ${s.c}">${s.t}</span>
+        <span>规划单号 <span class="mono">${d.id}</span></span>
+        <span>手机号 <span class="mono">${d.phone}</span></span>
+        <span>更新于 ${timeText}</span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>`;
+
+  const result = d.course ? `
+    <div class="score-card">
+      <div class="ring" style="background:conic-gradient(${color} ${score*3.6}deg,#DCE8FB 0)">
+        <div class="hole"></div>
+        <div class="num"><b>${score}</b><small>匹配度 %</small></div>
+      </div>
+      <div class="sc-main">
+        <div class="t">${d.course}</div>
+        <div class="s"><span>${d.org}</span><span>${d.match>=88?'高匹配方向':'可培养方向'}</span><span>系统生成 · ${d.planner}</span></div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">课程名称 · course_name</div><div class="v strong">${d.course}</div></div>
+      <div class="kv"><div class="k">合作机构 · org_id</div><div class="v">${d.org}</div></div>
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v"><b>${d.match}%</b> <span style="font-size:11px;color:var(--muted)">技能40 · 专业20 · 项目20 · 性格10 · 爱好10</span></div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+      <div class="kv full"><div class="k">推荐理由 · reason</div><div class="v"><ul class="reason" style="margin-top:4px">${d.reason.map(r=>`<li>${r}</li>`).join('')}</ul></div></div>
+    </div>` : `
+    <div class="note-box ${d.status===3?'warn':''}">
+      ${d.status===0
+        ? '<b>尚未生成推荐。</b>学员已提交基础信息，可点击「生成推荐」由系统匹配课程，或手动指定课程与机构。'
+        : `<b>推荐失败。</b>${d.failReason || '现有课程方向的匹配度均低于 60%，暂无合适课程。'}`}
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v">—</div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+    </div>`;
+
+  document.getElementById('dBody').innerHTML = `
+    <div class="sec" style="margin-top:16px">
+      <div class="sec-title">推荐结果<span class="side">系统按 5 个维度加权生成</span></div>
+      ${result}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">学员基础信息<span class="side">手机号为学员唯一身份（UNIQUE）</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">姓名 · name</div><div class="v strong">${d.name}</div></div>
+        <div class="kv"><div class="k">手机号 · mobile（唯一）</div><div class="v mono">${d.phone}</div></div>
+        <div class="kv"><div class="k">最高学历 · education</div><div class="v">${d.edu}</div></div>
+        <div class="kv"><div class="k">专业 · major</div><div class="v">${d.major}</div></div>
+        <div class="kv"><div class="k">毕业年份 · grad_year</div><div class="v">${d.grad} 届</div></div>
+        <div class="kv"><div class="k">现居城市 · city</div><div class="v">${d.city}</div></div>
+        <div class="kv"><div class="k">规划单号 · plan_no</div><div class="v mono">${d.id}</div></div>
+        <div class="kv"><div class="k">提交时间 · create_time</div><div class="v mono">${timeText}</div></div>
+        <div class="kv"><div class="k">规划师 · planner</div><div class="v">${d.planner}</div></div>
+        <div class="kv"><div class="k">备注 · remark</div><div class="v">${d.closeReason ? `<span style="color:#B03337">${d.closeReason}</span>` : '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">能力与输入画像<span class="side">匹配打分的主要依据</span></div>
+      <div class="grid2">
+        <div class="kv full"><div class="k">技能关键词 · skills</div><div class="v">${chips(d.skills)}</div></div>
+        <div class="kv full"><div class="k">实习经历 · internship</div><div class="v">${d.intern}</div></div>
+        <div class="kv full"><div class="k">项目经验 · project</div><div class="v">${d.project}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">性格与爱好<span class="side">辅助匹配条件，不构成硬性门槛</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">MBTI 类型</div><div class="v"><span class="mbti" style="font-size:12px;padding:2px 7px">${d.mbti}</span></div></div>
+        <div class="kv"><div class="k">四维 · 性格维度</div><div class="v">${mb.text}</div></div>
+        <div class="kv full"><div class="k">性格解读</div><div class="v">${mb.tip}</div></div>
+        <div class="kv full"><div class="k">爱好 · hobbies</div><div class="v">${chips(d.hobbies)}</div></div>
+      </div>
+    </div>`;
+
+  let btns = '';
+  if(d.status===0)      btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">生成推荐</button>';
+  else if(d.status===1) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aPush">推送合作机构</button>';
+  else if(d.status===2) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aEnroll">查看报名信息</button>';
+  else if(d.status===3) btns = '<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">重新生成推荐</button>';
+  else                  btns = '<button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aRestore">恢复记录</button>';
+
+  document.getElementById('dFoot').innerHTML = `<span class="tip">当前状态：${s.t}</span><div class="spacer"></div>${btns}`;
+
+  const on = (i,fn)=>{ const el = document.getElementById(i); if(el) el.onclick = fn; };
+  document.getElementById('dClose').onclick = closeDetail;
+  on('aClose', ()=>{ closeDetail(); openClose(d.id); });
+  on('aEdit', ()=>{ closeDetail(); openEdit(d.id); });
+  on('aGen', ()=>{ closeDetail(); openEdit(d.id, true); });
+  on('aPush', ()=>{ d.status=2; d.time='2026-10-20 10:20'; renderDetail(); refresh(); toast('已推送至 '+d.org+'，等待机构确认'); });
+  on('aEnroll', ()=>toast('打开就业课程 · 报名记录：'+d.id));
+  on('aRestore', ()=>{ d.status=1; d.closeReason=''; renderDetail(); refresh(); toast('已恢复记录：'+d.name); });
+}
+
+
+/* ---------------- 筛选 ---------------- */
+function applyFilter(){
+  const kw = document.getElementById('f-kw').value.trim();
+  const course = document.getElementById('f-course').value;
+  const org = document.getElementById('f-org').value;
+  const edu = document.getElementById('f-edu').value;
+  const city = document.getElementById('f-city').value;
+  const mbti = document.getElementById('f-mbti').value;
+  const mv = document.getElementById('f-match').value;
+  const st = document.getElementById('f-status').value;
+
+  rows = DATA.filter(d=>{
+    if(kw && !(d.name.includes(kw) || d.phone.includes(kw))) return false;
+    if(course && d.course!==course) return false;
+    if(org && d.org!==org) return false;
+    if(edu && d.edu!==edu) return false;
+    if(city && d.city!==city) return false;
+    if(mbti && d.mbti!==mbti) return false;
+    if(mv){
+      if(d.match==null) return false;
+      if(mv==='90' && d.match<90) return false;
+      if(mv==='80' && (d.match<80 || d.match>89)) return false;
+      if(mv==='70' && (d.match<70 || d.match>79)) return false;
+      if(mv==='low' && d.match>=70) return false;
+    }
+    if(st!=='' && d.status!==Number(st)) return false;
+    if(curTab!=='all' && d.status!==curTab) return false;
+    return true;
+  });
+  renderTable();
+}
+function refresh(){ renderTabs(); applyFilter(); }
+
+/* ---------------- 抽屉：详情 ---------------- */
 function mbtiDesc(m){
   const a={E:'外向',I:'内向',N:'直觉',S:'实感',F:'情感',T:'思考',P:'感知',J:'判断'};
   const tips={
@@ -667,158 +1026,10 @@ function mbtiDesc(m){
   };
 }
 
-
-/* ---------------- 当前记录 ---------------- */
-const params = new URLSearchParams(location.search);
-let curId = params.get('id') || DATA[0].id;
-if(!DATA.some(d=>d.id===curId)) curId = DATA[0].id;
-
-function matchCls(n){ return n>=88 ? 'high' : (n<75 ? 'low' : ''); }
-
-function render(){
-  const d = DATA.find(x=>x.id===curId);
-  const s = stOf(d.status);
-  document.getElementById('hAva').textContent = d.name.slice(0,1);
-  document.getElementById('hName').textContent = d.name;
-  document.getElementById('hMbti').textContent = d.mbti;
-  document.getElementById('hTime').textContent = '更新于 ' + (d.time==='—'?'2026-10-19 17:52':d.time);
-  const stEl = document.getElementById('hStatus');
-  stEl.className = 'status ' + s.c; stEl.textContent = s.t;
-
-  const m = mbtiDesc(d.mbti);
-  const score = d.match==null ? 0 : d.match;
-  const color = d.match>=88?'#12A150':(d.match<75?'#F59E0B':'#1B62F5');
-  const timeText = d.time==='—' ? '2026-10-19 17:52' : d.time;
-
-  const resultCard = d.course ? `
-      <div class="card">
-        <div class="card-head">推荐结果</div>
-        <div class="score-card compact">
-          <div class="ring md" style="background:conic-gradient(${color} ${score*3.6}deg, #DCE8FB 0)">
-            <div class="hole"></div>
-            <div class="num"><b>${score}</b><small>匹配度 %</small></div>
-          </div>
-          <div class="sc-main">
-            <div class="t">${d.course}</div>
-            <div class="s">
-              <span>${d.org}</span>
-              <span>${d.match>=88?'高匹配方向':'可培养方向'}</span>
-              <span>系统生成 · ${d.planner}</span>
-            </div>
-          </div>
-        </div>
-        <table class="info-table" style="border-top:1px solid var(--line)">
-          <tr>
-            <td class="k">课程名称</td><td class="v">${d.course}</td>
-            <td class="k">合作机构</td><td class="v">${d.org}<span style="color:#8A97A8;font-size:11px">（后台选定）</span></td>
-          </tr>
-          <tr>
-            <td class="k">匹配度</td><td class="v">${d.match}% <span style="color:#8A97A8;font-size:11px">技能40 · 专业20 · 项目20 · 性格10 · 爱好10</span></td>
-            <td class="k">推荐状态</td><td class="v"><span class="status ${s.c}">${s.t}</span></td>
-          </tr>
-          <tr>
-            <td class="k">推荐理由</td><td class="v" colspan="3"><ul class="reason">${d.reason.map(r=>`<li>${r}</li>`).join('')}</ul></td>
-          </tr>
-        </table>
-      </div>` : `
-      <div class="card">
-        <div class="card-head">推荐结果<span class="side">尚未生成 / 匹配失败</span></div>
-        <div class="card-body">
-          ${d.status===0
-            ? `<div class="note-box"><b>尚未生成推荐。</b>学员已提交基础信息，可点击「生成推荐」由系统匹配课程，或手动指定课程与机构。</div>`
-            : `<div class="note-box warn"><b>推荐失败。</b>${d.failReason||'暂无可匹配课程。'}</div>`}
-        </div>
-        <table class="info-table" style="border-top:1px solid var(--line)">
-          <tr>
-            <td class="k">匹配度</td><td class="v">—</td>
-            <td class="k">推荐状态</td><td class="v"><span class="status ${s.c}">${s.t}</span></td>
-          </tr>
-        </table>
-      </div>`;
-
-  document.getElementById('mainCol').innerHTML = resultCard + `
-      <div class="card">
-        <div class="card-head">学员基础信息<span class="side">手机号为学员唯一身份（UNIQUE）</span></div>
-        <table class="info-table">
-          <tr>
-            <td class="k">姓名</td><td class="v strong">${d.name}</td>
-            <td class="k">手机号</td><td class="v"><span class="mono">${d.phone}</span><span style="color:#8A97A8;font-size:11px"> · 唯一身份</span></td>
-          </tr>
-          <tr>
-            <td class="k">最高学历</td><td class="v">${d.edu}</td>
-            <td class="k">专业</td><td class="v">${d.major}</td>
-          </tr>
-          <tr>
-            <td class="k">毕业年份</td><td class="v">${d.grad} 届</td>
-            <td class="k">现居城市</td><td class="v">${d.city}</td>
-          </tr>
-          <tr>
-            <td class="k">规划单号</td><td class="v"><span class="mono">${d.id}</span></td>
-            <td class="k">提交时间</td><td class="v"><span class="mono">${timeText}</span></td>
-          </tr>
-          <tr>
-            <td class="k">规划师</td><td class="v">${d.planner}</td>
-            <td class="k">备注</td><td class="v">${d.closeReason ? `<span style="color:#B03337">${d.closeReason}</span>` : '—'}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <div class="card-head">能力与输入画像<span class="side">匹配打分的主要依据</span></div>
-        <table class="info-table">
-          <tr>
-            <td class="k">技能关键词</td>
-            <td class="v" colspan="3"><div class="chips" style="max-width:none">${d.skills.map(k=>`<span class="chip blue">${k}</span>`).join('')}</div></td>
-          </tr>
-          <tr>
-            <td class="k">实习经历</td><td class="v" colspan="3">${d.intern}</td>
-          </tr>
-          <tr>
-            <td class="k">项目经验</td><td class="v" colspan="3">${d.project}</td>
-          </tr>
-        </table>
-      </div>
-
-      <div class="card">
-        <div class="card-head">性格与爱好<span class="side">辅助匹配条件，不构成硬性门槛</span></div>
-        <table class="info-table">
-          <tr>
-            <td class="k">MBTI 类型</td><td class="v"><span class="mbti" style="font-size:12px;padding:2px 7px">${d.mbti}</span></td>
-            <td class="k">四维</td><td class="v">${m.text}</td>
-          </tr>
-          <tr>
-            <td class="k">性格解读</td><td class="v" colspan="3">${m.tip}</td>
-          </tr>
-          <tr>
-            <td class="k">爱好</td>
-            <td class="v" colspan="3"><div class="chips" style="max-width:none">${d.hobbies.map(k=>`<span class="chip blue">${k}</span>`).join('')}</div></td>
-          </tr>
-        </table>
-      </div>`;
-
-  buildActions(d, s);
-}
-
-function buildActions(d, s){
-  const box = document.getElementById('hActions');
-  if(d.status===0){
-    box.innerHTML = `<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">生成推荐</button>`;
-  }else if(d.status===1){
-    box.innerHTML = `<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aPush">推送合作机构</button>`;
-  }else if(d.status===2){
-    box.innerHTML = `<button class="btn" id="aClose">关闭记录</button><button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aEnroll">查看报名信息</button>`;
-  }else if(d.status===3){
-    box.innerHTML = `<button class="btn" id="aClose">关闭记录</button><button class="btn btn-primary" id="aGen">重新生成推荐</button>`;
-  }else{
-    box.innerHTML = `<button class="btn" id="aEdit">调整推荐</button><button class="btn btn-primary" id="aRestore">恢复记录</button>`;
-  }
-  const on=(i,fn)=>{ const el=box.querySelector('#'+i); if(el) el.onclick=fn; };
-  on('aEdit', ()=>openEdit(d.id));
-  on('aGen', ()=>openEdit(d.id, true));
-  on('aPush', ()=>{ d.status=2; d.time='2026-10-19 20:56'; toast('已推送至 '+d.org+'，等待机构确认'); render(); });
-  on('aEnroll', ()=>toast('打开就业课程 · 报名记录：'+d.id));
-  on('aRestore', ()=>{ d.status=1; d.closeReason=''; toast('已恢复记录：'+d.name); render(); });
-  on('aClose', ()=>openClose(d.id));
+function closeOverlays(){
+  document.getElementById('mask').classList.remove('show');
+  document.getElementById('cfgDrawer').classList.remove('show');
+  document.getElementById('dDrawer').classList.remove('show');
 }
 
 /* ---------------- 弹窗：调整推荐 ---------------- */
@@ -833,20 +1044,25 @@ function closeModal(){
   document.getElementById('modal').classList.remove('show');
   document.getElementById('mask').classList.remove('show');
 }
+
 function suggestCourse(d){
   const map = {'视觉传达设计':'AI 视觉设计（电商/商业）','汉语言文学':'AI 内容运营/账号操盘','计算机科学与技术':'Agent / RAG 开发工程师','软件工程':'大模型应用开发工程师','数字媒体技术':'AI 视频剪辑/成片师','动画':'AI 漫剧制作师/抽卡师','播音与主持艺术':'AI 数字人运营','市场营销':'AI 产品经理','环境设计':'AI 视觉设计（电商/商业）'};
   return map[d.major] || 'AI 内容运营/账号操盘';
 }
+
 function openEdit(id, isGen){
+  curId = id;
   const d = DATA.find(x=>x.id===id);
   const preCourse = d.course || suggestCourse(d);
   const pre = COURSES.find(c=>c.name===preCourse) || COURSES[0];
   const preOrg = d.org || pre.org;
   const preMatch = d.match==null ? 82 : d.match;
   const preReason = d.reason.length ? d.reason.map(r=>r.replace(/<[^>]+>/g,'')).join('\n') : '';
+
   const courseOpts = COURSES.filter(c=>c.on).map(c=>`<option ${c.name===preCourse?'selected':''}>${c.name}</option>`).join('');
   const orgOpts = ORGS.map(o=>`<option ${o===preOrg?'selected':''}>${o}</option>`).join('');
   const stOpts = STATUS.map(s=>`<option value="${s.k}" ${s.k===(d.status===0||d.status===3?1:d.status)?'selected':''}>${s.t}</option>`).join('');
+
   openModal(
     isGen?'生成课程推荐':'调整推荐结果',
     `${d.name} · ${d.phone} · 匹配依据：学历 / 专业 / 技能关键词 / 实习与项目 / MBTI / 爱好`,
@@ -856,25 +1072,32 @@ function openEdit(id, isGen){
       <div><label class="ctrl-label">匹配度 <b>match_score（0-100）</b></label><input class="ctrl" id="eMatch" type="number" min="0" max="100" value="${preMatch}"></div>
       <div><label class="ctrl-label">推荐状态 <b>status</b></label><select class="ctrl" id="eStatus">${stOpts}</select></div>
       <div class="full"><label class="ctrl-label">推荐理由 <b>recommend_reason · 每行一条</b></label>
-        <textarea class="ctrl" id="eReason" style="min-height:132px">${preReason}</textarea></div>
+        <textarea class="ctrl" id="eReason" style="min-height:132px" placeholder="例：专业对口，视觉传达设计背景覆盖课程 2 项核心标签。">${preReason}</textarea>
+      </div>
+      <div class="full"><div class="note-box">匹配度由系统按 <b>技能 40% · 专业 20% · 项目 20% · 性格 10% · 爱好 10%</b> 加权计算，运营可在此微调；机构由后台选定后推送。</div></div>
     </div>`,
-    `<button class="btn" id="mCancel">取消</button><button class="btn btn-primary" id="mSave">保存并生成</button>`);
+    `<button class="btn" id="mCancel">取消</button>
+     <button class="btn btn-primary" id="mSave">保存并生成</button>`
+  );
   document.getElementById('mCancel').onclick = closeModal;
   document.getElementById('mSave').onclick = ()=>{
-    d.course = document.getElementById('eCourse').value;
-    d.org = document.getElementById('eOrg').value;
-    d.match = Math.max(0, Math.min(100, Number(document.getElementById('eMatch').value)||0));
+    const cname = document.getElementById('eCourse').value;
+    const org = document.getElementById('eOrg').value;
+    const m = Math.max(0, Math.min(100, Number(document.getElementById('eMatch').value)||0));
     const st = Number(document.getElementById('eStatus').value);
-    d.status = st;
-    d.reason = document.getElementById('eReason').value.split('\n').map(x=>x.trim()).filter(Boolean);
-    d.time = '2026-10-19 20:56'; d.planner = '陈思远';
+    const rs = document.getElementById('eReason').value.split('\n').map(x=>x.trim()).filter(Boolean);
+    d.course = cname; d.org = org; d.match = m; d.status = st;
+    d.reason = rs.map(r=>r);
+    d.time = '2026-10-19 20:12';
+    d.planner = '陈思远';
     if(st!==3) delete d.failReason;
-    closeModal(); toast('已保存推荐：'+d.name+' → '+d.course); render();
+    closeModal(); closeOverlays(); toast('已保存推荐：'+d.name+' → '+cname); refresh();
   };
 }
 
 /* ---------------- 弹窗：关闭记录 ---------------- */
 function openClose(id){
+  curId = id;
   const d = DATA.find(x=>x.id===id);
   openModal('关闭规划记录', `${d.name} · ${d.phone} · 关闭后不再出现在待办列表，可随时恢复`,
     `<p style="margin-bottom:10px">请填写关闭原因（写入备注，最多 200 字）。</p>
@@ -894,43 +1117,147 @@ function openClose(id){
     const r = t.value.trim();
     if(!r){ toast('请填写关闭原因'); return; }
     d.status = 4; d.closeReason = r;
-    closeModal(); toast('已关闭记录：'+d.name); render();
+    closeModal(); closeOverlays(); toast('已关闭记录：'+d.name); refresh();
+  };
+}
+
+/* ---------------- 抽屉：推荐规则配置 ---------------- */
+function openConfig(){
+  const rowsHtml = COURSES.map((c,i)=>`
+    <tr>
+      <td><div class="cfg-name">${c.name}<em>course_id：${1001+i}</em></div></td>
+      <td><div class="chips" style="max-width:none">${c.tags.map(t=>`<span class="chip blue">${t}</span>`).join('')}</div></td>
+      <td>${c.org}</td>
+      <td><span class="status ${c.on?'st-3':'st-5'}">${c.on?'在架':'已下架'}</span></td>
+      <td><button class="link" data-c="${i}">编辑</button></td>
+    </tr>`).join('');
+
+  document.getElementById('cfgBody').innerHTML = `
+    <div class="sec">
+      <div class="sec-title">爱好固定选项<span class="side">字典 hobby · 共 ${HOBBY.length} 项</span></div>
+      <div class="note-box" style="margin-bottom:10px">爱好选项随课程标签自动扩展：新增课程方向时勾选标签，未收录的标签会同步写入字典 <b>hobby</b>，学员端即可选择。</div>
+      <div class="chip-pool">${HOBBY.map(h=>`<span class="p">${h}</span>`).join('')}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">课程 × 标签 × 合作机构<span class="side">课程方向 ${COURSES.length} 个 · 由合作机构入驻后维护</span></div>
+      <table class="cfg-table">
+        <thead><tr><th style="width:240px">课程名称</th><th>匹配标签</th><th style="width:150px">合作机构</th><th style="width:96px">状态</th><th style="width:70px">操作</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">匹配权重</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">技能关键词（skills）</div><div class="v strong">40%</div></div>
+        <div class="kv"><div class="k">专业 / 学历（major · education）</div><div class="v strong">20%</div></div>
+        <div class="kv"><div class="k">实习与项目（exp）</div><div class="v strong">20%</div></div>
+        <div class="kv"><div class="k">性格（MBTI）</div><div class="v strong">10%</div></div>
+        <div class="kv"><div class="k">爱好（hobby）</div><div class="v strong">10%</div></div>
+        <div class="kv"><div class="k">匹配度低于阈值</div><div class="v">60% 标记为推荐失败，不推送机构</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('cfgBody').querySelectorAll('[data-c]').forEach(el=>{
+    el.onclick = ()=>openCourseEdit(Number(el.dataset.c));
+  });
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('cfgDrawer').classList.add('show');
+}
+
+function openCourseEdit(i){
+  const c = COURSES[i];
+  openModal('编辑课程方向', '课程由合作机构维护，修改后立即影响新推荐结果',
+    `<div class="form-grid">
+      <div class="full"><label class="ctrl-label">课程名称 <b>course_name</b></label><input class="ctrl" id="cName" value="${c.name}"></div>
+      <div class="full"><label class="ctrl-label">匹配标签 <b>career_tags · 多选，可点击切换</b></label>
+        <div class="chip-pool" id="cTags">
+          ${HOBBY.map(h=>`<span class="p on ${c.tags.includes(h)?'sel':''}" data-t="${h}">${h}</span>`).join('')}
+        </div>
+      </div>
+      <div><label class="ctrl-label">合作机构 <b>org_id</b></label>
+        <select class="ctrl" id="cOrg">${ORGS.map(o=>`<option ${o===c.org?'selected':''}>${o}</option>`).join('')}</select>
+      </div>
+      <div><label class="ctrl-label">上架状态 <b>status</b></label>
+        <select class="ctrl" id="cOn"><option value="1" ${c.on?'selected':''}>在架</option><option value="0" ${!c.on?'selected':''}>已下架</option></select>
+      </div>
+    </div>`,
+    `<button class="btn" id="mCancel">取消</button><button class="btn btn-primary" id="mSave">保存</button>`);
+  const pool = document.getElementById('cTags');
+  pool.querySelectorAll('.p').forEach(el=>{
+    el.onclick = ()=>el.classList.toggle('sel');
+  });
+  document.getElementById('mCancel').onclick = closeModal;
+  document.getElementById('mSave').onclick = ()=>{
+    c.name = document.getElementById('cName').value.trim() || c.name;
+    c.org = document.getElementById('cOrg').value;
+    c.on = Number(document.getElementById('cOn').value);
+    c.tags = [...pool.querySelectorAll('.p.sel')].map(x=>x.dataset.t);
+    closeModal(); openConfig(); toast('已保存课程：'+c.name);
   };
 }
 
 /* ---------------- 交互 ---------------- */
-document.getElementById('back').onclick = ()=>location.href = '03a-职业规划.html';
-document.getElementById('mask').onclick = closeModal;
+document.getElementById('mask').onclick = ()=>{ closeModal(); closeOverlays(); };
+document.getElementById('cfgClose').onclick = closeOverlays;
+document.getElementById('cfgDone').onclick = closeOverlays;
+document.getElementById('cfgAdd').onclick = ()=>toast('新增课程方向：需先由机构管理完成入驻审核');
 
+document.getElementById('btn-search').onclick = ()=>{ curTab='all'; syncTabs(); applyFilter(); toast('查询完成，共 '+rows.length+' 条'); };
+document.getElementById('btn-reset').onclick = ()=>{
+  ['f-kw','f-course','f-org','f-edu','f-city','f-mbti','f-match','f-status'].forEach(i=>document.getElementById(i).value='');
+  curTab='all'; syncTabs(); applyFilter(); toast('筛选条件已重置');
+};
+document.getElementById('btn-add').onclick = ()=>toast('打开新增规划：手机号唯一校验 → 填写基础信息 → 生成推荐');
+document.getElementById('btn-export').onclick = ()=>toast('已导出当前 '+rows.length+' 条规划记录');
+document.getElementById('btn-batch').onclick = ()=>{
+  if(!checked.size){ toast('请先勾选需要推送的记录'); return; }
+  const ok = [...checked].map(id=>DATA.find(d=>d.id===id)).filter(d=>d.org && d.status===1);
+  ok.forEach(d=>{ d.status=2; });
+  toast(ok.length ? '已推送 '+ok.length+' 条记录至合作机构' : '所选记录均无合作机构，无法推送');
+  checked.clear(); refresh();
+};
+document.getElementById('ckAll').onchange = e=>{
+  checked.clear();
+  if(e.target.checked) rows.forEach(d=>checked.add(d.id));
+  renderTable();
+};
+
+/* 菜单切换 */
 const PAGES = {
-  contact:{name:'企业联系人',desc:'企业下联系人、账号与权限管理。'},
-  daka:{name:'大咖',desc:'专家 / 牛人档案、认证与服务记录管理。'},
-  job:{name:'岗位管理',desc:'岗位发布、上下架与违规审核。'},
-  project:{name:'项目大厅',desc:'项目需求发布、撮合进度与结算状态。'},
-  course:{name:'就业课程',desc:'课程、班级、学员与学习进度管理。'},
-  org:{name:'机构管理',desc:'合作机构入驻资料与资质审核。'},
-  apply:{name:'申请管理',desc:'入驻、认证、开票等各类申请的统一审批。'},
-  complaint:{name:'投诉处理',desc:'用户投诉工单受理、流转与结案。'},
-  sysconf:{name:'系统配置',desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
-  dict:{name:'字典管理',desc:'education / mbti / hobby 等字典枚举值维护。'}
+  company:   {name:'企业',       desc:'企业档案与认证审核。'},
+  contact:   {name:'企业联系人', desc:'企业下联系人、账号与权限管理。'},
+  daka:      {name:'大咖',       desc:'专家 / 牛人档案、认证与服务记录管理。'},
+  career:    {name:'职业规划',   desc:'学员基础信息、AI 课程推荐与合作机构推送。'},
+  job:       {name:'岗位管理',   desc:'岗位发布、上下架与违规审核。'},
+  project:   {name:'项目大厅',   desc:'项目需求发布、撮合进度与结算状态。'},
+  course:    {name:'就业课程',   desc:'课程、班级、学员与学习进度管理。'},
+  org:       {name:'机构管理',   desc:'合作机构入驻资料与资质审核。'},
+  apply:     {name:'申请管理',   desc:'入驻、认证、开票等各类申请的统一审批。'},
+  complaint: {name:'投诉处理',   desc:'用户投诉工单受理、流转与结案。'},
+  sysconf:   {name:'系统配置',   desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
+  dict:      {name:'字典管理',   desc:'education / mbti / hobby 等字典枚举值维护。'}
 };
 document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
   el.onclick = ()=>{
     document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
     el.classList.add('active');
-    const meta = PAGES[el.dataset.page] || {name:'—',desc:''};
-    document.getElementById('crumbNow') && (document.getElementById('crumbNow').textContent = meta.name);
-    document.getElementById('page-detail').style.display = 'none';
+    const p = el.dataset.page, meta = PAGES[p] || {name:'—',desc:''};
+    document.getElementById('crumbNow').textContent = meta.name;
+    const isCareer = p === 'career';
+    document.getElementById('page-career').style.display = isCareer ? 'block' : 'none';
     const ph = document.getElementById('page-ph');
-    ph.style.display = 'block';
-    document.getElementById('ph-title').textContent = meta.name;
-    document.getElementById('ph-desc').textContent = meta.desc;
+    ph.style.display = isCareer ? 'none' : 'block';
+    if(!isCareer){
+      document.getElementById('ph-title').textContent = meta.name;
+      document.getElementById('ph-desc').textContent = meta.desc;
+    }
   };
 });
-document.querySelectorAll('a.nav-item').forEach(el=>{ el.onclick = ()=>{
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-};});
+
+/* 配置入口 */
+document.getElementById('btn-config').onclick = openConfig;
 
 let toastTimer;
 function toast(msg){
@@ -939,22 +1266,21 @@ function toast(msg){
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>t.classList.remove('show'),2200);
 }
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeOverlays(); } });
 
-render();
-
+initSelects(); renderTabs(); applyFilter();
 </script>
 
 <style>a.nav-item{text-decoration:none}</style>
 <script>
 /* 原型串联：左侧菜单跳转（按目录顺序自动注入；站内项与原生链接不拦截） */
 (function(){
-  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',career:'03a-职业规划.html',job:'04-岗位管理.html',project:'05-项目大厅.html',course:'06-就业课程与机构管理.html',org:'06-就业课程与机构管理.html',apply:'07-申请管理.html',complaint:'08-投诉处理.html',sysconf:'09-系统配置.html',dict:'10-字典管理.html'};
-  var SELF='03b-职业规划-详情.html';
+  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',daka:'03-大咖.html',career:'04-职业规划.html',job:'05-岗位管理.html',project:'06-项目大厅.html',course:'07-就业课程与机构管理.html',org:'07-就业课程与机构管理.html',apply:'08-申请管理.html',complaint:'09-投诉处理.html',sysconf:'10-系统配置.html',dict:'11-字典管理.html'};
+  var SELF='04-职业规划.html';
   document.addEventListener('click',function(e){
     var el=(e.target&&e.target.closest)?e.target.closest('.nav-item'):null;
     if(!el) return;
-    if(el.tagName==='A') return;                       /* 已经是原生链接 */
+    if(el.tagName==='A') return;                        /* 已经是原生链接 */
     var href=MAP[el.getAttribute('data-page')];
     if(!href||href.charAt(0)==='#'||href===SELF) return; /* 无原型 / 本站内切换，交给页面自身 */
     e.preventDefault(); e.stopPropagation();
