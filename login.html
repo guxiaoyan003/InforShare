@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 / 注册 - DAKA 云管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .auth{display:flex;min-height:100vh}
+
+  /* ---------- 左侧品牌区 ---------- */
+  .brand{
+    width:46%;max-width:640px;flex:0 0 46%;position:relative;overflow:hidden;
+    background:linear-gradient(150deg,#0F4BD8 0%,#1B62F5 46%,#2E7CFF 100%);
+    color:#fff;padding:44px 48px;display:flex;flex-direction:column;
+  }
+  .brand::before{
+    content:"";position:absolute;width:520px;height:520px;border-radius:50%;
+    background:rgba(255,255,255,.07);right:-190px;top:-160px;
+  }
+  .brand::after{
+    content:"";position:absolute;width:340px;height:340px;border-radius:50%;
+    background:rgba(255,255,255,.05);left:-130px;bottom:-110px;
+  }
+  .brand > *{position:relative;z-index:1}
+  .brand-logo{display:flex;align-items:center;gap:12px}
+  .brand-logo .logo-mark{
+    width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.18);
+    color:#fff;font-weight:800;font-size:14px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(6px);
+  }
+  .brand-logo .logo-text{font-size:17px;font-weight:700;letter-spacing:.3px;line-height:1.2}
+  .brand-logo .logo-text span{display:block;font-size:11px;font-weight:400;color:rgba(255,255,255,.66);letter-spacing:1.4px}
+
+  .brand-hero{margin-top:auto;padding-top:40px}
+  .brand-hero h1{font-size:31px;font-weight:700;line-height:1.42;letter-spacing:-.4px}
+  .brand-hero h1 em{font-style:normal;background:linear-gradient(90deg,#fff,#BFD4FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .brand-hero p{font-size:14px;color:rgba(255,255,255,.78);margin-top:14px;line-height:1.85;max-width:430px}
+
+  .brand-feat{margin-top:32px;display:grid;gap:12px}
+  .brand-feat .fi{
+    display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.14);border-radius:11px;padding:11px 14px;backdrop-filter:blur(6px);
+  }
+  .brand-feat .fi .fi-ico{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .brand-feat .fi .fi-t{font-size:13px;font-weight:600}
+  .brand-feat .fi .fi-s{font-size:11.5px;color:rgba(255,255,255,.66);margin-top:2px}
+
+  .brand-foot{margin-top:auto;padding-top:30px;font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.8}
+
+  /* ---------- 右侧表单区 ---------- */
+  .auth-main{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+  .auth-card{width:100%;max-width:428px}
+  .auth-head{margin-bottom:22px}
+  .auth-head h2{font-size:23px;font-weight:700;letter-spacing:-.3px}
+  .auth-head p{font-size:13px;color:var(--muted);margin-top:7px}
+
+  /* 登录 / 注册 主切换 */
+  .seg{
+    display:flex;gap:4px;padding:4px;background:var(--gray-bg);border-radius:11px;margin-bottom:22px;
+  }
+  .seg button{
+    flex:1;height:38px;border:none;border-radius:8px;background:transparent;cursor:pointer;
+    font-size:14px;color:var(--text-2);font-family:inherit;font-weight:500;transition:.18s;
+  }
+  .seg button:hover{color:var(--blue-600)}
+  .seg button.active{background:#fff;color:var(--blue-600);font-weight:600;box-shadow:0 1px 3px rgba(18,38,74,.1)}
+
+  /* 验证码 / 微信 子切换 */
+  .subtabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:20px}
+  .subtab{
+    padding:10px 14px;font-size:13.5px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;
+    display:flex;align-items:center;gap:6px;transition:.15s;background:none;border-top:none;border-left:none;border-right:none;
+    font-family:inherit;
+  }
+  .subtab:hover{color:var(--blue-600)}
+  .subtab.active{color:var(--blue-600);font-weight:600;border-bottom-color:var(--blue-600)}
+  .view{display:none}
+  .view.active{display:block}
+
+  /* 角色选择 */
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+  .role{
+    border:1px solid var(--line-strong);border-radius:11px;padding:13px 14px;cursor:pointer;
+    background:#fff;transition:.16s;display:flex;align-items:center;gap:11px;
+  }
+  .role:hover{border-color:var(--blue-500);background:var(--blue-50)}
+  .role.active{border-color:var(--blue-600);background:var(--blue-50);box-shadow:0 0 0 3px rgba(46,124,255,.12)}
+  .role .r-ico{
+    width:36px;height:36px;border-radius:10px;background:var(--gray-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto;
+  }
+  .role.active .r-ico{background:var(--blue-100)}
+  .role .r-t{font-size:13.5px;font-weight:600;color:var(--text)}
+  .role .r-s{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* 表单 */
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:15px}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .field label .req{color:var(--red);margin-left:3px}
+  .ctrl{
+    height:42px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:14px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl::placeholder{color:#AEB9C8}
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:28px}
+  .ctrl.invalid{border-color:var(--red);background:#FFF7F7}
+  .ctrl.invalid:focus{box-shadow:0 0 0 3px rgba(229,72,77,.13)}
+  textarea.ctrl{min-height:88px;padding:10px 12px;line-height:1.6;resize:vertical}
+  .in-row{display:flex;gap:10px}
+  .in-row .ctrl{flex:1}
+  .code-btn{
+    flex:0 0 122px;height:42px;border-radius:9px;border:1px solid var(--blue-100);background:var(--blue-50);
+    color:var(--blue-600);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  }
+  .code-btn:hover{background:var(--blue-100)}
+  .code-btn:disabled{background:var(--gray-bg);border-color:var(--line);color:var(--muted);cursor:not-allowed;font-weight:400}
+  .helper{font-size:11.5px;color:var(--muted);margin-top:-8px;margin-bottom:14px;line-height:1.6}
+  .demo-code{
+    display:none;align-items:center;gap:8px;background:var(--orange-bg);border:1px solid #FBE3BC;
+    border-radius:9px;padding:9px 12px;font-size:12px;color:#C2760A;margin-bottom:15px;line-height:1.6;
+  }
+  .demo-code.show{display:flex}
+  .demo-code b{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:15px;letter-spacing:2px;color:#C2760A}
+
+  .btn{
+    height:42px;padding:0 18px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28);width:100%;height:44px;font-size:15px}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  .btn-wx{width:100%;height:44px;font-size:14px;font-weight:600;color:#07C160;border-color:#B7EFCF;background:#F0FBF5}
+  .btn-wx:hover{border-color:#07C160;background:#E4F8EC;color:#07C160}
+  .or{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--muted);font-size:12px}
+  .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .row-between{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .link{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .chk{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--text-2);cursor:pointer;line-height:1.6}
+  .chk input{margin-top:2px;accent-color:var(--blue-600);width:14px;height:14px;cursor:pointer}
+
+  /* ---------- 弹窗 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:440px;max-width:94vw;max-height:92vh;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+    display:flex;flex-direction:column;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+  .m-head .m-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:8px;background:var(--blue-100);color:var(--blue-600)}
+  .m-head .m-x{margin-left:auto;width:28px;height:28px;border-radius:8px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;color:var(--muted);font-size:13px}
+  .m-head .m-x:hover{color:var(--text);border-color:var(--blue-500)}
+  .m-body{padding:0 22px;overflow-y:auto;flex:1}
+  .m-body p{font-size:13px;color:var(--text-2);line-height:1.75}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px}
+  .m-foot .split{flex:1}
+
+  /* ---------- 二维码 ---------- */
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0 4px}
+  .qr-box{
+    width:212px;height:212px;border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;
+    position:relative;display:flex;align-items:center;justify-content:center;
+  }
+  .qr-box svg{width:100%;height:100%;display:block}
+  .qr-box.expired .qr-mask{
+    position:absolute;inset:0;border-radius:14px;background:rgba(255,255,255,.94);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;
+  }
+  .qr-mask .qm-ico{font-size:28px;opacity:.4}
+  .qr-mask .qm-t{font-size:13px;color:var(--muted)}
+  .qr-mask .qm-b{font-size:12.5px;color:var(--blue-600);font-weight:600}
+  .qr-box .qr-logo{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:42px;height:42px;border-radius:11px;background:#fff;border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--blue-600);
+    box-shadow:0 1px 4px rgba(18,38,74,.1);letter-spacing:-.5px;
+  }
+  .qr-status{margin-top:14px;font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:7px}
+  .qr-status .dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 3px rgba(245,158,11,.16)}
+  .qr-status.ok .dot{background:var(--green);box-shadow:0 0 0 3px rgba(18,161,80,.16)}
+  .qr-status.ok{color:var(--green);font-weight:600}
+  .qr-tips{margin-top:14px;width:100%;background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:12px 14px}
+  .qr-tips .t{font-size:12px;color:var(--blue-600);font-weight:700;margin-bottom:7px}
+  .qr-tips li{list-style:none;font-size:12.5px;color:var(--text-2);line-height:1.85;display:flex;gap:7px}
+  .qr-tips li .b{color:var(--blue-500);flex:0 0 auto}
+  .qr-scan-btn{margin-top:14px;width:100%;font-size:13px;color:var(--muted);background:transparent;border:none;cursor:pointer;font-family:inherit;padding:0}
+  .qr-scan-btn:hover{color:var(--blue-600);text-decoration:underline}
+
+  /* 扫码结果卡 */
+  .scan-user{display:flex;align-items:center;gap:12px;background:var(--green-bg);border:1px solid #D2F0DE;border-radius:10px;padding:12px 14px;margin-top:4px}
+  .scan-user .ava{
+    width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#07C160,#0AA84F);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:0 0 auto;
+  }
+  .scan-user .su-t{font-size:13.5px;font-weight:600;color:#0A6E37}
+  .scan-user .su-s{font-size:11.5px;color:#0C8A44;margin-top:2px}
+
+  /* 映射关系 */
+  .map-flow{display:flex;align-items:stretch;gap:12px;margin:4px 0 6px}
+  .map-card{
+    flex:1;border:1px solid var(--line);border-radius:11px;padding:12px;background:var(--blue-50);min-width:0;
+  }
+  .map-card .mc-h{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:9px;display:flex;align-items:center;gap:6px}
+  .map-card .mc-h .n{width:16px;height:16px;border-radius:5px;background:var(--blue-600);color:#fff;font-size:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  .map-card.wx{background:#F0FBF5;border-color:#B7EFCF}
+  .map-card.wx .mc-h .n{background:#07C160}
+  .map-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .map-row:last-child{margin-bottom:0}
+  .map-row .k{font-size:11.5px;color:var(--muted);flex:0 0 60px}
+  .map-row .v{font-size:12.5px;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .map-arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 24px;color:var(--blue-500)}
+  .map-arrow .a1{font-size:17px;line-height:1}
+  .map-note{
+    display:flex;align-items:flex-start;gap:8px;background:var(--blue-50);border:1px solid #EDF2FB;border-radius:9px;
+    padding:10px 12px;font-size:12px;color:var(--text-2);line-height:1.65;margin-top:4px;
+  }
+  .map-note .n-ico{color:var(--blue-600);flex:0 0 auto}
+
+  /* 协议 */
+  .agree-box{background:var(--gray-bg);border-radius:9px;padding:11px 13px;margin-bottom:16px}
+  .agree-box p{font-size:12px;color:var(--text-2);line-height:1.8}
+  .agree-box a{color:var(--blue-600);cursor:pointer;text-decoration:none}
+  .agree-box a:hover{text-decoration:underline}
+
+  /* 成功页 */
+  .success{text-align:center;padding:8px 0 4px}
+  .success .s-ico{
+    width:62px;height:62px;border-radius:50%;background:var(--green-bg);color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;
+  }
+  .success h3{font-size:18px;font-weight:700}
+  .success p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.75}
+  .success .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:12px 14px;margin-top:18px;text-align:left}
+  .success .kv .k{font-size:12px;color:var(--muted)}
+  .success .kv .v{font-size:13px;color:var(--text);margin-top:4px;font-weight:600}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2);white-space:nowrap}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .tag.green{background:var(--green-bg);color:var(--green)}
+  .tag.wx{background:#F0FBF5;color:#07C160}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .loading{
+    position:fixed;inset:0;background:#fff;z-index:95;display:none;flex-direction:column;
+    align-items:center;justify-content:center;gap:16px;
+  }
+  .loading.show{display:flex}
+  .spinner{
+    width:38px;height:38px;border:3px solid var(--blue-100);border-top-color:var(--blue-600);
+    border-radius:50%;animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .loading .l-t{font-size:14px;color:var(--text-2);font-weight:600}
+  .loading .l-s{font-size:12px;color:var(--muted)}
+
+  @media (max-width:980px){
+    .brand{display:none}
+    .auth-main{padding:32px 20px}
+  }
+</style>
+</head>
+<body>
+
+<div class="auth">
+  <!-- ============ 左侧品牌区 ============ -->
+  <aside class="brand">
+    <div class="brand-logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台<span>ENTERPRISE CLOUD</span></div>
+    </div>
+
+    <div class="brand-hero">
+      <h1>让每一次投诉<br>都<em>有迹可循、有据可依</em></h1>
+      <p>面向企业、大咖、机构与求职者的统一服务入口。手机号验证码与微信扫码双通道注册登录，身份自动写入联系人表，全流程可追溯。</p>
+
+      <div class="brand-feat">
+        <div class="fi">
+          <div class="fi-ico">📱</div>
+          <div>
+            <div class="fi-t">短信验证码通道</div>
+            <div class="fi-s">6 位动态码 · 60 秒重发保护</div>
+          </div>
+        </div>
+        <div class="fi">
+          <div class="fi-ico">🔗</div>
+          <div>
+            <div class="fi-t">微信扫码授权</div>
+            <div class="fi-s">SDK 静默授权 · openid 自动映射</div>
+          </div>
+        </div>
+        <div class="fi">
+          <div class="fi-ico">🗂️</div>
+          <div>
+            <div class="fi-t">统一身份档案</div>
+            <div class="fi-s">注册即写入联系人表，与企业档案关联</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-foot">
+      © 2026 DAKA 云管理平台 · 粤 ICP 备 2026000000 号<br>
+      技术支持 · 服务条款 · 隐私政策
+    </div>
+  </aside>
+
+  <!-- ============ 右侧表单区 ============ -->
+  <main class="auth-main">
+    <div class="auth-card">
+
+      <!-- 主切换：登录 / 注册 -->
+      <div class="seg">
+        <button class="active" data-view="login">登录</button>
+        <button data-view="register">注册</button>
+      </div>
+
+      <div class="auth-head">
+        <h2 id="authTitle">欢迎回来</h2>
+        <p id="authDesc">请使用手机号验证码或微信扫码登录管理后台</p>
+      </div>
+
+      <!-- ========== 登录 ========== -->
+      <section id="view-login">
+        <div class="subtabs">
+          <button class="subtab active" data-ltab="sms">📱 验证码登录</button>
+          <button class="subtab" data-ltab="wx">💬 微信扫码登录</button>
+        </div>
+
+        <!-- 登录 - 验证码 -->
+        <div class="view active" id="ltab-sms">
+          <div class="field">
+            <label>手机号<span class="req">*</span></label>
+            <input class="ctrl" id="li-phone" maxlength="11" placeholder="请输入 11 位手机号" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>短信验证码<span class="req">*</span></label>
+            <div class="in-row">
+              <input class="ctrl" id="li-code" maxlength="6" placeholder="6 位数字验证码" inputmode="numeric">
+              <button class="code-btn" id="li-getcode">获取验证码</button>
+            </div>
+          </div>
+          <div class="demo-code" id="li-demo">
+            <span>🔔</span>
+            <span>演示环境已模拟下发，本次验证码为 <b id="li-demoCode">------</b></span>
+          </div>
+          <div class="row-between">
+            <label class="chk"><input type="checkbox" id="li-remember" checked><span>7 天内免登录</span></label>
+            <button class="link" id="li-forget">收不到验证码？</button>
+          </div>
+          <button class="btn btn-primary" id="li-submit">登录</button>
+          <div class="or">其他方式</div>
+          <button class="btn btn-wx" id="li-wx">💬 使用微信扫码登录</button>
+          <p style="font-size:12px;color:var(--muted);margin-top:16px;text-align:center;line-height:1.7">
+            还没有账号？<button class="link" data-goto="register">立即注册</button>
+          </p>
+        </div>
+
+        <!-- 登录 - 微信 -->
+        <div class="view" id="ltab-wx">
+          <div class="qr-wrap">
+            <div class="qr-box" id="lwx-box"></div>
+            <div class="qr-status" id="lwx-status"></div>
+            <div style="margin-top:18px"><button class="btn btn-wx" id="lwx-btn">💬 打开微信扫一扫</button></div>
+            <button class="qr-scan-btn" id="lwx-sim">演示：模拟手机扫码</button>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:18px;text-align:center;line-height:1.7">
+            首次使用？<button class="link" data-goto="register">微信扫码注册</button>
+          </p>
+        </div>
+      </section>
+
+      <!-- ========== 注册 ========== -->
+      <section id="view-register" style="display:none">
+        <div class="subtabs">
+          <button class="subtab active" data-rtab="sms">📱 验证码注册</button>
+          <button class="subtab" data-rtab="wx">💬 微信扫码注册</button>
+        </div>
+
+        <!-- 角色 -->
+        <div class="roles" id="re-roles">
+          <div class="role active" data-role="person">
+            <div class="r-ico">👤</div>
+            <div><div class="r-t">个人</div><div class="r-s">求职者 / 大咖</div></div>
+          </div>
+          <div class="role" data-role="company">
+            <div class="r-ico">🏢</div>
+            <div><div class="r-t">企业</div><div class="r-s">企业主体</div></div>
+          </div>
+        </div>
+
+        <!-- 注册 - 验证码 -->
+        <div class="view active" id="rtab-sms">
+          <div class="field">
+            <label>手机号<span class="req">*</span></label>
+            <input class="ctrl" id="ri-phone" maxlength="11" placeholder="请输入 11 位手机号" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label>短信验证码<span class="req">*</span></label>
+            <div class="in-row">
+              <input class="ctrl" id="ri-code" maxlength="6" placeholder="6 位数字验证码" inputmode="numeric">
+              <button class="code-btn" id="ri-getcode">获取验证码</button>
+            </div>
+          </div>
+          <div class="demo-code" id="ri-demo">
+            <span>🔔</span>
+            <span>演示环境已模拟下发，本次验证码为 <b id="ri-demoCode">------</b></span>
+          </div>
+
+          <!-- 个人字段 -->
+          <div id="ri-person">
+            <div class="field">
+              <label>真实姓名<span class="req">*</span></label>
+              <input class="ctrl" id="ri-name" placeholder="请输入姓名">
+            </div>
+            <div class="field">
+              <label>身份类型</label>
+              <select class="ctrl" id="ri-idtype">
+                <option>求职者</option><option>大咖 / 专家</option>
+                <option>企业招聘者</option><option>机构工作人员</option><option>其他</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 企业字段 -->
+          <div id="ri-company" style="display:none">
+            <div class="field">
+              <label>企业名称<span class="req">*</span></label>
+              <input class="ctrl" id="ri-cname" placeholder="请输入营业执照全称">
+            </div>
+            <div class="field">
+              <label>统一社会信用代码<span class="req">*</span></label>
+              <input class="ctrl" id="ri-uscc" maxlength="18" placeholder="18 位统一社会信用代码">
+            </div>
+            <div class="field">
+              <label>联系人姓名<span class="req">*</span></label>
+              <input class="ctrl" id="ri-contact" placeholder="请输入联系人姓名">
+            </div>
+          </div>
+
+          <div class="agree-box">
+            <p>注册即表示已阅读并同意 <a data-doc="terms">《用户服务协议》</a> 与 <a data-doc="privacy">《隐私政策》</a>，授权平台在投诉处理、工单流转等业务场景下使用您的联系方式。</p>
+          </div>
+          <label class="chk" style="margin-bottom:16px">
+            <input type="checkbox" id="ri-agree"><span>我已阅读并同意上述协议</span>
+          </label>
+          <button class="btn btn-primary" id="ri-submit">注册并登录</button>
+          <div class="or">其他方式</div>
+          <button class="btn btn-wx" id="ri-wx">💬 使用微信扫码注册</button>
+          <p style="font-size:12px;color:var(--muted);margin-top:16px;text-align:center;line-height:1.7">
+            已有账号？<button class="link" data-goto="login">返回登录</button>
+          </p>
+        </div>
+
+        <!-- 注册 - 微信 -->
+        <div class="view" id="rtab-wx">
+          <div class="qr-wrap">
+            <div class="qr-box" id="rwx-box"></div>
+            <div class="qr-status" id="rwx-status"></div>
+            <div style="margin-top:18px"><button class="btn btn-wx" id="rwx-btn">💬 打开微信扫一扫</button></div>
+            <button class="qr-scan-btn" id="rwx-sim">演示：模拟手机扫码</button>
+          </div>
+          <div class="map-note" style="margin-top:16px">
+            <span class="n-ico">ⓘ</span>
+            <span>扫码成功后系统将获取您的微信号与 openid，并弹出<b>映射关系确认</b>，确认后写入联系人表完成账号绑定。</span>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:14px;text-align:center;line-height:1.7">
+            已有账号？<button class="link" data-goto="login">返回登录</button>
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ============ 遮罩 / 弹窗 ============ -->
+<div class="mask" id="mask"></div>
+<div class="modal" id="modal">
+  <div class="m-head">
+    <span id="mTag" class="m-tag" style="display:none"></span>
+    <span id="mTitle">—</span>
+    <button class="m-x" id="mX">✕</button>
+  </div>
+  <div class="m-body" id="mBody"></div>
+  <div class="m-foot" id="mFoot"></div>
+</div>
+
+<!-- ============ 全屏加载 ============ -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div class="l-t" id="loadTitle">正在进入平台…</div>
+  <div class="l-s" id="loadSub"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =======================================================================
+   模拟后端：数据库 + 验证码存储 + 联系人表
+======================================================================= */
+const DB = {
+  /* 系统用户表 */
+  users: [
+    { uid:'U-100001', phone:'13800138000', name:'陈思远', role:'个人', wechat:null, openid:null, regAt:'2026-03-12 10:22:31' },
+    { uid:'U-100002', phone:'13900139001', name:'深圳云启科技', role:'企业', wechat:'wxid_yunqi001', openid:'oYunQi001XYZ', regAt:'2026-04-08 14:03:19' }
+  ],
+  /* 短信验证码表：phone -> {code, sendAt, used} */
+  sms: {},
+  /* 联系人表：微信身份 -> 系统用户 映射 */
+  contacts: [
+    { wxid:'wxid_yunqi001', openid:'oYunQi001XYZ', nickname:'云启科技', uid:'U-100002', bindAt:'2026-04-08 14:05:02', source:'微信扫码注册' }
+  ],
+  /* 登录日志 */
+  logs: []
+};
+
+/* 微信扫码会话 */
+const WXSESSION = {
+  l: { sceneId:null, expireAt:0, state:'idle', tick:null },   // 登录扫码
+  r: { sceneId:null, expireAt:0, state:'idle', tick:null }    // 注册扫码
+};
+const QR_TTL = 120;   // 二维码有效期（秒）
+const RESEND = 60;    // 验证码重发间隔（秒）
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
+const nowStr = ()=>{ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const rnd6 = ()=> String(Math.floor(100000+Math.random()*900000));
+const phoneOK = p => /^1[3-9]\d{9}$/.test(p);
+
+let toastTimer;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* =======================================================================
+   伪二维码生成（带定位图案，确定性随机数据）
+======================================================================= */
+function seedRand(seed){
+  let h=2166136261;
+  for(let i=0;i<seed.length;i++){ h ^= seed.charCodeAt(i); h = Math.imul(h,16777619); }
+  return ()=>{ h+=0x6D2B79F5; let t=h; t=Math.imul(t^(t>>>15), t|1); t^=t+Math.imul(t^(t>>>7), t|61); return ((t^(t>>>14))>>>0)/4294967296; };
+}
+function makeQR(seed,n=25){
+  const rand=seedRand(seed);
+  const m=Array.from({length:n},()=>new Array(n).fill(0));
+  const finder=(r,c)=>{
+    for(let i=0;i<7;i++)for(let j=0;j<7;j++)
+      if(i===0||i===6||j===0||j===6||(i>=2&&i<=4&&j>=2&&j<=4)) m[r+i][c+j]=1;
+  };
+  finder(0,0); finder(0,n-7); finder(n-7,0);
+  for(let i=8;i<n-8;i++){ m[6][i]=i%2===0?1:0; m[i][6]=i%2===0?1:0; }
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++){
+    if(m[i][j])continue;
+    if((i<8&&j<8)||(i<8&&j>=n-8)||(i>=n-8&&j<8))continue;
+    if(i===6||j===6)continue;
+    m[i][j]= rand()<0.5?1:0;
+  }
+  let rects='';
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++) if(m[i][j]) rects+=`<rect x="${j}" y="${i}" width="1" height="1"/>`;
+  return `<svg viewBox="-1 -1 ${n+2} ${n+2}" shape-rendering="crispEdges">
+    <rect x="-1" y="-1" width="${n+2}" height="${n+2}" fill="#fff"/>
+    <g fill="#141A24">${rects}</g></svg>`;
+}
+
+/* =======================================================================
+   弹窗基座
+======================================================================= */
+function openModal(o){
+  $('mTitle').textContent=o.title;
+  const t=$('mTag');
+  if(o.tag){ t.style.display=''; t.textContent=o.tag; } else t.style.display='none';
+  $('mBody').innerHTML=o.body;
+  $('mFoot').innerHTML='';
+  $('modal').style.width=(o.width||440)+'px';
+  $('mask').classList.add('show');
+  $('modal').classList.add('show');
+  $('mBody').scrollTop=0;
+  if(o.after) o.after();
+}
+function closeModal(){
+  $('modal').classList.remove('show');
+  $('mask').classList.remove('show');
+}
+function footBtns(list){
+  const f=$('mFoot'); f.innerHTML='';
+  list.forEach(([txt,cls,fn,dis])=>{
+    const b=document.createElement('button');
+    b.className='btn '+(cls||'');
+    b.textContent=txt;
+    b.disabled=!!dis;
+    // 始终挂载：disabled 状态下浏览器不会派发 click，解禁后无需重新绑定
+    if(fn) b.onclick=fn;
+    f.appendChild(b);
+  });
+  return f;
+}
+
+/* =======================================================================
+   视图切换
+======================================================================= */
+function switchView(v){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  $('view-login').style.display    = v==='login'?'block':'none';
+  $('view-register').style.display = v==='register'?'block':'none';
+  $('authTitle').textContent = v==='login' ? '欢迎回来' : '创建账号';
+  $('authDesc').textContent  = v==='login'
+    ? '请使用手机号验证码或微信扫码登录管理后台'
+    : '选择角色后，通过手机验证码或微信扫码完成注册';
+  clearAllTimers();
+  closeModal();
+}
+document.querySelectorAll('.seg button').forEach(b=>{
+  b.onclick=()=>switchView(b.dataset.view);
+});
+document.querySelectorAll('[data-goto]').forEach(b=>{
+  b.onclick=()=>switchView(b.dataset.goto);
+});
+/* 子标签 */
+function bindSubtabs(btns, ids){
+  btns.forEach(b=>{
+    b.onclick=()=>{
+      btns.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      ids.forEach(id=>$(id).classList.remove('active'));
+      $(b.dataset.ltab? 'ltab-'+b.dataset.ltab : 'rtab-'+b.dataset.rtab).classList.add('active');
+      clearAllTimers();
+    };
+  });
+}
+bindSubtabs([...document.querySelectorAll('[data-ltab]')], ['ltab-sms','ltab-wx']);
+bindSubtabs([...document.querySelectorAll('[data-rtab]')], ['rtab-sms','rtab-wx']);
+
+/* 角色选择 */
+let role='person';
+document.querySelectorAll('#re-roles .role').forEach(r=>{
+  r.onclick=()=>{
+    document.querySelectorAll('#re-roles .role').forEach(x=>x.classList.remove('active'));
+    r.classList.add('active');
+    role=r.dataset.role;
+    $('ri-person').style.display  = role==='person'?'block':'none';
+    $('ri-company').style.display = role==='company'?'block':'none';
+  };
+});
+
+/* =======================================================================
+   验证码流程：生成 → 存表 → 模拟下发 → 校验
+======================================================================= */
+function startCountdown(btn, seconds, prefix, onDone){
+  btn.disabled=true;
+  let left=seconds;
+  btn.textContent=`${left}s 后可重发`;
+  const t=setInterval(()=>{
+    left--;
+    if(left<=0){
+      clearInterval(t);
+      btn.disabled=false; btn.textContent='重新获取';
+      if(onDone) onDone();
+    }else{
+      btn.textContent=`${left}s 后可重发`;
+    }
+  },1000);
+  TIMERS.push(t);
+  return t;
+}
+const TIMERS=[];
+function clearAllTimers(){ TIMERS.forEach(t=>clearInterval(t)); TIMERS.length=0; clearQR('l'); clearQR('r'); }
+
+function sendCode(phoneInput, codeInput, btn, demoBox, demoCode, scene){
+  const phone=phoneInput.value.trim();
+  phoneInput.classList.remove('invalid');
+  if(!phoneOK(phone)){
+    phoneInput.classList.add('invalid');
+    phoneInput.focus();
+    toast('请输入正确的 11 位手机号');
+    return;
+  }
+  const exist = DB.users.find(u=>u.phone===phone);
+  if(scene==='login' && !exist){
+    phoneInput.classList.add('invalid');
+    toast('该手机号尚未注册，请先注册账号');
+    return;
+  }
+  if(scene==='register' && exist){
+    phoneInput.classList.add('invalid');
+    toast('该手机号已注册，请直接登录');
+    return;
+  }
+
+  // 后台生成 6 位验证码 → 写入 sms 表
+  const code=rnd6();
+  DB.sms[phone]={ code, sendAt:nowStr(), used:false, scene };
+
+  // 调 API 下发（演示环境直接回显）
+  demoCode.textContent=code;
+  demoBox.classList.add('show');
+  codeInput.value='';
+  codeInput.classList.remove('invalid');
+
+  startCountdown(btn, RESEND);
+  toast('验证码已发送至 ' + phone.replace(/^(\d{3})\d{4}(\d{4})$/,'$1****$2'));
+}
+function checkCode(phone, input){
+  const rec=DB.sms[phone];
+  if(!rec){ input.classList.add('invalid'); toast('请先获取验证码'); return false; }
+  if(rec.used){ input.classList.add('invalid'); toast('验证码已使用，请重新获取'); return false; }
+  if(rec.code!==input.value.trim()){
+    input.classList.add('invalid');
+    toast('验证码不正确，请重新输入');
+    return false;
+  }
+  rec.used=true;
+  return true;
+}
+
+/* =======================================================================
+   登录：验证码
+======================================================================= */
+$('li-getcode').onclick=()=>sendCode($('li-phone'),$('li-code'),$('li-getcode'),$('li-demo'),$('li-demoCode'),'login');
+$('ri-getcode').onclick=()=>sendCode($('ri-phone'),$('ri-code'),$('ri-getcode'),$('ri-demo'),$('ri-demoCode'),'register');
+['li-phone','li-code','ri-phone','ri-code'].forEach(id=>{
+  $(id).addEventListener('input',e=>e.target.classList.remove('invalid'));
+});
+
+$('li-submit').onclick=()=>{
+  const phone=$('li-phone').value.trim(), code=$('li-code').value.trim();
+  $('li-phone').classList.remove('invalid'); $('li-code').classList.remove('invalid');
+  if(!phoneOK(phone)){ $('li-phone').classList.add('invalid'); toast('请输入正确的手机号'); return; }
+  if(!code){ $('li-code').classList.add('invalid'); toast('请输入验证码'); return; }
+  if(!checkCode(phone,$('li-code'))) return;
+
+  const u=DB.users.find(x=>x.phone===phone);
+  DB.logs.push({ time:nowStr(), user:u.name, uid:u.uid, way:'短信验证码', ip:'113.88.**.21' });
+  showSuccess(u,'短信验证码');
+};
+
+/* 收不到验证码 */
+$('li-forget').onclick=()=>{
+  openModal({
+    title:'收不到验证码？', tag:'帮助', width:440,
+    body:`
+      <p>请按以下顺序排查，仍无法收到可联系平台客服。</p>
+      <div style="margin-top:14px">
+        <div class="map-card" style="background:var(--blue-50)">
+          <div class="mc-h"><span class="n">1</span>确认手机号无误</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.7">请检查输入的 11 位号码是否与注册时一致，<b>不支持国际号码</b>。</div>
+        </div>
+        <div class="map-card" style="margin-top:10px">
+          <div class="mc-h"><span class="n">2</span>检查拦截与延迟</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.7">短信可能被安全软件拦截，建议查看拦截列表；同一号码 <b>60 秒内仅可下发一次</b>。</div>
+        </div>
+        <div class="map-card" style="margin-top:10px">
+          <div class="mc-h"><span class="n">3</span>改用微信扫码</div>
+          <div style="font-size:12.5px;color:var(--text-2);line-height:1.7">已绑定微信的用户可直接扫码登录，无需短信验证码。</div>
+        </div>
+      </div>`,
+    after(){ footBtns([['知道了','btn-primary',closeModal]]); }
+  });
+};
+
+/* =======================================================================
+   微信扫码：登录 / 注册 共用逻辑
+======================================================================= */
+function newScene(kind){
+  const S=WXSESSION[kind];
+  S.sceneId='SCENE'+String(Math.floor(Math.random()*900000+100000));
+  S.expireAt=Date.now()+QR_TTL*1000;
+  S.state='waiting';
+  return S;
+}
+function qrBoxHTML(kind){
+  const S=WXSESSION[kind];
+  return makeQR(S.sceneId+'@'+kind) + `<div class="qr-logo">大咖</div>`;
+}
+/* 二维码状态文案 */
+function qrStatusHTML(kind){
+  const S=WXSESSION[kind];
+  if(S.state==='expired') return { cls:'', html:'<span class="dot"></span>二维码已过期，请点击刷新' };
+  if(S.state==='scanned') return { cls:'ok', html:'<span class="dot"></span>扫码成功，请点击下方「我已扫码」继续' };
+  if(S.state==='mapped')  return { cls:'ok', html:'<span class="dot"></span>身份映射完成' };
+  const left=Math.max(0,Math.ceil((S.expireAt-Date.now())/1000));
+  return { cls:'', html:`<span class="dot"></span>请使用微信扫一扫 · <b style="font-weight:600;color:var(--text-2)">${left}s</b> 后失效` };
+}
+/* 把二维码画进指定容器（主页面 / 弹窗共用） */
+function paintQR(box, st, kind){
+  const S=WXSESSION[kind];
+  if(!box) return;
+  if(!S.sceneId){
+    box.classList.remove('expired');
+    box.innerHTML=`<div style="text-align:center;color:var(--muted);font-size:13px;line-height:1.8">
+      <div style="font-size:30px;opacity:.35;margin-bottom:8px">💬</div>点击下方按钮生成二维码</div>`;
+    if(st){ st.className='qr-status'; st.innerHTML=''; }
+    return;
+  }
+  box.classList.toggle('expired', S.state==='expired');
+  box.innerHTML = qrBoxHTML(kind) + (S.state==='expired'
+    ? `<div class="qr-mask"><span class="qm-ico">⌛</span><span class="qm-t">二维码已过期</span><span class="qm-b">点击刷新</span></div>`
+    : '');
+  if(st){ const s=qrStatusHTML(kind); st.className='qr-status '+s.cls; st.innerHTML=s.html; }
+}
+function renderQR(kind){
+  paintQR($(kind==='l'?'lwx-box':'rwx-box'), $(kind==='l'?'lwx-status':'rwx-status'), kind);
+}
+function startQRTick(kind){
+  const S=WXSESSION[kind];
+  clearInterval(S.tick);
+  S.tick=setInterval(()=>{
+    const K=WXSESSION[kind];
+    if(K.state!=='waiting' && K.state!=='scanned'){ clearInterval(K.tick); K.tick=null; return; }
+    if(Date.now()>K.expireAt){ K.state='expired'; clearInterval(K.tick); K.tick=null; renderQR(kind); toast('二维码已过期，请点击刷新'); return; }
+    renderQR(kind);
+  },1000);
+  TIMERS.push(S.tick);
+}
+function clearQR(kind){
+  const S=WXSESSION[kind];
+  if(S.tick){ clearInterval(S.tick); S.tick=null; }
+  S.sceneId=null; S.expireAt=0; S.state='idle';
+}
+
+/* 打开扫码弹窗 */
+function openScanModal(kind){
+  const isLogin = kind==='l';
+  newScene(kind);
+  openModal({
+    title: isLogin ? '微信扫码登录' : '微信扫码注册',
+    tag: isLogin ? '登录' : '注册',
+    width:440,
+    body:`
+      <div class="qr-wrap">
+        <div class="qr-box" id="scanBox"></div>
+        <div class="qr-status" id="scanStatus"></div>
+      </div>
+      <div class="qr-tips">
+        <div class="t">操作说明</div>
+        <ul>
+          <li><span class="b">·</span>${isLogin?'微信静默获取 openid，系统在联系人表查询映射关系：':'微信静默获取 openid 与昵称，用于建立身份映射：'}</li>
+          <li><span class="b">·</span>${isLogin?'映射成功 → 直接登录；映射失败 → 提示前往注册':'扫码后需确认「微信号 ↔ 系统账号」映射关系'}</li>
+          <li><span class="b">·</span>演示环境可点击下方按钮模拟手机端扫码</li>
+        </ul>
+      </div>
+      <button class="qr-scan-btn" id="scanSim" style="margin-top:12px;width:100%;padding:9px 0;background:var(--blue-50);border:1px solid var(--blue-100);border-radius:9px">演示：模拟手机扫码</button>`,
+    after(){
+      footBtns([
+        ['取消','',closeModal],
+        ['刷新二维码','',()=>{ newScene(kind); paintQR($('scanBox'),$('scanStatus'),kind); startQRTick(kind); toast('二维码已刷新'); }],
+        ['我已扫码','',()=>confirmScan(kind), true]
+      ]);
+      paintQR($('scanBox'), $('scanStatus'), kind);
+      $('scanSim').onclick=()=>onScanned(kind);
+
+      // 弹窗内独立计时：同步倒计时 / 按钮可用态
+      const t=setInterval(()=>{
+        if(!$('modal').classList.contains('show')){ clearInterval(t); return; }
+        const K=WXSESSION[kind];
+        if(K.state==='waiting' && Date.now()>K.expireAt){ K.state='expired'; toast('二维码已过期，请点击刷新'); }
+        paintQR($('scanBox'), $('scanStatus'), kind);
+        const sim=$('scanSim'); if(sim) sim.style.display = K.state==='waiting' ? '' : 'none';
+        const scan=[...document.querySelectorAll('#mFoot .btn')][2];
+        if(scan) scan.disabled = K.state!=='scanned';
+      },500);
+      TIMERS.push(t);
+    }
+  });
+}
+function onScanned(kind){
+  const S=WXSESSION[kind];
+  if(S.state!=='waiting'){ toast('二维码已加载完成，请稍候'); return; }
+  if(Date.now()>S.expireAt){ S.state='expired'; renderQR(kind); toast('二维码已过期，请刷新'); return; }
+  S.state='scanned';
+  if(S.tick){ clearInterval(S.tick); S.tick=null; }
+  renderQR(kind);
+  // 立即同步弹窗内展示，不等下一次轮询
+  if($('modal').classList.contains('show')) paintQR($('scanBox'), $('scanStatus'), kind);
+  const scan=[...document.querySelectorAll('#mFoot .btn')][2];
+  if(scan) scan.disabled=false;
+  const sim=$('scanSim'); if(sim) sim.style.display='none';
+  toast('扫码成功，请点击「我已扫码」继续');
+}
+$('li-wx').onclick   = ()=>openScanModal('l');
+$('lwx-btn').onclick = ()=>{ newScene('l'); renderQR('l'); startQRTick('l'); openScanModal('l'); };
+$('rwx-btn').onclick = ()=>{ newScene('r'); renderQR('r'); startQRTick('r'); openScanModal('r'); };
+$('lwx-sim').onclick = ()=>{ newScene('l'); renderQR('l'); startQRTick('l'); openScanModal('l'); };
+$('rwx-sim').onclick = ()=>{ newScene('r'); renderQR('r'); startQRTick('r'); openScanModal('r'); };
+
+/* 扫码确认后：查联系人表 → 映射 / 登录 */
+function confirmScan(kind){
+  const S=WXSESSION[kind];
+  if(S.state!=='scanned'){ toast('请先扫码'); return; }
+  const sceneId=S.sceneId;
+
+  if(kind==='l'){
+    // 登录：模拟返回的微信身份 → 查联系人表
+    const wxid='wxid_yunqi001', openid='oYunQi001XYZ', nickname='云启科技';
+    const rel = DB.contacts.find(c=>c.openid===openid);
+
+    if(!rel){
+      // 映射失败 → 引导注册
+      openModal({
+        title:'该微信尚未绑定账号', tag:'未注册', width:440,
+        body:`
+          <div class="scan-user" style="background:var(--orange-bg);border-color:#FBE3BC">
+            <div class="ava" style="background:linear-gradient(135deg,#F59E0B,#D97706)">云</div>
+            <div><div class="su-t" style="color:#C2760A">${nickname}</div><div class="su-s" style="color:#C2760A">${wxid}</div></div>
+          </div>
+          <div class="map-note" style="margin-top:14px">
+            <span class="n-ico">!</span>
+            <span>已在微信侧获取 openid：<span class="mono">${openid}</span>，但联系人表中<b>未查询到映射记录</b>，无法自动登录。</span>
+          </div>`,
+        after(){
+          footBtns([
+            ['关闭','',closeModal],
+            ['前往注册','',()=>{ closeModal(); switchView('register'); toast('请先完成注册后再扫码登录'); }],
+            ['换个方式登录','btn-primary',()=>{ closeModal(); document.querySelector('[data-ltab=sms]').click(); }]
+          ]);
+        }
+      });
+      S.state='expired';
+      return;
+    }
+
+    const u=DB.users.find(x=>x.uid===rel.uid);
+    S.state='mapped';
+    DB.logs.push({ time:nowStr(), user:u.name, uid:u.uid, way:'微信扫码', ip:'113.88.**.21' });
+    closeModal();
+    showSuccess(u,'微信扫码');
+    return;
+  }
+
+  // 注册：弹出映射关系确认
+  const wxid='wxid_' + Math.random().toString(36).slice(2,10);
+  const openid='o' + Math.random().toString(36).slice(2,14).toUpperCase();
+  const nickname = role==='company' ? ($('ri-cname').value.trim()||'未命名企业') : ($('ri-name').value.trim()||'微信用户');
+  const avatar = nickname.slice(0,1);
+
+  openModal({
+    title:'确认身份映射关系', tag:'绑定', width:460,
+    body:`
+      <p>微信扫码成功，已获取您的微信身份。请确认与系统账号的映射关系，确认后将写入<b>联系人表</b>。</p>
+      <div class="map-flow">
+        <div class="map-card wx">
+          <div class="mc-h"><span class="n">微</span>微信身份</div>
+          <div class="map-row"><span class="k">昵称</span><span class="v">${nickname}</span></div>
+          <div class="map-row"><span class="k">微信号</span><span class="v mono" style="font-size:11.5px">${wxid}</span></div>
+          <div class="map-row"><span class="k">openid</span><span class="v mono" style="font-size:11px">${openid}</span></div>
+        </div>
+        <div class="map-arrow"><span class="a1">⇄</span></div>
+        <div class="map-card">
+          <div class="mc-h"><span class="n">库</span>系统账号</div>
+          <div class="map-row"><span class="k">角色</span><span class="v">${role==='company'?'企业':'个人'}</span></div>
+          <div class="map-row"><span class="k">手机号</span><span class="v" id="mapPhone">${$('ri-phone').value.trim()||'未填写'}</span></div>
+          <div class="map-row"><span class="k">登录方式</span><span class="v">微信扫码注册</span></div>
+        </div>
+      </div>
+      <div class="map-note">
+        <span class="n-ico">ⓘ</span>
+        <span>确认后系统将在联系人表新增一条 <b>wxid / openid ↔ uid</b> 映射记录，后续可直接使用微信扫码登录。</span>
+      </div>`,
+    after(){
+      footBtns([
+        ['取消','',closeModal],
+        ['确认绑定并注册','btn-primary',()=>{
+          const phone=$('ri-phone').value.trim();
+          const u={
+            uid:'U-'+String(100000+Math.floor(Math.random()*899999)).slice(0,6),
+            phone: phone || '未绑定',
+            name: nickname,
+            role: role==='company'?'企业':'个人',
+            wechat: wxid, openid, regAt: nowStr()
+          };
+          DB.users.push(u);
+          DB.contacts.push({ wxid, openid, nickname, uid:u.uid, bindAt:nowStr(), source:'微信扫码注册' });
+          DB.logs.push({ time:nowStr(), user:u.name, uid:u.uid, way:'微信扫码注册', ip:'113.88.**.21' });
+          closeModal();
+          showSuccess(u,'微信扫码注册');
+        }]
+      ]);
+    }
+  });
+}
+
+/* =======================================================================
+   注册：验证码
+======================================================================= */
+$('ri-submit').onclick=()=>{
+  const phone=$('ri-phone').value.trim(), code=$('ri-code').value.trim();
+  const name=$('ri-name'), cname=$('ri-cname'), uscc=$('ri-uscc'), contact=$('ri-contact');
+  ['ri-phone','ri-code','ri-name','ri-cname','ri-uscc','ri-contact'].forEach(id=>$(id).classList.remove('invalid'));
+
+  if(!phoneOK(phone)){ $('ri-phone').classList.add('invalid'); toast('请输入正确的手机号'); return; }
+  if(DB.users.some(u=>u.phone===phone)){ $('ri-phone').classList.add('invalid'); toast('该手机号已注册，请直接登录'); return; }
+  if(!code){ $('ri-code').classList.add('invalid'); toast('请输入验证码'); return; }
+
+  if(role==='company'){
+    if(!cname.value.trim()){ cname.classList.add('invalid'); toast('请输入企业名称'); return; }
+    if(!/^[0-9A-HJ-NPQRTUWXY]{18}$/.test(uscc.value.trim())){ uscc.classList.add('invalid'); toast('请输入 18 位统一社会信用代码'); return; }
+    if(!contact.value.trim()){ contact.classList.add('invalid'); toast('请输入联系人姓名'); return; }
+  }else{
+    if(!name.value.trim()){ name.classList.add('invalid'); toast('请输入真实姓名'); return; }
+  }
+  if(!$('ri-agree').checked){ toast('请先阅读并同意用户服务协议'); return; }
+  if(!checkCode(phone,$('ri-code'))) return;
+
+  // 校验通过 → 联系人表新增记录
+  const u={
+    uid:'U-'+String(100000+Math.floor(Math.random()*899999)).slice(0,6),
+    phone,
+    name: role==='company' ? cname.value.trim() : name.value.trim(),
+    role: role==='company'?'企业':'个人',
+    wechat:null, openid:null, regAt: nowStr(),
+    contact: role==='company' ? contact.value.trim() : '',
+    uscc: role==='company' ? uscc.value.trim().toUpperCase() : ''
+  };
+  DB.users.push(u);
+  DB.logs.push({ time:nowStr(), user:u.name, uid:u.uid, way:'短信验证码注册', ip:'113.88.**.21' });
+  showSuccess(u,'短信验证码注册');
+};
+
+/* 协议文档 */
+document.querySelectorAll('[data-doc]').forEach(a=>{
+  a.onclick=()=>{
+    const isT=a.dataset.doc==='terms';
+    openModal({
+      title: isT?'用户服务协议':'隐私政策', tag:'协议', width:520,
+      body:`<div style="font-size:13px;color:var(--text-2);line-height:1.9">
+        <p><b>${isT?'一、服务内容':'一、我们收集的信息'}</b></p>
+        <p>${isT
+          ? '本平台为企业、大咖、机构与求职者提供投诉受理、工单流转、项目撮合与就业服务。注册即视为同意本协议全部条款。'
+          : '为完成身份识别与服务交付，我们会收集您的手机号、微信 openid、昵称及企业主体信息，用于账号绑定与工单通知。'}</p>
+        <p><b>${isT?'二、账号与映射':'二、信息使用'}</b></p>
+        <p>${isT
+          ? '您可通过手机号验证码或微信扫码登录，两种方式最终映射至同一 uid，联系人表维护唯一的身份对应关系。'
+          : '您的信息仅用于服务履约，不会向无关第三方披露；注销账号时可申请删除相关映射记录。'}</p>
+        <p><b>${isT?'三、使用规范':'三、信息安全'}</b></p>
+        <p>${isT
+          ? '不得利用平台发布虚假信息、恶意投诉或侵害他人合法权益，违规行为将按平台规则处理。'
+          : '我们采用加密传输与最小必要原则收集信息，验证码有效期 60 秒，登录日志留存 180 天。'}</p>
+      </div>`,
+      after(){ footBtns([['我已阅读','btn-primary',closeModal]]); }
+    });
+  };
+});
+
+/* =======================================================================
+   登录成功
+======================================================================= */
+function showSuccess(u, way){
+  openModal({
+    title:'登录成功', tag:'成功', width:440,
+    body:`
+      <div class="success">
+        <div class="s-ico">✓</div>
+        <h3>欢迎回来，${u.name}</h3>
+        <p>身份校验已通过，正在进入 DAKA 云管理平台…</p>
+        <div class="kv">
+          <div class="k">登录账号（uid）</div><div class="v mono">${u.uid}</div>
+        </div>
+        <div class="kv" style="margin-top:10px">
+          <div class="k">登录方式 / 角色</div>
+          <div class="v">${way} · <span class="tag blue">${u.role}</span></div>
+        </div>
+        <div class="kv" style="margin-top:10px">
+          <div class="k">映射关系</div>
+          <div class="v" style="font-size:12.5px;font-weight:500">
+            ${u.wechat
+              ? `<span class="tag wx">${u.wechat}</span> <span style="color:var(--muted);font-size:12px">⇄</span> <span class="mono">${u.uid}</span>`
+              : `<span style="color:var(--muted)">手机号 ${u.phone}（未绑定微信）</span>`}
+          </div>
+        </div>
+      </div>`,
+    after(){
+      footBtns([['立即进入平台','btn-primary',()=>enter(u)]]);
+      setTimeout(()=>{ if($('modal').classList.contains('show')) enter(u); }, 2600);
+    }
+  });
+}
+function enter(u){
+  closeModal();
+  $('loadTitle').textContent='正在进入平台…';
+  $('loadSub').textContent='正在加载 ' + u.name + ' 的工作台';
+  $('loading').classList.add('show');
+  setTimeout(()=>{
+    $('loadTitle').textContent='演示环境';
+    $('loadSub').textContent='登录流程已完整走通，此处可跳转至「投诉处理」等业务页面';
+    $('mFoot').innerHTML='';
+    openModal({
+      title:'登录完成', tag:'演示', width:440,
+      body:`
+        <div class="success">
+          <div class="s-ico">✓</div>
+          <h3>${u.name}，登录成功</h3>
+          <p>本次登录已写入登录日志，并完成与联系人表的身份映射。</p>
+          <div class="kv"><div class="k">账号 uid</div><div class="v mono">${u.uid}</div></div>
+          <div class="kv" style="margin-top:10px"><div class="k">手机号</div><div class="v mono">${u.phone}</div></div>
+          <div class="kv" style="margin-top:10px"><div class="k">登录日志</div><div class="v mono" style="font-size:12px">${DB.logs[DB.logs.length-1].time} · ${DB.logs[DB.logs.length-1].way}</div></div>
+        </div>`,
+      after(){ footBtns([['关闭','btn-primary',closeModal]]); }
+    });
+  }, 900);
+}
+
+/* =======================================================================
+   基础交互
+======================================================================= */
+$('mask').onclick=closeModal;
+$('mX').onclick=closeModal;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+/* 初始化：登录页展示静态二维码占位 */
+['l','r'].forEach(k=>{ WXSESSION[k].state='idle'; renderQR(k); });
+</script>
+</body>
+</html>
