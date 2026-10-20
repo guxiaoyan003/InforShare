@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>规则说明 - 企业端</title>
+<style>
+  :root{
+    --blue-800:#0A37C2;
+    --blue-700:#0F45E0;
+    --blue-600:#1750F0;
+    --blue-500:#2F6BFF;
+    --blue-400:#5B8CFF;
+    --blue-100:#E1EBFF;
+    --blue-50:#F1F6FF;
+    --line:#E7EDF9;
+    --line-strong:#D8E2F5;
+    --text:#111A2E;
+    --text-2:#46536B;
+    --muted:#8794AB;
+    --bg:#F4F7FD;
+    --white:#fff;
+    --radius:14px;
+    --shadow-sm:0 1px 2px rgba(16,35,80,.05);
+    --shadow-md:0 8px 24px rgba(16,35,80,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  svg{display:block}
+  button{font-family:inherit}
+
+  /* ---------- 骨架 ---------- */
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- 侧边栏 ---------- */
+  .sidebar{
+    width:236px;flex:0 0 236px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:20;
+  }
+  .logo{
+    height:66px;display:flex;align-items:center;gap:11px;padding:0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;flex:0 0 36px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 14px rgba(23,80,240,.34);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;line-height:1.25}
+  .logo-text span{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:1.2px;margin-top:2px}
+
+  .nav{padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;height:42px;padding:0 12px;border-radius:10px;
+    color:var(--text-2);font-size:14px;cursor:pointer;user-select:none;
+    transition:background .16s,color .16s,transform .16s;
+  }
+  .nav-item .ico{width:18px;height:18px;flex:0 0 18px;color:#7B88A0;transition:color .16s}
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item:hover .ico{color:var(--blue-500)}
+  .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));
+    color:#fff;font-weight:600;
+    box-shadow:0 8px 18px rgba(23,80,240,.30);
+  }
+  .nav-item.active .ico{color:#fff}
+
+  .sidebar-bottom{
+    margin-top:auto;padding:12px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:3px;
+  }
+  .sidebar-bottom .nav-item{height:40px;font-size:13.5px;color:#5D6B82}
+  .sidebar-bottom .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;
+  }
+
+  /* ---------- 主区 ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;
+    position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .crumb .sep{color:#C6D1E4}
+  .crumb b{color:var(--text);font-weight:600;font-size:13.5px}
+  .topbar .spacer{flex:1}
+
+  .tbtn{
+    height:36px;padding:0 13px;border-radius:10px;border:1px solid transparent;background:transparent;
+    color:var(--text-2);font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    transition:.16s;position:relative;
+  }
+  .tbtn:hover{background:var(--blue-50);border-color:var(--blue-100);color:var(--blue-600)}
+  .tbtn .ico{width:18px;height:18px;color:#6C7A93}
+  .tbtn:hover .ico{color:var(--blue-600)}
+  .tbtn.me{padding-left:6px}
+  .avatar{
+    width:28px;height:28px;border-radius:50%;flex:0 0 28px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 8px rgba(23,80,240,.28);
+  }
+  .badge-dot{
+    position:absolute;top:-5px;right:-7px;min-width:16px;height:16px;padding:0 5px;border-radius:9px;
+    background:#E5484D;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;
+    box-shadow:0 0 0 2px #fff;
+  }
+  .ico-wrap{position:relative;display:inline-flex;width:18px;height:18px;flex:0 0 18px}
+  .vline{width:1px;height:20px;background:var(--line-strong);margin:0 6px}
+
+  .content{
+    flex:1;padding:22px 24px 28px;min-width:0;
+    background:
+      radial-gradient(1100px 380px at 8% -12%, #E9F1FF 0%, rgba(233,241,255,0) 62%),
+      radial-gradient(800px 300px at 100% 0%, #EFF5FF 0%, rgba(239,245,255,0) 55%),
+      var(--bg);
+  }
+
+  /* ---------- 占位卡片 ---------- */
+  .stage{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);min-height:calc(100vh - 158px);
+    display:flex;align-items:center;justify-content:center;padding:48px 32px;
+  }
+  .stage-inner{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:520px}
+  .stage-ico{
+    width:74px;height:74px;border-radius:22px;
+    background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid #DCE8FF;
+    display:flex;align-items:center;justify-content:center;color:var(--blue-600);
+    box-shadow:0 10px 26px rgba(23,80,240,.12);
+    margin-bottom:22px;
+  }
+  .stage-ico svg{width:30px;height:30px}
+  .stage-title{font-size:21px;font-weight:700;letter-spacing:.2px;color:var(--text)}
+  .stage-sub{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
+  .stage-flag{
+    margin-top:20px;display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;color:var(--blue-600);background:var(--blue-50);
+    border:1px solid var(--blue-100);border-radius:20px;padding:5px 13px;
+  }
+  .stage-flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue-500)}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#0F1830;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.22s;
+    box-shadow:0 12px 32px rgba(0,0,0,.22);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1080px){
+    .sidebar{width:200px;flex:0 0 200px}
+    .content{padding:18px}
+  }
+
+  /* ==============================================================
+     【本页新增·隔离区】
+     以上自 infoshar_company_portal.html 原样搬入，未改动。
+     以下仅新增「左目录 + 右正文」的文档阅读布局。
+     ============================================================== */
+
+  /* ---------- 页头 ---------- */
+  .page-head{display:flex;align-items:baseline;gap:13px;margin-bottom:16px;flex-wrap:wrap}
+  .ph-title{font-size:21px;font-weight:700;letter-spacing:.2px}
+  .ph-sub{font-size:12.5px;color:var(--muted)}
+
+  /* ---------- 两栏 ---------- */
+  .doc-wrap{display:grid;grid-template-columns:218px minmax(0,1fr);gap:18px;align-items:start}
+
+  /* ---------- 左侧目录 ---------- */
+  .doc-nav{
+    position:sticky;top:86px;
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:10px;overflow:hidden;
+  }
+  .dn-item{
+    position:relative;display:flex;align-items:center;height:40px;padding:0 12px;
+    border-radius:9px;font-size:13.5px;color:var(--text-2);cursor:pointer;
+    transition:background .16s,color .16s;user-select:none;
+  }
+  .dn-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .dn-item.active{background:#F1F5FB;color:var(--text);font-weight:600}
+  .dn-item.active::before{
+    content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:2px;
+    background:var(--blue-600);
+  }
+  .dn-sep{height:1px;background:var(--line);margin:8px 4px}
+
+  .dn-group-head{
+    display:flex;align-items:center;gap:5px;height:38px;padding:0 12px;
+    border-radius:9px;font-size:13.5px;color:var(--text-2);cursor:pointer;
+    transition:background .16s,color .16s;user-select:none;
+  }
+  .dn-group-head:hover{background:var(--blue-50);color:var(--blue-600)}
+  .dn-group-head .cnt{font-size:12px;color:var(--muted);font-weight:400}
+  .dn-group-head .arw{margin-left:auto;width:13px;height:13px;color:#A9B4C8;transition:transform .18s}
+  .dn-group.open .dn-group-head .arw{transform:rotate(180deg)}
+
+  .dn-sub{display:none;padding:2px 0 4px}
+  .dn-group.open .dn-sub{display:block}
+  .dn-sub a{
+    display:block;padding:8px 12px 8px 24px;border-radius:8px;
+    font-size:12.5px;color:var(--muted);text-decoration:none;cursor:pointer;
+    line-height:1.5;transition:background .16s,color .16s;
+  }
+  .dn-sub a:hover{background:var(--blue-50);color:var(--blue-600)}
+  .dn-sub a.on{color:var(--blue-600);font-weight:600;background:var(--blue-50)}
+
+  /* ---------- 右侧正文 ---------- */
+  .doc{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:44px 64px 56px;min-height:calc(100vh - 200px);
+  }
+  .doc-title{
+    font-size:22px;font-weight:700;letter-spacing:.3px;text-align:center;
+    color:var(--text);margin-bottom:22px;
+  }
+  .doc-lead{
+    font-size:14.5px;line-height:2;color:var(--text-2);
+    margin:0 0 34px;
+  }
+
+  .doc h3{
+    font-size:15.5px;font-weight:700;color:var(--text);letter-spacing:.2px;
+    margin:34px 0 14px;
+  }
+  .doc h3:first-of-type{margin-top:0}
+
+  .doc ol{list-style:none;padding:0;margin:0;counter-reset:item}
+  .doc ol li{
+    counter-increment:item;font-size:14.5px;line-height:2;color:var(--text-2);
+    padding-left:1.35em;position:relative;
+  }
+  .doc ol li::before{
+    content:counter(item) ".";position:absolute;left:0;top:0;
+    color:#8FA0BA;font-variant-numeric:tabular-nums;
+  }
+
+  .doc .para{font-size:14.5px;line-height:2;color:var(--text-2);margin:0}
+  .doc .para b{color:var(--text);font-weight:600}
+
+  .doc-back{
+    display:none;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:90px 20px;
+  }
+  .doc-back.show{display:flex}
+  .doc-back .ico{
+    width:64px;height:64px;border-radius:19px;background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid #DCE8FF;display:flex;align-items:center;justify-content:center;
+    color:var(--blue-600);margin-bottom:20px;
+  }
+  .doc-back .t{font-size:16px;font-weight:600;color:var(--text)}
+  .doc-back .d{font-size:13px;color:var(--muted);margin-top:9px;line-height:1.8;max-width:400px}
+  .doc-back .b{
+    margin-top:20px;height:36px;padding:0 16px;border-radius:9px;
+    border:1px solid var(--line-strong);background:#fff;color:var(--text-2);
+    font-size:13px;cursor:pointer;font-family:inherit;transition:.16s;
+  }
+  .doc-back .b:hover{border-color:var(--blue-400);color:var(--blue-600);background:var(--blue-50)}
+
+  @media (max-width:1180px){
+    .doc-wrap{grid-template-columns:1fr}
+    .doc-nav{position:static}
+    .doc{padding:32px 26px 40px}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 左侧菜单 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+
+        <nav class="nav">
+    <div class="nav-item" data-page="job">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="18" height="13.5" rx="2.6"/><path d="M8 7V5.6A1.6 1.6 0 0 1 9.6 4h4.8A1.6 1.6 0 0 1 16 5.6V7"/><path d="M3 12.2h18"/>
+      </svg>
+      <span>岗位管理</span>
+    </div>
+    <div class="nav-item" data-page="project">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 21 7.5 12 12 3 7.5 12 3Z"/><path d="m3 12.3 9 4.5 9-4.5"/><path d="m3 16.9 9 4.5 9-4.5"/>
+      </svg>
+      <span>项目管理</span>
+    </div>
+    <div class="nav-item" data-page="intent">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20.2s-7.2-4.4-7.2-9.2a4.1 4.1 0 0 1 7.2-2.7 4.1 4.1 0 0 1 7.2 2.7c0 4.8-7.2 9.2-7.2 9.2Z"/>
+      </svg>
+      <span>意向大咖</span>
+    </div>
+    <div class="nav-item" data-page="expert">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10.6" cy="10.6" r="6.4"/><path d="m15.4 15.4 4.2 4.2"/><path d="M8.2 10.6h4.8"/><path d="M10.6 8.2v4.8"/>
+      </svg>
+      <span>大咖搜索</span>
+    </div>
+    <div class="nav-item" data-page="apply">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 13.2 6.1 5.8A1.6 1.6 0 0 1 7.7 4.6h8.6a1.6 1.6 0 0 1 1.6 1.2L20 13.2v5a1.9 1.9 0 0 1-1.9 1.9H5.9A1.9 1.9 0 0 1 4 18.2Z"/><path d="M4 13.2h4.5a3.5 3.5 0 0 0 7 0H20"/>
+      </svg>
+      <span>申请管理</span>
+    </div>
+    </nav>
+
+        <div class="sidebar-bottom">
+    <div class="nav-item active" data-page="rule">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 3.2H7.2A2.2 2.2 0 0 0 5 5.4v13.2a2.2 2.2 0 0 0 2.2 2.2h9.6a2.2 2.2 0 0 0 2.2-2.2V8L14 3.2Z"/><path d="M14 3.2V8h5"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.4"/>
+      </svg>
+      <span>规则说明</span>
+    </div>
+    <div class="nav-item" data-page="setting">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3.1"/><path d="M19.3 14.9a1.6 1.6 0 0 0 .32 1.77l.06.06a1.95 1.95 0 1 1-2.76 2.76l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.95 1.95 0 1 1-3.9 0v-.09a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a1.95 1.95 0 1 1-2.76-2.76l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97h-.17a1.95 1.95 0 1 1 0-3.9h.09a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.95 1.95 0 1 1 2.76-2.76l.06.06a1.6 1.6 0 0 0 1.77.32h.08a1.6 1.6 0 0 0 .97-1.47v-.17a1.95 1.95 0 1 1 3.9 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.95 1.95 0 1 1 2.76 2.76l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.95 1.95 0 1 1 0 3.9h-.09a1.6 1.6 0 0 0-1.47.97Z"/>
+      </svg>
+      <span>设置</span>
+    </div>
+
+    </div>
+</aside>
+
+  <!-- ============ 右侧 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">企业端 <span class="sep">/</span><span id="crumbMid" style="display:none"><span id="crumbParent">规则说明</span> <span class="sep">/</span></span> <b id="crumbNow">规则说明</b></div>
+      <div class="spacer"></div>
+
+      <button class="tbtn" id="btnMsg">
+        <span class="ico-wrap">
+          <svg class="ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13.6 7.3a4.6 4.6 0 0 0-9.2 0c0 4-1.5 5.2-1.5 5.2h12.2s-1.5-1.2-1.5-5.2Z"/>
+            <path d="M7.5 15.1a1.7 1.7 0 0 0 3 0"/>
+          </svg>
+          <span class="badge-dot">3</span>
+        </span>
+        <span>消息</span>
+      </button>
+
+      <div class="vline"></div>
+
+      <button class="tbtn me" id="btnMe">
+        <span class="avatar">云</span>
+        <span>个人中心</span>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <!-- ==================== 规则说明 ==================== -->
+      <section id="page-rules">
+        <div class="page-head">
+          <h1 class="ph-title">规则说明</h1>
+          <span class="ph-sub">平台规则与协议，使用服务前请了解</span>
+        </div>
+
+        <div class="doc-wrap">
+          <!-- 目录 -->
+          <aside class="doc-nav">
+            <div class="dn-item active" id="navHome">行为总则</div>
+
+            <div class="dn-sep"></div>
+
+            <div class="dn-group open" data-g="detail">
+              <div class="dn-group-head">规则详情 <span class="cnt">(5)</span>
+                <svg class="arw" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 4.4 6 8l3.6-3.6"/></svg>
+              </div>
+              <div class="dn-sub">
+                <a data-doc="招聘行为管理规范">招聘行为管理规范</a>
+                <a data-doc="信息发布规范">信息发布规范</a>
+                <a data-doc="账号使用规范">账号使用规范</a>
+                <a data-doc="沟通行为规范">沟通行为规范</a>
+                <a data-doc="违规处置细则">违规处置细则</a>
+              </div>
+            </div>
+
+            <div class="dn-group" data-g="policy">
+              <div class="dn-group-head">协议政策 <span class="cnt">(4)</span>
+                <svg class="arw" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 4.4 6 8l3.6-3.6"/></svg>
+              </div>
+              <div class="dn-sub">
+                <a data-doc="用户服务协议">用户服务协议</a>
+                <a data-doc="隐私政策">隐私政策</a>
+                <a data-doc="企业入驻协议">企业入驻协议</a>
+                <a data-doc="大咖合作协议">大咖合作协议</a>
+              </div>
+            </div>
+          </aside>
+
+          <!-- 正文 -->
+          <article class="doc" id="doc">
+            <div id="docMain">
+              <h2 class="doc-title">大咖平台规则</h2>
+
+              <p class="doc-lead">
+                大咖始终致力于为广大用户提供一个安全、健康、高效的人才合作平台，该总则旨在为用户使用平台服务提供指引性规范和行为准则，平台内每一位用户均需确保了解并遵守以下规范：
+              </p>
+
+              <h3>关于安全性</h3>
+              <ol>
+                <li>平台严禁一切危害用户安全行为，如限制人身自由、恐吓、暴力及整容、试药等损害健康行为；</li>
+                <li>平台严禁一切诈骗欺诈行为，如刷单诈骗、诱导贷款、网络行乞、诱导他人参与诈骗等；</li>
+                <li>平台严禁一切色情违规行为，如发布色情信息、招募不当关系、诱导大咖从事色情擦边工作等；</li>
+                <li>平台严禁一切非招聘合作目的的隐私索取，如索要照片、住址等，严禁一切恶意插件与链接；</li>
+                <li>平台亦严禁除以上风险之外的其他任何违法违规行为，用户需确保招聘合作全程合法合规；</li>
+              </ol>
+
+              <h3>关于真实性</h3>
+              <ol>
+                <li>请确保招聘合作账号真实，严禁赠与、租借、售让、冒用账号，保持人企关系一致性；</li>
+                <li>请确保企业信息真实准确，包括企业名称、经营地址、公司网址、经营范围、产品介绍等；</li>
+                <li>请确保职位信息符合实际，包括招聘条件、薪资待遇、职位类型、工作地址等；</li>
+                <li>请确保大咖资料真实准确，包括个人经历、学历、作品等不夸大、不虚假，诚信合作；</li>
+                <li>请确保沟通及社区言论真实可信，避免发布虚构、误导性信息，不侵犯他人知识产权；</li>
+                <li>请确保以上全部信息的有效性，及时更新并剔除失效信息；</li>
+              </ol>
+
+              <h3>关于文明性</h3>
+              <ol>
+                <li>请保持文明沟通，友善谦逊，积极回复，共建和谐合作环境；</li>
+                <li>请保持平台的纯粹性，杜绝骚扰、广告、社交等非招聘合作行为，维护专业氛围；</li>
+                <li>请保持契约精神，认真履行面试与 offer 约定，无法履约请提前协商并征得谅解；</li>
+                <li>请保持尊重平等，关注招聘双方的沟通体验，关爱特殊群体，让温暖的力量覆盖平台；</li>
+                <li>请亦保持除以上要求之外的其他招聘合作及工作场景的文明性。</li>
+              </ol>
+
+              <h3>关于违规后果</h3>
+              <p class="para">
+                参照我国相关法律法规、<b>《大咖用户协议》</b>《招聘行为管理规范》等文件，大咖平台对于违反“平台总则”的违规账号及用户，将视情节严重程度采取不同的处置方式。处置类型包括但不限于警告、强制规则学习、期限禁言、限制部分招聘合作功能、禁止发布职位或简历、封禁个人账号、禁止公司使用，乃至永久停止违规者使用大咖服务等处置措施；构成违法犯罪的，平台将积极配合执法及司法机关的工作，并保留向违规者追究法律责任的权利。
+              </p>
+            </div>
+
+            <div class="doc-back" id="docBack">
+              <div class="ico">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/>
+                  <path d="M14 2v6h6"/>
+                  <path d="M8 13h8M8 17h5"/>
+                </svg>
+              </div>
+              <div class="t" id="docBackTitle">—</div>
+              <div class="d">该文档将在正式版本中提供全文，当前版本仅开放《平台总则》。</div>
+              <button class="b" id="btnBackHome">返回平台总则</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- 其它菜单占位 -->
+      <section id="page-stage" class="stage" style="display:none">
+        <div class="stage-inner">
+          <div class="stage-ico" id="stageIco"></div>
+          <div class="stage-title" id="stageTitle">—</div>
+          <div class="stage-sub" id="stageSub">—</div>
+          <div class="stage-flag">完成企业认证后开放</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ================= 目录展开 ================= */
+document.querySelectorAll('.dn-group-head').forEach(h => {
+  h.onclick = () => h.parentElement.classList.toggle('open');
+});
+
+/* ================= 规则文档正文 ================= */
+const DOCS = {
+  '招聘行为管理规范': {
+    lead: '为规范企业用户在大咖平台开展招聘活动的行为，保障大咖的知情权与选择权，维护平台招聘秩序，制定本规范。',
+    secs: [
+      ['一、适用范围', [
+        '本规范适用于企业用户在大咖平台发布的全部招聘合作需求，包括全职、实习、兼职、零工日结及劳务派遣等形式。',
+        '企业用户及其授权的招聘联系人，在发布、沟通、面试、录用各环节均应遵守本规范。',
+        '平台另行发布项目外包、岗位外包等合作规范的，从其规定；本规范未涵盖的事项，参照平台总则执行。'
+      ]],
+      ['二、职位发布要求', [
+        '职位名称应准确反映岗位性质，不得使用「急招高薪」「包吃住月入过万」等夸大或诱导性表述。',
+        '岗位职责与任职要求须具体可核验，不得照搬他人职位描述，不得留空或仅以「面议」代替全部内容。',
+        '薪资待遇须填写真实区间或明确月薪数额，不得以「底薪加提成」模糊表述替代，提成规则应在职位描述中说明。',
+        '工作地址须填写实际办公地点；确需多地办公或驻场的，应逐项列明，不得以「全国」笼统代替。',
+        '同一职位不得重复发布；岗位需求变更的，应下架原职位后重新发布，不得以修改标题规避审核。'
+      ]],
+      ['三、沟通与面试', [
+        '企业应通过平台内置沟通工具与大咖联系，不得在首次沟通时即要求添加站外联系方式。',
+        '面试邀约应明确时间、地点、形式与联系人，临时变更须提前告知并取得对方同意。',
+        '不得以面试为名要求大咖从事与岗位无关的活动，不得收取任何名义的面试费、培训费、押金、服装费。',
+        '面试过程中不得询问婚育状况、宗教信仰、疾病史等与岗位胜任无关的隐私信息。'
+      ]],
+      ['四、录用与入职', [
+        '录用通知应载明岗位、薪资、工作地点、试用期限与报到时间，不得口头承诺后不予兑现。',
+        '已发出录用通知又撤销的，企业应主动说明原因，并承担因此给对方造成的直接损失。',
+        '入职后实际岗位、薪资、工作内容应与发布信息一致；确需调整的，应与大咖协商一致并留存记录。',
+        '企业应在录用后 5 个工作日内，在平台将对应意向记录标记为「已合作」，便于双方留档。'
+      ]],
+      ['五、禁止行为', [
+        '严禁发布虚假职位，或以招聘名义收集简历用于销售及其他非招聘目的。',
+        '严禁以任何形式向大咖收取费用，包括押金、培训费、体检费、工装费、介绍费等。',
+        '严禁诱导大咖从事刷单、跑分、代收款、网络推广等涉嫌违法违规的活动。',
+        '严禁扣押大咖身份证件、学历证书原件，或以任何理由限制其人身自由。',
+        '严禁冒用其他企业名义发布职位，或为无用工主体资格的第三方代为招聘。'
+      ]]
+    ]
+  },
+
+  '信息发布规范': {
+    lead: '本规范适用于企业用户在大咖平台发布的企业资料、职位信息、项目需求及图片附件等全部内容。',
+    secs: [
+      ['一、企业资料', [
+        '企业名称须与营业执照登记名称完全一致，不得使用简称、品牌名或「XX 分公司」等非登记名称。',
+        '统一社会信用代码须为 18 位，且与该企业登记信息一致，一码仅可认证一个账号。',
+        '经营地址须填写实际经营场所；多地经营的，以主要办公地为准。',
+        '企业介绍应客观描述主营业务、团队规模与行业地位，不得使用「行业第一」「唯一」等无依据的绝对化表述。'
+      ]],
+      ['二、职位信息', [
+        '职位类别须选择平台岗位类目的末级，不得为提升曝光而错选热门类目。',
+        '薪资区间上下限差值不得超过该岗位市场水平的两倍，明显失真的将被要求修正。',
+        '职位描述中的技能要求应与岗位实际需要匹配，不得堆砌无关关键词。',
+        '福利标签须真实，标注「五险一金」「双休」「包住」等内容的，入职后应实际提供。',
+        '职位有效期届满未处理的，系统将自动下架，恢复发布需重新提交审核。'
+      ]],
+      ['三、项目需求', [
+        '项目需求应说明背景、交付物、验收标准与周期，不得仅以「详聊」代替需求描述。',
+        '预算区间须真实，采用按人天计费的应标明单价与预估人天。',
+        '涉及代码、设计稿等交付物的，应明确知识产权归属与交付形式。',
+        '项目需求不得包含具体企业名称、联系方式等引导站外交易的信息。'
+      ]],
+      ['四、图片与附件', [
+        '上传的营业执照须为原件彩色照片或扫描件，四角完整、文字清晰、无遮挡与涂改。',
+        '企业标识、办公环境照片须为自有或已获授权的素材，不得使用他人商标或网络图片。',
+        '单个附件不超过 20 MB，格式限 JPG、PNG、PDF；含有病毒的附件将被拦截并记录。'
+      ]],
+      ['五、内容审核', [
+        '平台对发布内容实行先审后发，一般在 1 个工作日内完成；批量发布的可延长至 3 个工作日。',
+        '审核不通过的，平台将退回并说明原因，企业修改后可重新提交。',
+        '已发布内容被举报或在巡查中发现的，平台有权先行下架，再行核实。'
+      ]]
+    ]
+  },
+
+  '账号使用规范': {
+    lead: '为保障账号主体真实、使用安全，防止账号被滥用或冒用，制定本规范。',
+    secs: [
+      ['一、注册与实名', [
+        '企业账号须由企业法定代表人或其书面授权的员工注册，注册时须完成手机号验证。',
+        '一个手机号仅可注册一个企业账号；同一企业仅可认证一个主账号。',
+        '注册信息须真实有效，手机号、邮箱发生变更的应在 7 日内更新。',
+        '平台有权对注册信息进行核验，核验不通过的将限制账号功能直至补充完成。'
+      ]],
+      ['二、账号归属', [
+        '企业账号归该企业所有，不归注册人个人所有；注册人离职时应办理账号交接。',
+        '严禁将账号赠与、租借、售让给任何第三方，包括关联公司与代运营机构。',
+        '严禁冒用他人企业信息注册，或以虚假材料通过认证。',
+        '企业发生合并、分立、名称变更的，应在 30 日内提交主体变更申请。'
+      ]],
+      ['三、账号安全', [
+        '账号密码应设置为 8 位以上并包含字母与数字，不得使用手机号、生日等易猜组合。',
+        '建议开启登录保护，异地登录时平台将通过短信或站内信提醒。',
+        '发现账号异常登录、信息被篡改的，应立即修改密码并联系平台客服。',
+        '因账号保管不善导致的损失由账号主体自行承担，平台存在过错的除外。'
+      ]],
+      ['四、多人协作', [
+        '企业可为账号添加子账号，按「招聘专员」「面试官」「财务」等角色分配权限。',
+        '子账号的操作记录归属主账号，主账号对子账号行为承担连带责任。',
+        '人员离职后，企业应在 3 个工作日内停用其子账号。'
+      ]],
+      ['五、注销与冻结', [
+        '企业可申请注销账号，注销前须结清全部订单与款项、处理完进行中的合作。',
+        '注销后账号数据将按法律法规要求留存，其余信息在 30 日后清除且不可恢复。',
+        '涉嫌违规被冻结的账号，冻结期间不可注销；冻结期满且完成整改的，可申请解冻。'
+      ]]
+    ]
+  },
+
+  '沟通行为规范': {
+    lead: '本规范适用于企业与大咖在大咖平台内的全部沟通行为，包括站内信、电话、视频面试及线下面谈。',
+    secs: [
+      ['一、基本礼仪', [
+        '沟通应使用文明用语，不得使用侮辱、歧视、威胁性言辞。',
+        '应主动表明身份与所属企业，不得隐瞒真实招聘意图。',
+        '对方明确表示不感兴趣后，不得反复骚扰式追问。',
+        '尊重对方的时间，非紧急事项避免在 22:00 至次日 8:00 之间联系。'
+      ]],
+      ['二、响应时效', [
+        '大咖投递或表达意向后，企业应在 3 个工作日内给予首次回复。',
+        '面试结束后，应在 5 个工作日内告知结果，未通过的也应简要说明原因。',
+        '超过 7 日未响应且未说明原因的，平台将向企业发送提醒，并在大咖端标注「响应较慢」。'
+      ]],
+      ['三、隐私保护', [
+        '沟通中不得索要与岗位无关的个人信息，包括身份证照片、家庭住址、婚育情况、银行账户。',
+        '因办理入职确需收集身份信息的，应在录用后通过平台指定入口提交，不得在聊天中发送。',
+        '不得将沟通中获取的简历、作品、联系方式用于本次招聘以外的用途。',
+        '不得将对方信息转发至第三方平台或社群。'
+      ]],
+      ['四、禁止行为', [
+        '严禁以招聘为名进行推销、招商、微商引流、课程销售。',
+        '严禁在沟通中发送涉黄、涉赌、涉诈内容或不明链接、二维码。',
+        '严禁诱导大咖参与刷单、代持、代收款等资金往来活动。',
+        '严禁以「内推费」「保录用」等名义收取费用。',
+        '严禁在沟通中贬低其他企业、平台或同行。'
+      ]],
+      ['五、沟通留痕', [
+        '平台内沟通记录将加密留存，用于纠纷处理与违规认定。',
+        '线下沟通产生争议的，双方可上传录音、聊天截图等材料申请平台介入。'
+      ]]
+    ]
+  },
+
+  '违规处置细则': {
+    lead: '为统一违规行为的认定标准与处置尺度，保障处置结果公平、可预期，制定本细则。',
+    secs: [
+      ['一、违规分级', [
+        '一般违规：首次出现、未造成实际损失、可即时改正的行为，如信息填写不规范、回复不及时、标签与实际不符。',
+        '较重违规：造成一定影响或经提醒仍未改正的行为，如虚假职位、重复发布、诱导站外沟通、收取小额费用。',
+        '严重违规：涉嫌违法或造成较大损害的行为，如诈骗、收取押金、扣押证件、发布涉黄信息、冒用企业身份。'
+      ]],
+      ['二、处置措施', [
+        '警告：以站内信形式告知，要求限期整改，不限制功能。',
+        '强制规则学习：要求完成平台规则学习并通过测试后方可继续使用。',
+        '内容处置：删除违规内容、下架违规职位或项目、限制曝光。',
+        '功能限制：期限禁言 3 日至 90 日、限制发布职位、限制查看大咖联系方式。',
+        '账号处置：封禁个人账号、禁止公司使用、永久停止服务。'
+      ]],
+      ['三、判定依据', [
+        '平台内沟通记录、发布内容与操作日志。',
+        '用户提交的证据材料，包括截图、录音、合同、转账凭证。',
+        '行政或司法机关出具的法律文书。',
+        '平台巡查、举报核实与第三方核验结果。'
+      ]],
+      ['四、申诉与复核', [
+        '被处置方可在收到通知后 7 日内提交申诉，说明理由并附证据。',
+        '平台在收到申诉后 5 个工作日内完成复核，复杂案件可延长至 10 个工作日。',
+        '复核期间原处置措施不停止执行；确有必要中止执行的，平台将书面告知。',
+        '复核结论分为维持、减轻、撤销三种，结果通过站内信与短信双通道告知。'
+      ]],
+      ['五、处置结果公示', [
+        '严重违规的处置结果，平台可在规则说明页公示，公示内容包括违规类型、处置措施与时间，不披露个人隐私信息。',
+        '公示期为 30 日，期满自动下线。'
+      ]]
+    ]
+  },
+
+  '用户服务协议': {
+    lead: '欢迎使用大咖。本协议是你与大咖平台之间关于注册、使用平台服务所订立的约定，请在使用前完整阅读。',
+    secs: [
+      ['一、协议范围', [
+        '本协议适用于所有访问或使用大咖平台的用户，包括企业用户与大咖用户。',
+        '你完成注册即视为已阅读并同意本协议；不同意的，请停止使用平台服务。',
+        '本协议与《平台总则》《隐私政策》及各专项规范共同构成完整约定，冲突时以专项规范为准。'
+      ]],
+      ['二、服务内容', [
+        '平台为大咖与企业提供信息展示、需求匹配、沟通工具、合作记录与信用评价等服务。',
+        '平台提供 AI 辅助能力，包括资料整理、岗位描述优化、合作建议，输出结果仅供参考，不构成录用承诺。',
+        '平台可提供就业课程、职业规划、企业内训等增值服务，具体以服务页面说明为准。',
+        '平台有权根据业务发展调整服务内容，调整前将通过站内公告告知。'
+      ]],
+      ['三、账号与身份', [
+        '你应使用真实身份注册，并对账号下的全部行为负责。',
+        '企业用户须完成企业认证后方可发布职位与项目；大咖用户须完成实名认证后方可发起合作意向。',
+        '平台对认证材料仅做形式核验，不对其真实性作实质担保。'
+      ]],
+      ['四、用户权利与义务', [
+        '你有权查询、更正自己的注册信息与资料，有权注销账号。',
+        '你应保证发布内容真实、合法、不侵犯第三方权利。',
+        '你不得利用平台从事违法违规活动，不得干扰平台正常运行。',
+        '你应妥善保管账号密码，因保管不善造成的损失自行承担。',
+        '你理解并同意，平台为撮合服务提供方，不参与你与对方之间的实际合作与结算。'
+      ]],
+      ['五、服务变更与中断', [
+        '因系统维护、升级需要暂停服务的，平台将提前公告。',
+        '因不可抗力、网络故障、第三方服务异常导致服务中断的，平台不承担赔偿责任，但将尽力恢复。',
+        '平台有权对长期未登录、信息失效的账号进行清理，清理前将提前 30 日通知。'
+      ]],
+      ['六、免责声明', [
+        '平台不对用户发布信息的真实性、准确性作保证，用户应自行判断并承担相应风险。',
+        '平台不对合作结果、录用结果、薪资兑现作任何承诺。',
+        '因用户自身原因导致的纠纷与损失由用户自行解决，平台可提供必要协助。'
+      ]],
+      ['七、争议解决', [
+        '因本协议产生的争议，双方应友好协商解决。',
+        '协商不成的，可向平台所在地有管辖权的人民法院提起诉讼。',
+        '本协议适用中华人民共和国法律。'
+      ]]
+    ]
+  },
+
+  '隐私政策': {
+    lead: '大咖重视你的个人信息保护。本政策说明我们收集哪些信息、如何使用与保护，以及你享有的权利。',
+    secs: [
+      ['一、我们收集的信息', [
+        '账号信息：手机号、密码、注册时间、登录设备与 IP 地址。',
+        '身份信息：企业用户的营业执照、统一社会信用代码、法定代表人姓名；大咖用户的姓名、身份证号、学历与工作经历。',
+        '使用信息：浏览记录、搜索关键词、投递与沟通记录、意向操作日志。',
+        '设备信息：设备型号、操作系统、浏览器类型、网络类型。',
+        '你主动上传的内容：头像、作品集、项目附件、沟通中发送的文件。'
+      ]],
+      ['二、信息的使用', [
+        '用于账号注册、登录验证与身份核验。',
+        '用于需求匹配、内容推荐与沟通撮合。',
+        '用于安全风控，识别异常登录、欺诈与违规行为。',
+        '用于服务改进与统计分析，统计结果不含可识别个人身份的信息。'
+      ]],
+      ['三、信息的共享与披露', [
+        '你的公开资料（姓名、岗位方向、工作经历概要）将向企业用户展示，你可自行设置可见范围。',
+        '企业联系方式仅在双方建立合作意向后向对方展示。',
+        '除法律法规要求或你明确授权外，我们不会向第三方提供你的个人信息。',
+        '因合并、收购导致信息转移的，我们将要求承接方继续受本政策约束。'
+      ]],
+      ['四、信息的存储与保护', [
+        '你的信息存储于中华人民共和国境内的服务器。',
+        '身份证号、银行账户等敏感信息采用加密存储，仅授权人员在必要范围内可访问。',
+        '我们采取访问控制、传输加密、操作审计等措施保护信息安全。',
+        '信息保存期限为账号存续期间及注销后法律法规要求的期限。'
+      ]],
+      ['五、你的权利', [
+        '你有权查询、更正你的个人信息。',
+        '你有权撤回授权同意，撤回后我们将停止相应处理，但不影响此前已进行的处理。',
+        '你有权注销账号，注销后我们将按法律规定删除或匿名化处理你的信息。',
+        '你有权获取你的信息副本。',
+        '你认为我们处理行为侵害你权益的，可向平台投诉或向监管部门反映。'
+      ]],
+      ['六、未成年人保护', [
+        '平台服务面向年满 18 周岁的用户，不接受未成年人注册。',
+        '发现未成年人使用平台的，我们将停止服务并删除相关信息。'
+      ]],
+      ['七、政策更新', [
+        '本政策更新时，我们将在平台公告并显著提示。',
+        '更新后你继续使用服务的，视为接受更新后的政策。'
+      ]]
+    ]
+  },
+
+  '企业入驻协议': {
+    lead: '本协议适用于申请入驻大咖平台、使用招聘与合作服务的企业用户。',
+    secs: [
+      ['一、入驻条件', [
+        '依法设立并有效存续的企业、个体工商户或其他组织。',
+        '具备与招聘需求相匹配的用工主体资格。',
+        '未被列入经营异常名录、严重违法失信名单。',
+        '法定代表人及主要经营者无重大失信记录。'
+      ]],
+      ['二、资质审核', [
+        '企业须提交营业执照、统一社会信用代码、法定代表人信息与招聘联系人信息。',
+        '平台在收到材料后 1 个工作日内完成初审，需要补充材料的将一次性告知。',
+        '审核通过的，企业获得发布职位与项目的权限；未通过的，可修改后重新提交。',
+        '企业名称、法定代表人、经营地址发生变更的，应在 30 日内提交变更申请并重新审核。',
+        '平台有权对已入驻企业进行抽查，发现资质失效的将暂停服务。'
+      ]],
+      ['三、企业权利', [
+        '在平台发布职位、项目需求，查看大咖公开资料。',
+        '对符合条件的大咖发起合作意向、进行沟通与面试。',
+        '使用平台提供的招聘管理、合作记录与数据统计功能。',
+        '对平台服务提出意见与建议。'
+      ]],
+      ['四、企业义务', [
+        '保证提交的资质材料真实、有效、完整。',
+        '保证发布的职位与项目信息真实，薪资待遇与实际一致。',
+        '依法与大咖签订劳动合同或合作协议，按时足额支付报酬。',
+        '保护大咖个人信息，不得用于招聘以外的用途。',
+        '配合平台处理投诉与纠纷，如实提供相关材料。'
+      ]],
+      ['五、服务费用', [
+        '平台基础服务免费；增值服务（置顶曝光、批量邀约、企业内训等）按页面标价收费。',
+        '已支付的服务费用，除平台原因导致服务无法提供外，不予退还。',
+        '平台调整收费标准的，将提前 30 日公告，已购服务不受影响。'
+      ]],
+      ['六、违约责任', [
+        '企业提交虚假材料的，平台有权立即终止服务、封禁账号，已支付费用不予退还。',
+        '企业发布虚假职位或收取费用的，按《违规处置细则》处理。',
+        '企业侵害大咖合法权益的，应自行承担赔偿责任，平台可协助维权。',
+        '企业违约给平台造成损失的，应予以赔偿。'
+      ]],
+      ['七、协议终止', [
+        '企业可随时申请注销账号，终止本协议。',
+        '企业严重违约或资质失效的，平台有权单方终止协议。',
+        '协议终止后，企业在平台已产生的合作仍应按约履行完毕。'
+      ]]
+    ]
+  },
+
+  '大咖合作协议': {
+    lead: '本协议适用于通过大咖平台与企业建立合作关系的个人用户（以下称「大咖」）。',
+    secs: [
+      ['一、服务内容', [
+        '平台为大咖提供资料展示、需求推荐、合作意向对接、沟通工具与信用记录服务。',
+        '平台提供 AI 职业规划、就业课程、能力评估等增值服务，具体以服务页面为准。',
+        '平台不向大咖收取注册费、推荐费、入职费。',
+        '平台为撮合服务提供方，不参与大咖与企业之间劳动或合作关系的建立与履行。'
+      ]],
+      ['二、资料与资质', [
+        '大咖应提供真实、完整的个人资料，包括教育背景、工作经历、项目经验与技能标签。',
+        '大咖须完成实名认证，认证信息包括姓名、身份证号与手机号。',
+        '资料发生变化的，应及时更新，避免因信息失效影响合作。',
+        '不得盗用他人作品、伪造项目经历或虚构学历与证书。'
+      ]],
+      ['三、合作达成', [
+        '企业发起合作意向后，大咖可自主决定是否接受，平台不强制撮合。',
+        '双方达成意向后，应在平台内确认合作形式（全职、兼职、项目制）与主要条款。',
+        '面试、试岗安排由双方协商确定，平台可提供协助但不参与具体安排。',
+        '合作达成后，双方应及时在平台更新合作状态，便于信用记录积累。'
+      ]],
+      ['四、报酬与结算', [
+        '劳动报酬由企业与大咖依法约定，平台不代收代付。',
+        '采用项目制的，建议在合作前以书面形式明确交付物、验收标准、付款节点与违约责任。',
+        '企业逾期支付的，大咖可向平台投诉，平台将视情况限制该企业发布新需求。',
+        '平台不承担企业欠薪的垫付责任，但可协助提供沟通记录与合作凭证。',
+        '大咖应依法申报并缴纳个人所得税。'
+      ]],
+      ['五、知识产权', [
+        '大咖在合作前已有的作品、代码、方法论，知识产权归大咖所有。',
+        '合作期间为完成企业任务而产生的成果，归属由双方约定；未约定的归企业所有，大咖享有署名权。',
+        '大咖不得将企业的商业秘密、未公开资料用于其他项目。'
+      ]],
+      ['六、保密', [
+        '大咖应对合作中接触的企业经营信息、技术资料、薪酬数据保密。',
+        '保密义务在合作终止后继续有效，期限为 2 年。',
+        '法律法规要求披露的，不视为违约，但应提前告知企业。'
+      ]],
+      ['七、违约责任', [
+        '大咖提供虚假资料的，平台有权下架资料、限制功能，情节严重的封禁账号。',
+        '大咖泄露企业商业秘密的，应承担相应赔偿责任。',
+        '大咖无正当理由不履行已确认合作的，平台将记录违约并在信用档案中体现。'
+      ]]
+    ]
+  }
+};
+
+
+/* ================= 文档切换 ================= */
+/* 行为总则的原始 DOM 存一份，用于回到首页 */
+const HOME_HTML = $('docMain').innerHTML;
+
+function renderDocHtml(title, d){
+  var html = '<h2 class="doc-title">' + title + '</h2>'
+    + '<p class="doc-lead">' + d.lead + '</p>';
+  d.secs.forEach(function(sec){
+    html += '<h3>' + sec[0] + '</h3><ol>'
+      + sec[1].map(function(i){ return '<li>' + i + '</li>'; }).join('')
+      + '</ol>';
+  });
+  return html;
+}
+
+function showHome(){
+  $('docMain').innerHTML = HOME_HTML;
+  $('docMain').style.display = '';
+  $('docBack').classList.remove('show');
+  $('navHome').classList.add('active');
+  document.querySelectorAll('.dn-sub a').forEach(a => a.classList.remove('on'));
+  $('crumbMid').style.display = 'none';
+  $('crumbNow').textContent = '规则说明';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+document.querySelectorAll('.dn-sub a').forEach(a => {
+  a.onclick = () => {
+    const name = a.dataset.doc;
+    const d = DOCS[name];
+    if(!d){ toast('该文档暂未开放'); return; }
+    $('docMain').innerHTML = renderDocHtml(name, d);
+    $('docMain').style.display = '';
+    $('docBack').classList.remove('show');
+    $('navHome').classList.remove('active');
+    document.querySelectorAll('.dn-sub a').forEach(x => x.classList.toggle('on', x === a));
+    $('crumbMid').style.display = 'inline-flex';
+    $('crumbNow').textContent = name;
+    window.scrollTo({ top:0, behavior:'smooth' });
+  };
+});
+
+$('navHome').onclick = showHome;
+
+if($('btnBackHome')) $('btnBackHome').onclick = showHome;
+
+/* ================= 菜单 ================= */
+const MODULES = {
+  job:     { name:'岗位管理', desc:'该模块页面已单独产出，菜单互通后可直接跳转。' },
+  project: { name:'项目管理', desc:'完成企业认证后开放。规划包含：项目发布、对接进度、交付与验收记录。' },
+  talent:  { name:'大咖管理', desc:'完成企业认证后开放。规划包含：已合作大咖、收藏夹、履约评价与黑名单。' }
+};
+
+const ICONS = {};
+document.querySelectorAll('.nav-item').forEach(el => {
+  ICONS[el.dataset.page] = el.querySelector('.ico').outerHTML;
+});
+
+const NAV_URL = { job:'岗位管理.html', project:'项目管理.html', intent:'意向大咖.html', expert:'大咖搜索.html', apply:'申请管理.html', setting:'设置.html' };
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.onclick = () => {
+    const key = el.dataset.page;
+    if(NAV_URL[key]){ location.href = encodeURI(NAV_URL[key]); return; }
+    if(key === 'rule'){
+      document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x === el));
+      $('page-rules').style.display = '';
+      $('page-stage').style.display = 'none';
+      $('crumbNow').textContent = '规则说明';
+    }
+  };
+});
+
+$('btnMsg').onclick = () => toast('消息中心页面待填充');
+$('btnMe').onclick  = () => toast('个人中心页面待填充');
+</script>
+</body>
+</html>
