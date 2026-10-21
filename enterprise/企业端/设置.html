@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>填写企业信息 - 企业端</title>
+<style>
+  :root{
+    --blue-800:#0A37C2;
+    --blue-700:#0F45E0;
+    --blue-600:#1750F0;
+    --blue-500:#2F6BFF;
+    --blue-400:#5B8CFF;
+    --blue-100:#E1EBFF;
+    --blue-50:#F1F6FF;
+    --line:#E7EDF9;
+    --line-strong:#D8E2F5;
+    --text:#111A2E;
+    --text-2:#46536B;
+    --muted:#8794AB;
+    --bg:#F4F7FD;
+    --white:#fff;
+    --radius:14px;
+    --shadow-sm:0 1px 2px rgba(16,35,80,.05);
+    --shadow-md:0 8px 24px rgba(16,35,80,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  svg{display:block}
+  button{font-family:inherit}
+
+  /* ---------- 骨架 ---------- */
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- 侧边栏 ---------- */
+  .sidebar{
+    width:236px;flex:0 0 236px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:20;
+  }
+  .logo{
+    height:66px;display:flex;align-items:center;gap:11px;padding:0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;flex:0 0 36px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 14px rgba(23,80,240,.34);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;line-height:1.25}
+  .logo-text span{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:1.2px;margin-top:2px}
+
+  .nav{padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;height:42px;padding:0 12px;border-radius:10px;
+    color:var(--text-2);font-size:14px;cursor:pointer;user-select:none;
+    transition:background .16s,color .16s,transform .16s;
+  }
+  .nav-item .ico{width:18px;height:18px;flex:0 0 18px;color:#7B88A0;transition:color .16s}
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item:hover .ico{color:var(--blue-500)}
+  .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));
+    color:#fff;font-weight:600;
+    box-shadow:0 8px 18px rgba(23,80,240,.30);
+  }
+  .nav-item.active .ico{color:#fff}
+
+  .sidebar-bottom{
+    margin-top:auto;padding:12px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:3px;
+  }
+  .sidebar-bottom .nav-item{height:40px;font-size:13.5px;color:#5D6B82}
+  .sidebar-bottom .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;
+  }
+
+  /* ---------- 主区 ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;
+    position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .crumb .sep{color:#C6D1E4}
+  .crumb b{color:var(--text);font-weight:600;font-size:13.5px}
+  .topbar .spacer{flex:1}
+
+  .tbtn{
+    height:36px;padding:0 13px;border-radius:10px;border:1px solid transparent;background:transparent;
+    color:var(--text-2);font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    transition:.16s;position:relative;
+  }
+  .tbtn:hover{background:var(--blue-50);border-color:var(--blue-100);color:var(--blue-600)}
+  .tbtn .ico{width:18px;height:18px;color:#6C7A93}
+  .tbtn:hover .ico{color:var(--blue-600)}
+  .tbtn.me{padding-left:6px}
+  .avatar{
+    width:28px;height:28px;border-radius:50%;flex:0 0 28px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 8px rgba(23,80,240,.28);
+  }
+  .badge-dot{
+    position:absolute;top:-5px;right:-7px;min-width:16px;height:16px;padding:0 5px;border-radius:9px;
+    background:#E5484D;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;
+    box-shadow:0 0 0 2px #fff;
+  }
+  .ico-wrap{position:relative;display:inline-flex;width:18px;height:18px;flex:0 0 18px}
+  .vline{width:1px;height:20px;background:var(--line-strong);margin:0 6px}
+
+  .content{
+    flex:1;padding:22px 24px 28px;min-width:0;
+    background:
+      radial-gradient(1100px 380px at 8% -12%, #E9F1FF 0%, rgba(233,241,255,0) 62%),
+      radial-gradient(800px 300px at 100% 0%, #EFF5FF 0%, rgba(239,245,255,0) 55%),
+      var(--bg);
+  }
+
+  /* ---------- 占位卡片 ---------- */
+  .stage{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);min-height:calc(100vh - 158px);
+    display:flex;align-items:center;justify-content:center;padding:48px 32px;
+  }
+  .stage-inner{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:520px}
+  .stage-ico{
+    width:74px;height:74px;border-radius:22px;
+    background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid #DCE8FF;
+    display:flex;align-items:center;justify-content:center;color:var(--blue-600);
+    box-shadow:0 10px 26px rgba(23,80,240,.12);
+    margin-bottom:22px;
+  }
+  .stage-ico svg{width:30px;height:30px}
+  .stage-title{font-size:21px;font-weight:700;letter-spacing:.2px;color:var(--text)}
+  .stage-sub{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
+  .stage-flag{
+    margin-top:20px;display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;color:var(--blue-600);background:var(--blue-50);
+    border:1px solid var(--blue-100);border-radius:20px;padding:5px 13px;
+  }
+  .stage-flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue-500)}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#0F1830;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.22s;
+    box-shadow:0 12px 32px rgba(0,0,0,.22);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1080px){
+    .sidebar{width:200px;flex:0 0 200px}
+    .content{padding:18px}
+  }
+
+  /* ==============================================================
+     【本页新增·隔离区】
+     以上自 infoshar_company_portal.html 原样搬入，未改动。
+     以下：五组完整字段 + 顶部横向认证进度 + 所在地区地图选点。
+     ============================================================== */
+
+  /* ---------- 页头 ---------- */
+  .page-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .ph-title{font-size:21px;font-weight:700;letter-spacing:.2px;display:flex;align-items:center;gap:11px}
+  .ph-right{margin-left:auto;display:flex;align-items:center;gap:11px;flex:0 0 auto}
+
+  .st-pill{
+    display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 11px;border-radius:20px;
+    font-size:12px;font-weight:600;border:1px solid transparent;white-space:nowrap;
+  }
+  .st-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-0{background:#EFF3FA;border-color:#E1E8F4;color:#68758D}
+  .st-1{background:#FEF5E7;border-color:#F8E3BE;color:#B4730C}
+  .st-2{background:var(--blue-50);border-color:var(--blue-100);color:var(--blue-600)}
+  .st-3{background:#E9F8F0;border-color:#C9EDDB;color:#0E8A4E}
+  .st-4{background:#FDEDED;border-color:#F8D2D3;color:#C4363B}
+
+  .demo-lb{font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .demo-switch{display:flex;gap:2px;padding:3px;background:#EDF2FA;border-radius:10px}
+  .demo-switch button{
+    height:26px;padding:0 10px;border:none;background:transparent;border-radius:7px;cursor:pointer;
+    font-size:12px;color:var(--text-2);transition:.15s;white-space:nowrap;font-family:inherit;
+  }
+  .demo-switch button:hover{color:var(--blue-600)}
+  .demo-switch button.on{background:#fff;color:var(--blue-600);font-weight:600;box-shadow:0 1px 3px rgba(16,35,80,.10)}
+
+  /* ---------- 顶部横向认证进度 ---------- */
+  .progress{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);padding:19px 26px 20px;margin-bottom:18px;
+  }
+  .prog-track{display:flex;align-items:center}
+  .pstep{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+  .pstep .num{
+    width:26px;height:26px;border-radius:50%;flex:0 0 26px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:700;
+    background:#fff;border:1.5px solid var(--line-strong);color:#B6C0D0;
+  }
+  .pstep .lb{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap}
+  .pstep.todo .lb{color:#9AA6BA;font-weight:500}
+  .pstep.done .num{background:#0E8A4E;border-color:#0E8A4E;color:#fff}
+  .pstep.cur .num{border-color:var(--blue-500);color:var(--blue-600);box-shadow:0 0 0 4px rgba(47,107,255,.12)}
+  .pstep .now{
+    font-size:10.5px;font-weight:600;color:var(--blue-600);background:var(--blue-50);
+    border:1px solid var(--blue-100);border-radius:20px;padding:1px 7px;margin-left:2px;
+  }
+  .pline{flex:1 1 auto;height:2px;background:var(--line-strong);margin:0 17px;min-width:34px;border-radius:1px}
+  .pline.done{background:#B7E2CB}
+
+  .prog-reject{
+    display:none;margin-top:15px;padding:11px 14px;border-radius:10px;
+    background:#FDEDED;border:1px solid #F8D2D3;color:#B93237;font-size:12.5px;line-height:1.65;
+  }
+  .prog-reject.show{display:block}
+  .prog-reject b{font-weight:600}
+
+  /* ---------- 面板 ---------- */
+  .panel{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);overflow:hidden;
+  }
+  .panel-head{
+    padding:15px 22px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#FCFDFF,#fff);
+  }
+  .panel-head .t{font-size:14px;font-weight:700;letter-spacing:.2px}
+  .panel-head .pill{
+    font-size:11px;font-weight:600;color:var(--blue-600);background:var(--blue-50);
+    border:1px solid var(--blue-100);border-radius:20px;padding:2px 9px;
+  }
+  .panel-head .spacer{flex:1}
+  .panel-head .tip{font-size:11.5px;color:var(--muted)}
+  .panel-body{padding:22px}
+  .panel-foot{
+    padding:15px 22px;border-top:1px solid var(--line);background:#FCFDFF;
+    display:flex;align-items:center;gap:10px;
+  }
+  .panel-foot .tip{font-size:12px;color:var(--muted)}
+  .panel-foot .spacer{flex:1}
+
+  /* ---------- 分节 ---------- */
+  .sec{display:flex;align-items:center;gap:9px;margin:26px 0 16px;padding-top:22px;border-top:1px dashed var(--line)}
+  .sec.first{margin-top:0;padding-top:0;border-top:none}
+  .sec .n{
+    width:20px;height:20px;border-radius:7px;flex:0 0 20px;
+    background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);
+    font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;
+  }
+  .sec .t{font-size:13.5px;font-weight:700;color:var(--text);letter-spacing:.2px}
+
+  /* ---------- 表单 ---------- */
+  .form-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:15px 16px}
+  .fi{display:flex;flex-direction:column;gap:7px;min-width:0}
+  .form-grid>.fi{grid-column:span 2}
+  .fi.span3{grid-column:span 3}
+  .fi.full{grid-column:1/-1}
+  .fi>label{
+    font-size:12.5px;font-weight:600;color:var(--text-2);
+    display:flex;align-items:center;gap:4px;flex-wrap:wrap;
+  }
+  .fi>label .req{color:#E5484D;font-style:normal;margin-left:1px}
+  .fi>label .unit{margin-left:6px;font-size:11px;font-weight:400;color:#B2BCCC}
+
+  .ctl{
+    height:42px;width:100%;border:1px solid var(--line-strong);border-radius:10px;
+    padding:0 13px;font-size:13.5px;color:var(--text);background:#fff;outline:none;
+    font-family:inherit;transition:border-color .16s,box-shadow .16s;
+  }
+  .ctl::placeholder{color:#B6C0D0}
+  .ctl:hover:not(:disabled){border-color:#C3D0E8}
+  .ctl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(47,107,255,.13)}
+  .ctl:disabled{background:#F5F8FD;color:#A8B3C6;border-color:#E7EDF9;cursor:not-allowed}
+  textarea.ctl{height:auto;min-height:88px;padding:11px 13px;line-height:1.7;resize:vertical}
+  select.ctl{
+    appearance:none;cursor:pointer;padding-right:34px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2.4 4.4 6 8l3.6-3.6' stroke='%238794AB' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center;
+  }
+  .ctl.err{border-color:#E5484D;background:#FFF9F9;box-shadow:0 0 0 3px rgba(229,72,77,.10)}
+
+  .ctl-ro{
+    height:42px;display:flex;align-items:center;padding:0 13px;border-radius:10px;
+    background:#F7F9FD;border:1px dashed var(--line-strong);color:var(--text-2);font-size:13px;
+    overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+  }
+  .ctl-ro.na{color:#AEB9CB}
+
+  /* ---------- 工作地点 ---------- */
+  .loc-card{border:1px solid var(--line);border-radius:12px;background:#FBFCFE;padding:16px 16px 18px}
+  .loc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:15px}
+  .loc-t{font-size:13.5px;font-weight:700;color:var(--text);letter-spacing:.2px}
+  .loc-btn{
+    height:30px;padding:0 12px;border-radius:8px;cursor:pointer;
+    background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);
+    font-size:12.5px;font-weight:500;display:inline-flex;align-items:center;gap:5px;
+    font-family:inherit;transition:.16s;white-space:nowrap;
+  }
+  .loc-btn:hover:not(:disabled){background:var(--blue-100);border-color:#C6DAFF}
+  .loc-btn:disabled{opacity:.6;cursor:not-allowed}
+  .loc-btn svg{width:13px;height:13px;flex:0 0 13px}
+  .loc-row+.loc-row{margin-top:0}
+  .loc-lb{font-size:12px;color:var(--text-2);margin-bottom:7px;display:flex;align-items:center;gap:1px}
+  .loc-lb .req{color:#E5484D;font-style:normal}
+  .addr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .ta-box{position:relative}
+  .ta-box .ctl{padding-right:58px}
+  .cc{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:11.5px;color:#B6C0D0;pointer-events:none}
+  @keyframes rotLoc{to{transform:rotate(360deg)}}
+  /* ============================================================
+     【新增】工作地点 + 地图选点（1:1 复刻 Position_Management）
+     ============================================================ */
+  .loc-wrap{display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:16px;align-items:start}
+  .loc-fields{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .cascade.narrow{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .loc-fields .cascade.narrow{max-width:370px}
+
+  .map-card{
+    border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff;
+    box-shadow:var(--shadow-sm);cursor:pointer;transition:.16s;
+  }
+  .map-card:hover{border-color:var(--blue-400);box-shadow:0 10px 24px rgba(22,87,240,.14)}
+  .map-thumb{height:118px;position:relative;background:#EFF3EA;overflow:hidden}
+  .map-thumb svg{width:100%;height:100%;display:block}
+  .map-thumb .mt-pin{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-100%);
+    width:22px;height:32px;color:var(--blue-600);filter:drop-shadow(0 3px 6px rgba(18,38,74,.28));
+  }
+  .map-thumb .mt-pin svg{width:22px;height:32px}
+  .map-card-foot{
+    display:flex;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--line);background:#fff;
+  }
+  .map-card-foot span{
+    font-size:11.5px;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .map-card-foot b{color:var(--blue-600);font-weight:600;font-size:12px;white-space:nowrap}
+  .map-card.picked .map-card-foot span{color:var(--text-2);font-weight:500}
+
+  /* ---------- 地图选点（覆盖整个视口） ---------- */
+  .map-view{
+    position:fixed;inset:0;z-index:120;background:#EFF3EA;
+    display:none;flex-direction:column;overflow:hidden;
+  }
+  .map-view.show{display:flex}
+  .mv-head{
+    flex:0 0 auto;height:56px;display:flex;align-items:center;gap:12px;padding:0 16px;
+    background:#fff;border-bottom:1px solid var(--line);position:relative;z-index:2;
+  }
+  .mv-back{
+    display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px 0 9px;border-radius:8px;
+    border:1px solid var(--line-strong);background:#fff;color:var(--text-2);font-size:13px;
+    font-family:inherit;cursor:pointer;transition:.15s;flex:0 0 auto;
+  }
+  .mv-back:hover{border-color:var(--blue-400);color:var(--blue-600);background:var(--blue-50)}
+  .mv-back svg{width:14px;height:14px}
+  .mv-title{font-size:14px;font-weight:700;white-space:nowrap}
+  .mv-cities{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .mv-city{
+    height:28px;padding:0 11px;border-radius:14px;border:1px solid var(--line-strong);background:#fff;
+    color:var(--text-2);font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s;
+  }
+  .mv-city:hover{border-color:var(--blue-400);color:var(--blue-600)}
+  .mv-city.on{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+  .mv-canvas{flex:1;position:relative;overflow:hidden;min-height:0;cursor:crosshair}
+  .mv-canvas > svg{width:100%;height:100%;display:block}
+  .mv-hint{
+    position:absolute;left:50%;top:14px;transform:translateX(-50%);
+    background:rgba(26,34,49,.74);color:#fff;font-size:12px;padding:6px 12px;border-radius:14px;
+    pointer-events:none;
+  }
+  .mv-panel{
+    flex:0 0 auto;background:#fff;border-top:1px solid var(--line);padding:12px 16px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .mv-empty{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .mv-empty svg{width:15px;height:15px;flex:0 0 15px;color:#A9B6C7}
+  .mi{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:0}
+  .mi-ico{
+    width:34px;height:34px;border-radius:10px;flex:0 0 34px;
+    background:var(--blue-50);border:1px solid #DCE8FF;color:var(--blue-600);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .mi-ico svg{width:17px;height:17px}
+  .mi-name{font-size:13.5px;font-weight:700;color:var(--text)}
+  .mi-addr{font-size:12.5px;color:var(--text-2);margin-top:3px;line-height:1.5}
+  .mi-meta{font-size:11.5px;color:var(--muted);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+  .mv-panel .spacer{flex:1}
+  .mv-panel .btn{height:34px}
+  .mv-panel .btn-primary{height:36px;padding:0 18px}
+  .mv-panel .btn-primary:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  #mapPop{position:absolute;left:0;top:0;display:none;pointer-events:none;z-index:2}
+
+  .loc-spin{display:inline-block;animation:rotLoc .9s linear infinite}
+
+  /* ---------- 营业执照 ---------- */
+  .lic-card{border:1px solid var(--line);border-radius:12px;background:#FBFCFE;padding:15px;transition:.16s}
+  .lic-card.err{border-color:#E5484D;background:#FFF9F9}
+  .lic-top{display:flex;align-items:center;gap:9px;margin-bottom:13px;flex-wrap:wrap}
+  .lic-top .t{font-size:12.5px;font-weight:700;color:var(--text-2)}
+  .lic-top .tag-req{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;background:#FDEDED;color:#C4363B;border:1px solid #F8D2D3}
+  .lic-top .spacer{flex:1}
+  .lic-top .mode{font-size:11px;color:var(--muted)}
+
+  .drop{
+    display:flex;align-items:center;gap:15px;padding:14px;border:1.5px dashed var(--line-strong);
+    border-radius:11px;background:#fff;cursor:pointer;transition:.16s;
+  }
+  .drop:hover{border-color:var(--blue-400);background:#FAFCFF}
+  .drop.has{border-style:solid;border-color:var(--line);cursor:default}
+  .thumb{
+    width:118px;height:76px;flex:0 0 118px;border-radius:9px;background:linear-gradient(135deg,#EFF5FF,#DEE9FF);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+    color:var(--blue-600);font-size:11.5px;font-weight:600;position:relative;overflow:hidden;
+  }
+  .thumb.has{background:linear-gradient(135deg,#F7FAFF,#E9F1FF)}
+  .thumb .stamp{
+    position:absolute;right:6px;bottom:6px;background:rgba(10,55,194,.85);color:#fff;
+    font-size:9.5px;font-weight:500;padding:1.5px 6px;border-radius:5px;letter-spacing:.2px;
+  }
+  .drop-info{min-width:0;flex:1}
+  .drop-name{font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .drop-name.na{color:var(--text-2);font-weight:500}
+  .drop-tip{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.6}
+  .drop-act{display:flex;gap:8px;flex:0 0 auto}
+
+  .lv{
+    margin-top:11px;border-radius:10px;padding:11px 13px;font-size:12.5px;line-height:1.6;
+    display:flex;align-items:flex-start;gap:10px;border:1px solid transparent;
+  }
+  .lv .ic{flex:0 0 auto;font-size:13px;line-height:1.45}
+  .lv .bd{min-width:0;flex:1}
+  .lv b{font-weight:600}
+  .lv .sub{font-size:11.5px;margin-top:3px;opacity:.88;line-height:1.6}
+  .lv-wait{background:var(--blue-50);border-color:var(--blue-100);color:#12408F}
+  .lv-run{background:#FEF5E7;border-color:#F8E3BE;color:#A56A08}
+  .lv-ok{background:#E9F8F0;border-color:#C9EDDB;color:#0B7B46}
+  .lv-bad{background:#FDEDED;border-color:#F8D2D3;color:#B93237}
+  .lv-manual{background:#F4F7FD;border-color:#E7EDF9;color:var(--text-2)}
+  .lv .chips{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}
+  .lv .chips span{
+    font-size:10.5px;padding:1.5px 7px;border-radius:5px;background:rgba(255,255,255,.78);
+    border:1px solid rgba(0,0,0,.05);font-weight:500;
+  }
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .spin{display:inline-block;animation:rot .9s linear infinite}
+
+  /* 回填高亮 */
+  @keyframes flashFill{
+    0%{background:#FFF7E4;border-color:#F0CD8E;box-shadow:0 0 0 3px rgba(240,170,40,.13)}
+    100%{background:#fff;border-color:var(--line-strong);box-shadow:none}
+  }
+  .flash{animation:flashFill 2.2s ease-out forwards}
+
+  /* ---------- 按钮 ---------- */
+  .btn{
+    height:38px;padding:0 17px;border-radius:10px;border:1px solid var(--line-strong);
+    background:#fff;color:var(--text-2);font-size:13.5px;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    transition:.16s;white-space:nowrap;font-family:inherit;
+  }
+  .btn:hover{border-color:var(--blue-400);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;
+    color:#fff;font-weight:600;box-shadow:0 8px 18px rgba(23,80,240,.28);
+  }
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+  .btn-ghost:hover{background:#FFF3F3;color:#C4363B;border-color:#F8D2D3}
+  .btn-sm{height:32px;padding:0 12px;font-size:12.5px;border-radius:9px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  @media (max-width:1120px){
+    .form-grid{grid-template-columns:1fr}
+    .form-grid>.fi,.fi.full,.fi.span3{grid-column:auto}
+    .prog-track{flex-wrap:wrap;gap:10px}
+    .pline{min-width:20px}
+  }
+  @media (max-width:900px){
+    .loc-wrap{grid-template-columns:minmax(0,1fr)}
+    .map-card{max-width:370px}
+    .map-thumb{height:132px}
+  }
+</style>
+<script>
+/* ================================================================
+   地图选点模块（1:1 复刻 Position_Management 的工作地点地图）
+   用法：MapPicker.init({ getArea, onApply })
+   ================================================================ */
+const MapPicker = (function () {
+  const MAP_CITIES = [
+    { prov:'广东省', city:'深圳市', label:'深圳', lng:114.06, lat:22.54, pois:[
+      { n:'南山科技园', d:'南山区', a:'科苑路 8 号 3 栋 12 层', x:470, y:392, t:'甲级写字楼' },
+      { n:'前海自贸区', d:'南山区', a:'前海大道 66 号 A 座 18 层', x:352, y:436, t:'商务办公' },
+      { n:'福田车公庙', d:'福田区', a:'深南大道 6011 号 NEO 大厦 9 层', x:600, y:334, t:'商务办公' },
+      { n:'宝安中心区', d:'宝安区', a:'新湖路 99 号互联网产业基地 B 栋', x:286, y:298, t:'产业园' },
+      { n:'龙岗坂田',   d:'龙岗区', a:'雅宝路 1 号星河 WORLD C 栋 7 层', x:772, y:262, t:'产业园' }
+    ]},
+    { prov:'北京市', city:'北京市', label:'北京', lng:116.40, lat:39.90, pois:[
+      { n:'中关村软件园', d:'海淀区', a:'东北旺西路 8 号院 23 号楼', x:420, y:300, t:'科技园区' },
+      { n:'西二旗',       d:'海淀区', a:'西二旗中路 33 号院 6 号楼', x:352, y:236, t:'办公园区' },
+      { n:'国贸 CBD',     d:'朝阳区', a:'建国门外大街 1 号国贸三期 28 层', x:648, y:356, t:'甲级写字楼' },
+      { n:'亦庄经开区',   d:'大兴区', a:'荣华南路 15 号院 3 号楼', x:700, y:512, t:'产业园' }
+    ]},
+    { prov:'上海市', city:'上海市', label:'上海', lng:121.47, lat:31.23, pois:[
+      { n:'张江高科',   d:'浦东新区', a:'碧波路 690 号 5 号楼', x:600, y:382, t:'科技园区' },
+      { n:'陆家嘴',     d:'浦东新区', a:'世纪大道 100 号环球金融中心 32 层', x:646, y:322, t:'甲级写字楼' },
+      { n:'徐家汇',     d:'徐汇区',   a:'漕溪北路 88 号圣爱大厦 15 层', x:418, y:398, t:'商务办公' },
+      { n:'虹桥商务区', d:'闵行区',   a:'申长路 988 弄 2 号楼', x:300, y:362, t:'商务办公' }
+    ]},
+    { prov:'浙江省', city:'杭州市', label:'杭州', lng:120.15, lat:30.27, pois:[
+      { n:'未来科技城',     d:'余杭区', a:'文一西路 969 号 3 号楼', x:362, y:300, t:'科技园区' },
+      { n:'滨江物联网小镇', d:'滨江区', a:'江陵路 88 号 5 幢', x:520, y:446, t:'产业园' },
+      { n:'文三路数字大厦', d:'西湖区', a:'文三路 90 号 12 层', x:446, y:352, t:'商务办公' }
+    ]},
+    { prov:'江苏省', city:'苏州市', label:'苏州', lng:120.62, lat:31.32, pois:[
+      { n:'苏州工业园区', d:'工业园区', a:'星湖街 328 号创意产业园 6 栋', x:520, y:376, t:'产业园' },
+      { n:'吴中太湖新城', d:'吴中区',   a:'东吴北路 188 号 9 层', x:420, y:466, t:'商务办公' }
+    ]}
+  ];
+
+  let cfg = { getArea: function(){ return { prov:'', city:'', district:'' }; }, onApply: function(){} };
+  let cityIdx = 0;
+  let sel = null;
+  let bound = false;
+
+  function $(id){ return document.getElementById(id); }
+
+  function mapRand(seed){
+    let s = seed % 233280;
+    return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  }
+
+  /* 离线 SVG 底图：水系 / 绿地 / 街区 / 路网 */
+  function mapArt(opt){
+    opt = opt || {};
+    const rnd = mapRand(opt.seed || 11);
+    const detail = !!opt.detail;
+    let out = '<rect width="1000" height="640" fill="#EFF3EA"/>';
+
+    out += '<path d="M0 516 C170 468 262 546 432 510 C612 472 772 544 1000 496 L1000 640 L0 640 Z" fill="#CBE3F4"/>';
+    out += '<path d="M0 516 C170 468 262 546 432 510 C612 472 772 544 1000 496" fill="none" stroke="#B5D7EE" stroke-width="3"/>';
+
+    [[58,84,196,124],[652,54,262,132],[286,430,208,110]].forEach(p => {
+      out += `<rect x="${p[0]}" y="${p[1]}" width="${p[2]}" height="${p[3]}" rx="20" fill="#D9E8CE"/>`;
+    });
+
+    const cxs = [0,170,345,520,690,860,1000];
+    const cys = [0,130,255,380,505,640];
+    for (let j = 0; j < cys.length - 1; j++){
+      for (let i = 0; i < cxs.length - 1; i++){
+        const x0 = cxs[i] + 14, y0 = cys[j] + 14;
+        const w = cxs[i+1] - cxs[i] - 28, h = cys[j+1] - cys[j] - 28;
+        if (w < 44 || h < 40) continue;
+        const ix = x0 + rnd() * 6, iy = y0 + rnd() * 6;
+        const iw = w - rnd() * 14, ih = h - rnd() * 14;
+        const tone = rnd() > .6 ? '#DDE6D2' : '#E3EAD8';
+        out += `<rect x="${ix.toFixed(1)}" y="${iy.toFixed(1)}" width="${iw.toFixed(1)}" height="${ih.toFixed(1)}" rx="6" fill="${tone}" stroke="#D5DFC9" stroke-width="1"/>`;
+        if (rnd() > .45){
+          out += `<rect x="${(ix+8).toFixed(1)}" y="${(iy+8).toFixed(1)}" width="${(iw*0.42).toFixed(1)}" height="${(ih*0.32).toFixed(1)}" rx="4" fill="#D2DCC6"/>`;
+        }
+        if (rnd() > .55){
+          out += `<rect x="${(ix+iw*0.52).toFixed(1)}" y="${(iy+ih*0.52).toFixed(1)}" width="${(iw*0.34).toFixed(1)}" height="${(ih*0.28).toFixed(1)}" rx="4" fill="#D2DCC6"/>`;
+        }
+      }
+    }
+
+    [170,345,520,690,860].forEach(x => {
+      out += `<line x1="${x}" y1="0" x2="${x}" y2="640" stroke="#D8E1EC" stroke-width="17"/>`;
+      out += `<line x1="${x}" y1="0" x2="${x}" y2="640" stroke="#FFFFFF" stroke-width="11"/>`;
+    });
+    [130,255,380,505].forEach(y => {
+      out += `<line x1="0" y1="${y}" x2="1000" y2="${y}" stroke="#D8E1EC" stroke-width="17"/>`;
+      out += `<line x1="0" y1="${y}" x2="1000" y2="${y}" stroke="#FFFFFF" stroke-width="11"/>`;
+    });
+
+    out += '<path d="M-20 470 C200 424 386 300 620 244 C780 206 900 196 1020 208" fill="none" stroke="#F2DCB4" stroke-width="24" stroke-linecap="round"/>';
+    out += '<path d="M-20 470 C200 424 386 300 620 244 C780 206 900 196 1020 208" fill="none" stroke="#FFEFD2" stroke-width="16" stroke-linecap="round"/>';
+
+    if (detail){
+      out += '<text x="96" y="152" font-size="13" fill="#9AA79B" letter-spacing="2">高新区</text>';
+      out += '<text x="700" y="126" font-size="13" fill="#9AA79B" letter-spacing="2">生态公园</text>';
+      out += '<text x="356" y="484" font-size="13" fill="#9AA79B" letter-spacing="2">滨水绿廊</text>';
+      out += '<text x="636" y="586" font-size="12" fill="#8FB6D2" letter-spacing="2">滨江大道</text>';
+      out += '<text x="120" y="360" font-size="11" fill="#A8B3A9" transform="rotate(-90 120 360)">科苑路</text>';
+      out += '<text x="196" y="320" font-size="11" fill="#C9A46A" transform="rotate(-27 196 320)">深南大道</text>';
+    }
+    return out;
+  }
+
+  function pinMarkup(){
+    return '<g id="mapPin" style="display:none">' +
+        '<circle cx="0" cy="-34" r="22" fill="#1657F0" opacity=".12"/>' +
+        '<path d="M0 0 C-9 -13 -15 -21 -15 -30 A15 15 0 1 1 15 -30 C15 -21 9 -13 0 0 Z" fill="#1657F0" stroke="#fff" stroke-width="2.5"/>' +
+        '<circle cx="0" cy="-30" r="5.2" fill="#fff"/>' +
+      '</g>';
+  }
+
+  function poiMarkup(city){
+    return city.pois.map(p =>
+      `<g><circle cx="${p.x}" cy="${p.y}" r="4.6" fill="#1657F0" opacity=".42"/>` +
+      `<text x="${p.x + 9}" y="${p.y + 4}" font-size="11.5" fill="#6F7F72">${p.n}</text></g>`
+    ).join('');
+  }
+
+  function renderCities(){
+    const box = $('mvCities');
+    if (!box) return;
+    box.innerHTML = MAP_CITIES.map((c, i) =>
+      `<button type="button" class="mv-city ${i === cityIdx ? 'on' : ''}" data-i="${i}">${c.label}</button>`
+    ).join('');
+  }
+
+  function renderMap(){
+    const svg = $('mapSvg');
+    if (!svg) return;
+    const c = MAP_CITIES[cityIdx];
+    svg.innerHTML = mapArt({ seed: 11 + cityIdx * 13, detail: true }) + poiMarkup(c) + pinMarkup();
+    if (sel) placePin(sel.x, sel.y);
+  }
+
+  function placePin(x, y){
+    const pin = $('mapPin');
+    if (!pin) return;
+    pin.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+    pin.style.display = 'block';
+  }
+
+  function renderPanel(){
+    const empty = $('mvEmpty'), info = $('mvInfo'), ok = $('btnMapOk'), hint = $('mvHint');
+    if (!empty) return;
+    if (!sel){
+      empty.style.display = 'flex';
+      if (info) info.style.display = 'none';
+      if (ok) ok.disabled = true;
+      if (hint) hint.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    if (info) info.style.display = 'flex';
+    if (ok) ok.disabled = false;
+    if (hint) hint.style.display = 'none';
+    $('miName').textContent = sel.name;
+    $('miAddr').textContent = `${sel.prov}${sel.city}${sel.district} ${sel.addr}`;
+    $('miGeo').textContent = `经纬度 ${sel.lng}, ${sel.lat}`;
+    $('miType').textContent = sel.type;
+  }
+
+  function selectAt(x, y){
+    const c = MAP_CITIES[cityIdx];
+    let best = null, bd = 1e9;
+    c.pois.forEach(p => {
+      const d = Math.hypot(p.x - x, p.y - y);
+      if (d < bd){ bd = d; best = p; }
+    });
+    const near = best && bd < 70;
+    sel = {
+      prov: c.prov,
+      city: c.city,
+      district: best ? best.d : '',
+      name: best ? (near ? best.n : best.n + '附近') : '自定义位置',
+      addr: best ? best.a : '请补充门牌号与楼层',
+      type: best ? best.t : '自定义选点',
+      x: x, y: y,
+      lng: (c.lng + (x - 500) / 9000).toFixed(4),
+      lat: (c.lat - (y - 320) / 9000).toFixed(4)
+    };
+    placePin(x, y);
+    renderPanel();
+  }
+
+  function open(){
+    const a = cfg.getArea() || {};
+    const idx = MAP_CITIES.findIndex(c => c.city === a.city);
+    cityIdx = idx < 0 ? 0 : idx;
+    sel = null;
+    renderCities();
+    renderMap();
+    renderPanel();
+    const v = $('mapView');
+    if (v) v.classList.add('show');
+  }
+
+  function close(){
+    const v = $('mapView');
+    if (v) v.classList.remove('show');
+  }
+
+  /* 缩略图：随省市区变化 */
+  function syncThumb(){
+    const a = cfg.getArea() || {};
+    const idx = MAP_CITIES.findIndex(c => c.city === a.city);
+    const i = idx < 0 ? 0 : idx;
+    const thumb = $('mapThumb');
+    if (thumb){
+      thumb.innerHTML =
+        `<svg viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice">${mapArt({ seed: 11 + i * 13, detail: false })}</svg>` +
+        (a.prov
+          ? '<span class="mt-pin"><svg viewBox="-16 -48 32 50" fill="currentColor">' +
+            '<path d="M0 0 C-9 -13 -15 -21 -15 -30 A15 15 0 1 1 15 -30 C15 -21 9 -13 0 0 Z"/>' +
+            '<circle cx="0" cy="-30" r="5" fill="#fff"/></svg></span>'
+          : '');
+    }
+    const txt = $('mapCardText');
+    if (txt) txt.textContent = a.prov ? `${a.prov} ${a.city} ${a.district}` : '点击地图选择工作地点';
+    const card = $('mapCard');
+    if (card) card.classList.toggle('picked', !!a.prov);
+  }
+
+  function applySelection(){
+    if (!sel) return;
+    cfg.onApply(sel);
+    syncThumb();
+    close();
+  }
+
+  function bind(){
+    if (bound) return;
+    bound = true;
+    const card = $('mapCard');
+    if (card) card.addEventListener('click', open);
+    const back = $('btnMapBack');  if (back)  back.addEventListener('click', close);
+    const cancel = $('btnMapCancel'); if (cancel) cancel.addEventListener('click', close);
+    const ok = $('btnMapOk'); if (ok) ok.addEventListener('click', applySelection);
+
+    const cities = $('mvCities');
+    if (cities) cities.addEventListener('click', (e) => {
+      const b = e.target.closest('.mv-city');
+      if (!b) return;
+      cityIdx = +b.dataset.i;
+      sel = null;
+      renderCities();
+      renderMap();
+      renderPanel();
+    });
+
+    const canvas = $('mvCanvas');
+    if (canvas) canvas.addEventListener('click', (e) => {
+      const svg = $('mapSvg');
+      if (!svg) return;
+      const r = svg.getBoundingClientRect();
+      const scale = Math.max(r.width / 1000, r.height / 640);
+      const offX = (r.width - 1000 * scale) / 2;
+      const offY = (r.height - 640 * scale) / 2;
+      const x = (e.clientX - r.left - offX) / scale;
+      const y = (e.clientY - r.top - offY) / scale;
+      if (x < 6 || y < 6 || x > 994 || y > 634) return;
+      selectAt(x, y);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && $('mapView') && $('mapView').classList.contains('show')){
+        e.stopPropagation();
+        close();
+      }
+    }, true);
+  }
+
+  return {
+    init: function(options){
+      cfg = Object.assign(cfg, options || {});
+      bind();
+      syncThumb();
+    },
+    open: open,
+    close: close,
+    syncThumb: syncThumb,
+    MAP_CITIES: MAP_CITIES
+  };
+})();
+
+</script>
+</head>
+<body>
+<!-- ================================================================
+     地图选点（覆盖整个视口）
+     ================================================================ -->
+<div class="map-view" id="mapView">
+  <div class="mv-head">
+    <button class="mv-back" type="button" id="btnMapBack">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 5 8 12l7 7"/>
+      </svg>
+      返回
+    </button>
+    <div class="mv-title">选择工作地点</div>
+    <div class="mv-cities" id="mvCities"></div>
+  </div>
+  <div class="mv-canvas" id="mvCanvas">
+    <svg id="mapSvg" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid slice"></svg>
+    <div class="mv-hint" id="mvHint">点击地图任意位置选择工作地点</div>
+  </div>
+  <div class="mv-panel">
+    <div class="mv-empty" id="mvEmpty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s6.5-5.6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.4 6.5 11 6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>
+      </svg>
+      尚未选择位置，点击上方地图任意位置选点
+    </div>
+    <div class="mi" id="mvInfo" style="display:none">
+      <div class="mi-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21s6.5-5.6 6.5-11A6.5 6.5 0 0 0 5.5 10c0 5.4 6.5 11 6.5 11Z"/><circle cx="12" cy="10" r="2.3"/>
+        </svg>
+      </div>
+      <div style="min-width:0">
+        <div class="mi-name" id="miName">—</div>
+        <div class="mi-addr" id="miAddr">—</div>
+        <div class="mi-meta"><span id="miGeo">—</span><span id="miType">—</span></div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="btnMapCancel">取消</button>
+    <button class="btn btn-primary" id="btnMapOk" disabled>确认使用该地址</button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- ============ 左侧菜单 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+
+        <nav class="nav">
+      <div class="nav-item" data-page="job"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13.5" rx="2.6"/><path d="M8 7V5.6A1.6 1.6 0 0 1 9.6 4h4.8A1.6 1.6 0 0 1 16 5.6V7"/><path d="M3 12.2h18"/></svg></span>岗位招聘</div>
+      <div class="nav-item" data-page="project"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 21 7.5 12 12 3 7.5 12 3Z"/><path d="m3 12.3 9 4.5 9-4.5"/><path d="m3 16.9 9 4.5 9-4.5"/></svg></span>项目外包</div>
+      <div class="nav-item" data-page="jobouts"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="8.4" width="12.6" height="11" rx="2.4"/><path d="M6.4 8.4V6.9A1.6 1.6 0 0 1 8 5.3h2.2a1.6 1.6 0 0 1 1.6 1.6v1.5"/><circle cx="17.9" cy="10.9" r="2.7"/><path d="M14.2 20.1c0-2 1.7-3.5 3.7-3.5s3.7 1.5 3.7 3.5"/></svg></span>岗位外包</div>
+      <div class="nav-item" data-page="consult"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 17.4h5.2"/><path d="M10.2 20.4h3.6"/><path d="M12 3.4a5.6 5.6 0 0 0-3.2 10.2c.5.4.8 1 .8 1.6h4.8c0-.6.3-1.2.8-1.6A5.6 5.6 0 0 0 12 3.4Z"/></svg></span>数智化咨询</div>
+      <div class="nav-item" data-page="train"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m3.2 9.6 8.8-4.2 8.8 4.2-8.8 4.2-8.8-4.2Z"/><path d="M6.8 11.6v4.3c0 1.6 2.3 2.7 5.2 2.7s5.2-1.1 5.2-2.7v-4.3"/></svg></span>AI培训</div>
+      <div class="nav-item" data-page="coach"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.6" cy="7.6" r="3"/><path d="M3 19.6c0-3 2.5-5.2 5.6-5.2s5.6 2.2 5.6 5.2"/><path d="m18 4.8.85 1.75 1.95.28-1.4 1.4.33 1.95L18 9.28l-1.73.9.33-1.95-1.4-1.4 1.95-.28L18 4.8Z"/></svg></span>AI私教</div>
+      <div class="nav-item" data-page="career"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg></span>AI职业规划</div>
+      <div class="nav-item" data-page="intern"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.6v-6.4"/><path d="M12 14.2c0-3 2.2-5.2 5.2-5.2 0 3-2.2 5.2-5.2 5.2Z"/><path d="M12 12.4C12 9.8 10 7.8 7.4 7.8c0 2.6 2 4.6 4.6 4.6Z"/></svg></span>AI实习</div>
+      <div class="nav-item" data-page="expert"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9.2" cy="8.2" r="3.2"/><path d="M3.6 19.6c0-3.05 2.5-5.2 5.6-5.2s5.6 2.15 5.6 5.2"/><path d="M16.4 5.4a3 3 0 0 1 0 5.7"/><path d="M17.6 14.7c2.05.6 3.6 2.4 3.6 4.9"/></svg></span>大咖搜索</div>
+      <div class="nav-item" data-page="apply"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13.2 6.1 5.8A1.6 1.6 0 0 1 7.7 4.6h8.6a1.6 1.6 0 0 1 1.6 1.2L20 13.2v5a1.9 1.9 0 0 1-1.9 1.9H5.9A1.9 1.9 0 0 1 4 18.2Z"/><path d="M4 13.2h4.5a3.5 3.5 0 0 0 7 0H20"/></svg></span>申请管理</div>
+    </nav>
+
+        <div class="sidebar-bottom">
+      <div class="nav-item" data-page="rule"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.2H7.2A2.2 2.2 0 0 0 5 5.4v13.2a2.2 2.2 0 0 0 2.2 2.2h9.6a2.2 2.2 0 0 0 2.2-2.2V8L14 3.2Z"/><path d="M14 3.2V8h5"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.4"/></svg></span>规则说明</div>
+      <div class="nav-item active" data-page="setting"><span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M19.3 14.9a1.6 1.6 0 0 0 .32 1.77l.06.06a1.95 1.95 0 1 1-2.76 2.76l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.95 1.95 0 1 1-3.9 0v-.09a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a1.95 1.95 0 1 1-2.76-2.76l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97h-.17a1.95 1.95 0 1 1 0-3.9h.09a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.95 1.95 0 1 1 2.76-2.76l.06.06a1.6 1.6 0 0 0 1.77.32h.08a1.6 1.6 0 0 0 .97-1.47v-.17a1.95 1.95 0 1 1 3.9 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.95 1.95 0 1 1 2.76 2.76l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.95 1.95 0 1 1 0 3.9h-.09a1.6 1.6 0 0 0-1.47.97Z"/></svg></span>设置</div>
+    </div>
+</aside>
+
+  <!-- ============ 右侧 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">企业端 <span class="sep">/</span> <span id="crumbParent">设置</span> <span class="sep">/</span> <b id="crumbNow">企业信息</b></div>
+      <div class="spacer"></div>
+
+      <button class="tbtn" id="btnMsg">
+        <span class="ico-wrap">
+          <svg class="ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13.6 7.3a4.6 4.6 0 0 0-9.2 0c0 4-1.5 5.2-1.5 5.2h12.2s-1.5-1.2-1.5-5.2Z"/>
+            <path d="M7.5 15.1a1.7 1.7 0 0 0 3 0"/>
+          </svg>
+          <span class="badge-dot">3</span>
+        </span>
+        <span>消息</span>
+      </button>
+
+      <div class="vline"></div>
+
+      <button class="tbtn me" id="btnMe">
+        <span class="avatar">云</span>
+        <span>个人中心</span>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <!-- ==================== 填写企业信息 ==================== -->
+      <section id="page-form">
+        <div class="page-head">
+          <div class="ph-title">
+            填写企业信息
+            <span class="st-pill st-0" id="stPill">未提交</span>
+          </div>
+          <div class="ph-right">
+            <span class="demo-lb">演示状态</span>
+            <div class="demo-switch" id="demoSwitch">
+              <button data-st="0" class="on">未提交</button>
+              <button data-st="1">待审核</button>
+              <button data-st="4">已驳回</button>
+              <button data-st="3">已通过</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 顶部横向认证进度 -->
+        <div class="progress">
+          <div class="prog-track" id="progTrack">
+            <div class="pstep done"><span class="num">✓</span><span class="lb">注册账号</span></div>
+            <div class="pline done"></div>
+            <div class="pstep cur"><span class="num">2</span><span class="lb">填写企业信息</span><span class="now">当前</span></div>
+            <div class="pline"></div>
+            <div class="pstep todo"><span class="num">3</span><span class="lb">平台审核</span></div>
+            <div class="pline"></div>
+            <div class="pstep todo"><span class="num">4</span><span class="lb">认证通过</span></div>
+          </div>
+          <div class="prog-reject" id="progReject"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <span class="t">企业资料</span>
+            <span class="pill" id="fillCount">2 / 14 必填</span>
+            <span class="spacer"></span>
+            
+          </div>
+
+          <div class="panel-body">
+            <div class="form-grid" id="formGrid">
+
+              <!-- ① 企业基本信息 -->
+              <div class="sec first" style="grid-column:1/-1">
+                <span class="n">1</span>
+                <span class="t">企业基本信息</span>
+                
+                
+                
+              </div>
+
+              <div class="fi span3">
+                <label>企业名称<i class="req">*</i></label>
+                <input class="ctl" id="f-name" data-editable value="深圳智联数据科技有限公司" maxlength="100" placeholder="请输入企业全称">
+              </div>
+
+              <div class="fi span3">
+                <label>统一社会信用代码<i class="req">*</i></label>
+                <input class="ctl" id="f-uscc" data-editable value="91440300MA5FT8XL2K" maxlength="18" placeholder="18 位大写字母或数字" style="letter-spacing:.7px;font-family:'SF Mono',Menlo,Consolas,monospace">
+              </div>
+
+              <div class="fi span3">
+                <label>企业类型<i class="req">*</i></label>
+                <select class="ctl" id="f-ctype" data-editable>
+                  <option value="">请选择</option>
+                  <option>外企</option><option>私企</option><option>国企</option>
+                  <option>个体工商户</option><option>事业单位</option><option>社会组织</option><option>其他</option>
+                </select>
+              </div>
+
+              <div class="fi span3">
+                <label>人员范围<i class="req">*</i></label>
+                <select class="ctl" id="f-size" data-editable>
+                  <option value="">请选择</option>
+                  <option>1-20人</option><option>21-99人</option><option>100-499人</option>
+                  <option>500-999人</option><option>1000人及以上</option>
+                </select>
+              </div>
+
+              <div class="loc-card" style="grid-column:1/-1">
+                <div class="loc-head">
+                  <span class="loc-t">工作地点</span>
+                  <button class="loc-btn" id="btnLocate" type="button">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M8 14.4s5.2-4.6 5.2-8.2A5.2 5.2 0 0 0 2.8 6.2c0 3.6 5.2 8.2 5.2 8.2Z"/>
+                      <circle cx="8" cy="6.2" r="1.9"/>
+                    </svg>
+                    自动定位
+                  </button>
+                </div>
+
+                <div class="loc-wrap">
+                  <div class="loc-fields">
+                    <div class="loc-row">
+                      <div class="loc-lb">省 / 市 / 区<i class="req">*</i></div>
+                      <div class="addr3">
+                        <select class="ctl" id="f-prov" data-editable><option value="">请选择省份</option></select>
+                        <select class="ctl" id="f-city" data-editable disabled><option value="">请选择城市</option></select>
+                        <select class="ctl" id="f-dist" data-editable disabled><option value="">请选择区县</option></select>
+                      </div>
+                    </div>
+
+                    <div class="loc-row">
+                      <div class="loc-lb">详细地址<i class="req">*</i></div>
+                      <div class="ta-box">
+                        <input class="ctl" id="f-addr" data-editable maxlength="200" placeholder="街道、门牌号、楼层室，如：科技园中科苑路 8 号 3 栋 12 层">
+                        <span class="cc" id="addrCount">0/200</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 地图卡片：点击进入地图选点 -->
+                  <div class="map-card" id="mapCard" title="点击打开地图选择工作地点">
+                    <div class="map-thumb" id="mapThumb"></div>
+                    <div class="map-card-foot">
+                      <span id="mapCardText">点击地图选择工作地点</span>
+                      <b>地图选点 ›</b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ② 工商登记信息 -->
+              <div class="sec" style="grid-column:1/-1">
+                <span class="n">2</span>
+                <span class="t">工商登记信息</span>
+                
+                
+                
+              </div>
+
+              <div class="fi">
+                <label>法定代表人<i class="req">*</i></label>
+                <input class="ctl" id="f-legal" data-editable maxlength="50" placeholder="请输入姓名">
+              </div>
+
+              <div class="fi">
+                <label>注册资本<span class="unit">单位：万元</span></label>
+                <input class="ctl" id="f-capital" data-editable type="number" min="0" step="0.01" placeholder="如 1000">
+              </div>
+
+              <div class="fi">
+                <label>成立日期</label>
+                <input class="ctl" id="f-est" data-editable type="date">
+              </div>
+
+              <div class="fi full">
+                <label>经营范围</label>
+                <textarea class="ctl" id="f-scope" data-editable maxlength="1000" placeholder="如：人工智能应用软件开发；数据处理服务；企业管理咨询"></textarea>
+              </div>
+
+              <!-- ③ 营业执照 -->
+              <div class="sec" style="grid-column:1/-1">
+                <span class="n">3</span>
+                <span class="t">营业执照</span>
+                
+                
+                
+              </div>
+
+              <div class="lic-card" id="licCard" style="grid-column:1/-1">
+                <div class="lic-top">
+                  <span class="t">营业执照</span>
+                  <span class="tag-req" id="licReqTag">必填</span>
+                  
+                  <span class="spacer"></span>
+                  <span class="mode" id="licModeTag">校验方式：OCR 识别</span>
+                </div>
+
+                <div class="drop" id="drop">
+                  <div class="thumb" id="thumb">未上传</div>
+                  <div class="drop-info">
+                    <div class="drop-name na" id="licName">点击此处上传营业执照</div>
+                    <div class="drop-tip" id="licTip">支持 JPG / PNG / PDF，单个不超过 5 MB；须为原件彩色照片或扫描件，四角完整、无遮挡、无涂改</div>
+                  </div>
+                  <div class="drop-act">
+                    <button class="btn btn-sm" id="licPick">选择文件</button>
+                    <button class="btn btn-sm btn-ghost" id="licClear" style="display:none">移除</button>
+                  </div>
+                  <input type="file" id="licFile" accept="image/*,.pdf" style="display:none">
+                </div>
+
+                <div id="licVerify"></div>
+              </div>
+
+              <!-- ④ 招聘联系人 -->
+              <div class="sec" style="grid-column:1/-1">
+                <span class="n">4</span>
+                <span class="t">招聘联系人</span>
+                
+                
+                
+              </div>
+
+              <div class="fi">
+                <label>联系人姓名<i class="req">*</i></label>
+                <input class="ctl" id="f-cname" data-editable maxlength="50" placeholder="请输入真实姓名">
+              </div>
+
+              <div class="fi">
+                <label>手机号<i class="req">*</i></label>
+                <input class="ctl" id="f-cmobile" data-editable maxlength="11" placeholder="11 位手机号">
+              </div>
+
+              <div class="fi">
+                <label>职务<i class="req">*</i></label>
+                <input class="ctl" id="f-ctitle" data-editable maxlength="50" placeholder="如 招聘经理">
+              </div>
+
+              <div class="fi">
+                <label>身份证号<i class="req">*</i></label>
+                <input class="ctl" id="f-cid" data-editable maxlength="18" placeholder="18 位，末位可为 X">
+              </div>
+
+              <div class="fi">
+                <label>微信号</label>
+                <input class="ctl" id="f-cwechat" data-editable maxlength="50" placeholder="便于大咖加微信沟通">
+              </div>
+
+              <div class="fi">
+                <label>邮箱</label>
+                <input class="ctl" id="f-cemail" data-editable maxlength="100" placeholder="name@company.com">
+              </div>
+
+              <div class="fi">
+                <label>联系人实名状态</label>
+                <div class="ctl-ro na" id="ro-cverify">0 未认证</div>
+              </div>
+
+              <!-- ⑤ 企业介绍 -->
+              <div class="sec" style="grid-column:1/-1">
+                <span class="n">5</span>
+                <span class="t">企业介绍</span>
+                
+                
+                
+              </div>
+
+              <div class="fi full">
+                <label>企业介绍</label>
+                <textarea class="ctl" id="f-intro" data-editable maxlength="300" placeholder="一句话说清你在做什么，便于大咖判断是否投递" style="min-height:78px"></textarea>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="panel-foot">
+            <span class="tip" id="footTip">资料可随时保存，提交后进入平台审核队列</span>
+            <div class="spacer"></div>
+            <button class="btn" id="bDraft">保存草稿</button>
+            <button class="btn btn-primary" id="bSubmit">提交认证</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 其它菜单占位 -->
+      <section id="page-stage" class="stage" style="display:none">
+        <div class="stage-inner">
+          <div class="stage-ico" id="stageIco"></div>
+          <div class="stage-title" id="stageTitle">—</div>
+          <div class="stage-sub" id="stageSub">—</div>
+          <div class="stage-flag">完成企业认证后开放</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const AREA_DATA = {"北京市":{"北京市":["东城区","西城区","朝阳区","丰台区","石景山区","海淀区","门头沟区","房山区","通州区","顺义区","昌平区","大兴区","怀柔区","平谷区","密云区","延庆区"]},"天津市":{"天津市":["和平区","河东区","河西区","南开区","河北区","红桥区","东丽区","西青区","津南区","北辰区","武清区","宝坻区","滨海新区","宁河区","静海区","蓟州区"]},"河北省":{"石家庄市":["长安区","桥西区","新华区","井陉矿区","裕华区","藁城区","鹿泉区","栾城区","井陉县","正定县","行唐县","灵寿县","高邑县","深泽县","赞皇县","无极县","平山县","元氏县","赵县","石家庄高新技术产业开发区","石家庄循环化工园区","辛集市","晋州市","新乐市"],"唐山市":["路南区","路北区","古冶区","开平区","丰南区","丰润区","曹妃甸区","滦南县","乐亭县","迁西县","玉田县","河北唐山芦台经济开发区","唐山市汉沽管理区","唐山高新技术产业开发区","河北唐山海港经济开发区","遵化市","迁安市","滦州市"],"秦皇岛市":["海港区","山海关区","北戴河区","抚宁区","青龙满族自治县","昌黎县","卢龙县","秦皇岛市经济技术开发区","北戴河新区"],"邯郸市":["邯山区","丛台区","复兴区","峰峰矿区","肥乡区","永年区","临漳县","成安县","大名县","涉县","磁县","邱县","鸡泽县","广平县","馆陶县","魏县","曲周县","邯郸经济技术开发区","邯郸冀南新区","武安市"],"邢台市":["襄都区","信都区","任泽区","南和区","临城县","内丘县","柏乡县","隆尧县","宁晋县","巨鹿县","新河县","广宗县","平乡县","威县","清河县","临西县","河北邢台经济开发区","南宫市","沙河市"],"保定市":["竞秀区","莲池区","满城区","清苑区","徐水区","涞水县","阜平县","定兴县","唐县","高阳县","容城县","涞源县","望都县","安新县","易县","曲阳县","蠡县","顺平县","博野县","雄县","保定高新技术产业开发区","保定白沟新城","涿州市","定州市","安国市","高碑店市"],"张家口市":["桥东区","桥西区","宣化区","下花园区","万全区","崇礼区","张北县","康保县","沽源县","尚义县","蔚县","阳原县","怀安县","怀来县","涿鹿县","赤城县","张家口经济开发区","张家口市察北管理区","张家口市塞北管理区"],"承德市":["双桥区","双滦区","鹰手营子矿区","承德县","兴隆县","滦平县","隆化县","丰宁满族自治县","宽城满族自治县","围场满族蒙古族自治县","承德高新技术产业开发区","平泉市"],"沧州市":["新华区","运河区","沧县","青县","东光县","海兴县","盐山县","肃宁县","南皮县","吴桥县","献县","孟村回族自治县","河北沧州经济开发区","沧州高新技术产业开发区","沧州渤海新区","泊头市","任丘市","黄骅市","河间市"],"廊坊市":["安次区","广阳区","固安县","永清县","香河县","大城县","文安县","大厂回族自治县","廊坊经济技术开发区","霸州市","三河市"],"衡水市":["桃城区","冀州区","枣强县","武邑县","武强县","饶阳县","安平县","故城县","景县","阜城县","河北衡水高新技术产业开发区","衡水滨湖新区","深州市"]},"山西省":{"太原市":["小店区","迎泽区","杏花岭区","尖草坪区","万柏林区","晋源区","清徐县","阳曲县","娄烦县","山西转型综合改革示范区","古交市"],"大同市":["新荣区","平城区","云冈区","云州区","阳高县","天镇县","广灵县","灵丘县","浑源县","左云县","山西大同经济开发区"],"阳泉市":["城区","矿区","郊区","平定县","盂县"],"长治市":["潞州区","上党区","屯留区","潞城区","襄垣县","平顺县","黎城县","壶关县","长子县","武乡县","沁县","沁源县"],"晋城市":["城区","沁水县","阳城县","陵川县","泽州县","高平市"],"朔州市":["朔城区","平鲁区","山阴县","应县","右玉县","山西朔州经济开发区","怀仁市"],"晋中市":["榆次区","太谷区","榆社县","左权县","和顺县","昔阳县","寿阳县","祁县","平遥县","灵石县","介休市"],"运城市":["盐湖区","临猗县","万荣县","闻喜县","稷山县","新绛县","绛县","垣曲县","夏县","平陆县","芮城县","永济市","河津市"],"忻州市":["忻府区","定襄县","五台县","代县","繁峙县","宁武县","静乐县","神池县","五寨县","岢岚县","河曲县","保德县","偏关县","五台山风景名胜区","原平市"],"临汾市":["尧都区","曲沃县","翼城县","襄汾县","洪洞县","古县","安泽县","浮山县","吉县","乡宁县","大宁县","隰县","永和县","蒲县","汾西县","侯马市","霍州市"],"吕梁市":["离石区","文水县","交城县","兴县","临县","柳林县","石楼县","岚县","方山县","中阳县","交口县","孝义市","汾阳市"]},"内蒙古自治区":{"呼和浩特市":["新城区","回民区","玉泉区","赛罕区","土默特左旗","托克托县","和林格尔县","清水河县","武川县","呼和浩特经济技术开发区"],"包头市":["东河区","昆都仑区","青山区","石拐区","白云鄂博矿区","九原区","土默特右旗","固阳县","达尔罕茂明安联合旗","包头稀土高新技术产业开发区"],"乌海市":["海勃湾区","海南区","乌达区"],"赤峰市":["红山区","元宝山区","松山区","阿鲁科尔沁旗","巴林左旗","巴林右旗","林西县","克什克腾旗","翁牛特旗","喀喇沁旗","宁城县","敖汉旗"],"通辽市":["科尔沁区","科尔沁左翼中旗","科尔沁左翼后旗","开鲁县","库伦旗","奈曼旗","扎鲁特旗","通辽经济技术开发区","霍林郭勒市"],"鄂尔多斯市":["东胜区","康巴什区","达拉特旗","准格尔旗","鄂托克前旗","鄂托克旗","杭锦旗","乌审旗","伊金霍洛旗"],"呼伦贝尔市":["海拉尔区","扎赉诺尔区","阿荣旗","莫力达瓦达斡尔族自治旗","鄂伦春自治旗","鄂温克族自治旗","陈巴尔虎旗","新巴尔虎左旗","新巴尔虎右旗","满洲里市","牙克石市","扎兰屯市","额尔古纳市","根河市"],"巴彦淖尔市":["临河区","五原县","磴口县","乌拉特前旗","乌拉特中旗","乌拉特后旗","杭锦后旗"],"乌兰察布市":["集宁区","卓资县","化德县","商都县","兴和县","凉城县","察哈尔右翼前旗","察哈尔右翼中旗","察哈尔右翼后旗","四子王旗","丰镇市"],"兴安盟":["乌兰浩特市","阿尔山市","科尔沁右翼前旗","科尔沁右翼中旗","扎赉特旗","突泉县"],"锡林郭勒盟":["二连浩特市","锡林浩特市","阿巴嘎旗","苏尼特左旗","苏尼特右旗","东乌珠穆沁旗","西乌珠穆沁旗","太仆寺旗","镶黄旗","正镶白旗","正蓝旗","多伦县","乌拉盖管理区管委会"],"阿拉善盟":["阿拉善左旗","阿拉善右旗","额济纳旗","内蒙古阿拉善高新技术产业开发区"]},"辽宁省":{"沈阳市":["和平区","沈河区","大东区","皇姑区","铁西区","苏家屯区","浑南区","沈北新区","于洪区","辽中区","康平县","法库县","新民市"],"大连市":["中山区","西岗区","沙河口区","甘井子区","旅顺口区","金州区","普兰店区","长海县","瓦房店市","庄河市"],"鞍山市":["铁东区","铁西区","立山区","千山区","台安县","岫岩满族自治县","海城市"],"抚顺市":["新抚区","东洲区","望花区","顺城区","抚顺县","新宾满族自治县","清原满族自治县"],"本溪市":["平山区","溪湖区","明山区","南芬区","本溪满族自治县","桓仁满族自治县"],"丹东市":["元宝区","振兴区","振安区","宽甸满族自治县","东港市","凤城市"],"锦州市":["古塔区","凌河区","太和区","黑山县","义县","凌海市","北镇市"],"营口市":["站前区","西市区","鲅鱼圈区","老边区","盖州市","大石桥市"],"阜新市":["海州区","新邱区","太平区","清河门区","细河区","阜新蒙古族自治县","彰武县"],"辽阳市":["白塔区","文圣区","宏伟区","弓长岭区","太子河区","辽阳县","灯塔市"],"盘锦市":["双台子区","兴隆台区","大洼区","盘山县"],"铁岭市":["银州区","清河区","铁岭县","西丰县","昌图县","调兵山市","开原市"],"朝阳市":["双塔区","龙城区","朝阳县","建平县","喀喇沁左翼蒙古族自治县","北票市","凌源市"],"葫芦岛市":["连山区","龙港区","南票区","绥中县","建昌县","兴城市"]},"吉林省":{"长春市":["南关区","宽城区","朝阳区","二道区","绿园区","双阳区","九台区","农安县","长春经济技术开发区","长春净月高新技术产业开发区","长春高新技术产业开发区","长春汽车经济技术开发区","榆树市","德惠市","公主岭市"],"吉林市":["昌邑区","龙潭区","船营区","丰满区","永吉县","吉林经济开发区","吉林高新技术产业开发区","吉林中国新加坡食品区","蛟河市","桦甸市","舒兰市","磐石市"],"四平市":["铁西区","铁东区","梨树县","伊通满族自治县","双辽市"],"辽源市":["龙山区","西安区","东丰县","东辽县"],"通化市":["东昌区","二道江区","通化县","辉南县","柳河县","梅河口市","集安市"],"白山市":["浑江区","江源区","抚松县","靖宇县","长白朝鲜族自治县","临江市"],"松原市":["宁江区","前郭尔罗斯蒙古族自治县","长岭县","乾安县","吉林松原经济开发区","扶余市"],"白城市":["洮北区","镇赉县","通榆县","吉林白城经济开发区","洮南市","大安市"],"延边朝鲜族自治州":["延吉市","图们市","敦化市","珲春市","龙井市","和龙市","汪清县","安图县"]},"黑龙江省":{"哈尔滨市":["道里区","南岗区","道外区","平房区","松北区","香坊区","呼兰区","阿城区","双城区","依兰县","方正县","宾县","巴彦县","木兰县","通河县","延寿县","尚志市","五常市"],"齐齐哈尔市":["龙沙区","建华区","铁锋区","昂昂溪区","富拉尔基区","碾子山区","梅里斯达斡尔族区","龙江县","依安县","泰来县","甘南县","富裕县","克山县","克东县","拜泉县","讷河市"],"鸡西市":["鸡冠区","恒山区","滴道区","梨树区","城子河区","麻山区","鸡东县","虎林市","密山市"],"鹤岗市":["向阳区","工农区","南山区","兴安区","东山区","兴山区","萝北县","绥滨县"],"双鸭山市":["尖山区","岭东区","四方台区","宝山区","集贤县","友谊县","宝清县","饶河县"],"大庆市":["萨尔图区","龙凤区","让胡路区","红岗区","大同区","肇州县","肇源县","林甸县","杜尔伯特蒙古族自治县","大庆高新技术产业开发区"],"伊春市":["伊美区","乌翠区","友好区","嘉荫县","汤旺县","丰林县","大箐山县","南岔县","金林区","铁力市"],"佳木斯市":["向阳区","前进区","东风区","郊区","桦南县","桦川县","汤原县","同江市","富锦市","抚远市"],"七台河市":["新兴区","桃山区","茄子河区","勃利县"],"牡丹江市":["东安区","阳明区","爱民区","西安区","林口县","绥芬河市","海林市","宁安市","穆棱市","东宁市"],"黑河市":["爱辉区","逊克县","孙吴县","北安市","五大连池市","嫩江市"],"绥化市":["北林区","望奎县","兰西县","青冈县","庆安县","明水县","绥棱县","安达市","肇东市","海伦市"],"大兴安岭地区":["漠河市","呼玛县","塔河县","加格达奇区","松岭区","新林区","呼中区"]},"上海市":{"上海市":["黄浦区","徐汇区","长宁区","静安区","普陀区","虹口区","杨浦区","闵行区","宝山区","嘉定区","浦东新区","金山区","松江区","青浦区","奉贤区","崇明区"]},"江苏省":{"南京市":["玄武区","秦淮区","建邺区","鼓楼区","浦口区","栖霞区","雨花台区","江宁区","六合区","溧水区","高淳区"],"无锡市":["锡山区","惠山区","滨湖区","梁溪区","新吴区","江阴市","宜兴市"],"徐州市":["鼓楼区","云龙区","贾汪区","泉山区","铜山区","丰县","沛县","睢宁县","徐州经济技术开发区","新沂市","邳州市"],"常州市":["天宁区","钟楼区","新北区","武进区","金坛区","溧阳市"],"苏州市":["虎丘区","吴中区","相城区","姑苏区","吴江区","苏州工业园区","常熟市","张家港市","昆山市","太仓市"],"南通市":["通州区","崇川区","海门区","如东县","南通经济技术开发区","启东市","如皋市","海安市"],"连云港市":["连云区","海州区","赣榆区","东海县","灌云县","灌南县","连云港经济技术开发区"],"淮安市":["淮安区","淮阴区","清江浦区","洪泽区","涟水县","盱眙县","金湖县","淮安经济技术开发区"],"盐城市":["亭湖区","盐都区","大丰区","响水县","滨海县","阜宁县","射阳县","建湖县","盐城经济技术开发区","东台市"],"扬州市":["广陵区","邗江区","江都区","宝应县","扬州经济技术开发区","仪征市","高邮市"],"镇江市":["京口区","润州区","丹徒区","镇江新区","丹阳市","扬中市","句容市"],"泰州市":["海陵区","高港区","姜堰区","兴化市","靖江市","泰兴市"],"宿迁市":["宿城区","宿豫区","沭阳县","泗阳县","泗洪县","宿迁经济技术开发区"]},"浙江省":{"杭州市":["上城区","拱墅区","西湖区","滨江区","萧山区","余杭区","富阳区","临安区","临平区","钱塘区","桐庐县","淳安县","建德市"],"宁波市":["海曙区","江北区","北仑区","镇海区","鄞州区","奉化区","象山县","宁海县","余姚市","慈溪市"],"温州市":["鹿城区","龙湾区","瓯海区","洞头区","永嘉县","平阳县","苍南县","文成县","泰顺县","瑞安市","乐清市","龙港市"],"嘉兴市":["南湖区","秀洲区","嘉善县","海盐县","海宁市","平湖市","桐乡市"],"湖州市":["吴兴区","南浔区","德清县","长兴县","安吉县"],"绍兴市":["越城区","柯桥区","上虞区","新昌县","诸暨市","嵊州市"],"金华市":["婺城区","金东区","武义县","浦江县","磐安县","兰溪市","义乌市","东阳市","永康市"],"衢州市":["柯城区","衢江区","常山县","开化县","龙游县","江山市"],"舟山市":["定海区","普陀区","岱山县","嵊泗县"],"台州市":["椒江区","黄岩区","路桥区","三门县","天台县","仙居县","温岭市","临海市","玉环市"],"丽水市":["莲都区","青田县","缙云县","遂昌县","松阳县","云和县","庆元县","景宁畲族自治县","龙泉市"]},"安徽省":{"合肥市":["瑶海区","庐阳区","蜀山区","包河区","长丰县","肥东县","肥西县","庐江县","合肥高新技术产业开发区","合肥经济技术开发区","合肥新站高新技术产业开发区","巢湖市"],"芜湖市":["镜湖区","鸠江区","弋江区","湾沚区","繁昌区","南陵县","芜湖经济技术开发区","安徽芜湖三山经济开发区","无为市"],"蚌埠市":["龙子湖区","蚌山区","禹会区","淮上区","怀远县","五河县","固镇县","蚌埠市高新技术开发区","蚌埠市经济开发区"],"淮南市":["大通区","田家庵区","谢家集区","八公山区","潘集区","凤台县","寿县"],"马鞍山市":["花山区","雨山区","博望区","当涂县","含山县","和县"],"淮北市":["杜集区","相山区","烈山区","濉溪县"],"铜陵市":["铜官区","义安区","郊区","枞阳县"],"安庆市":["迎江区","大观区","宜秀区","怀宁县","太湖县","宿松县","望江县","岳西县","安徽安庆经济开发区","桐城市","潜山市"],"黄山市":["屯溪区","黄山区","徽州区","歙县","休宁县","黟县","祁门县"],"滁州市":["琅琊区","南谯区","来安县","全椒县","定远县","凤阳县","中新苏滁高新技术产业开发区","滁州经济技术开发区","天长市","明光市"],"阜阳市":["颍州区","颍东区","颍泉区","临泉县","太和县","阜南县","颍上县","阜阳合肥现代产业园区","阜阳经济技术开发区","界首市"],"宿州市":["埇桥区","砀山县","萧县","灵璧县","泗县","宿州马鞍山现代产业园区","宿州经济技术开发区"],"六安市":["金安区","裕安区","叶集区","霍邱县","舒城县","金寨县","霍山县"],"亳州市":["谯城区","涡阳县","蒙城县","利辛县"],"池州市":["贵池区","东至县","石台县","青阳县"],"宣城市":["宣州区","郎溪县","泾县","绩溪县","旌德县","宣城市经济开发区","宁国市","广德市"]},"福建省":{"福州市":["鼓楼区","台江区","仓山区","马尾区","晋安区","长乐区","闽侯县","连江县","罗源县","闽清县","永泰县","平潭县","福清市"],"厦门市":["思明区","海沧区","湖里区","集美区","同安区","翔安区"],"莆田市":["城厢区","涵江区","荔城区","秀屿区","仙游县"],"三明市":["三元区","沙县区","明溪县","清流县","宁化县","大田县","尤溪县","将乐县","泰宁县","建宁县","永安市"],"泉州市":["鲤城区","丰泽区","洛江区","泉港区","惠安县","安溪县","永春县","德化县","金门县","石狮市","晋江市","南安市"],"漳州市":["芗城区","龙文区","龙海区","长泰区","云霄县","漳浦县","诏安县","东山县","南靖县","平和县","华安县"],"南平市":["延平区","建阳区","顺昌县","浦城县","光泽县","松溪县","政和县","邵武市","武夷山市","建瓯市"],"龙岩市":["新罗区","永定区","长汀县","上杭县","武平县","连城县","漳平市"],"宁德市":["蕉城区","霞浦县","古田县","屏南县","寿宁县","周宁县","柘荣县","福安市","福鼎市"]},"江西省":{"南昌市":["东湖区","西湖区","青云谱区","青山湖区","新建区","红谷滩区","南昌县","安义县","进贤县"],"景德镇市":["昌江区","珠山区","浮梁县","乐平市"],"萍乡市":["安源区","湘东区","莲花县","上栗县","芦溪县"],"九江市":["濂溪区","浔阳区","柴桑区","武宁县","修水县","永修县","德安县","都昌县","湖口县","彭泽县","瑞昌市","共青城市","庐山市"],"新余市":["渝水区","分宜县"],"鹰潭市":["月湖区","余江区","贵溪市"],"赣州市":["章贡区","南康区","赣县区","信丰县","大余县","上犹县","崇义县","安远县","定南县","全南县","宁都县","于都县","兴国县","会昌县","寻乌县","石城县","瑞金市","龙南市"],"吉安市":["吉州区","青原区","吉安县","吉水县","峡江县","新干县","永丰县","泰和县","遂川县","万安县","安福县","永新县","井冈山市"],"宜春市":["袁州区","奉新县","万载县","上高县","宜丰县","靖安县","铜鼓县","丰城市","樟树市","高安市"],"抚州市":["临川区","东乡区","南城县","黎川县","南丰县","崇仁县","乐安县","宜黄县","金溪县","资溪县","广昌县"],"上饶市":["信州区","广丰区","广信区","玉山县","铅山县","横峰县","弋阳县","余干县","鄱阳县","万年县","婺源县","德兴市"]},"山东省":{"济南市":["历下区","市中区","槐荫区","天桥区","历城区","长清区","章丘区","济阳区","莱芜区","钢城区","平阴县","商河县","济南高新技术产业开发区"],"青岛市":["市南区","市北区","黄岛区","崂山区","李沧区","城阳区","即墨区","胶州市","平度市","莱西市"],"淄博市":["淄川区","张店区","博山区","临淄区","周村区","桓台县","高青县","沂源县"],"枣庄市":["市中区","薛城区","峄城区","台儿庄区","山亭区","滕州市"],"东营市":["东营区","河口区","垦利区","利津县","广饶县","东营经济技术开发区","东营港经济开发区"],"烟台市":["芝罘区","福山区","牟平区","莱山区","蓬莱区","烟台高新技术产业开发区","烟台经济技术开发区","龙口市","莱阳市","莱州市","招远市","栖霞市","海阳市"],"潍坊市":["潍城区","寒亭区","坊子区","奎文区","临朐县","昌乐县","潍坊滨海经济技术开发区","青州市","诸城市","寿光市","安丘市","高密市","昌邑市"],"济宁市":["任城区","兖州区","微山县","鱼台县","金乡县","嘉祥县","汶上县","泗水县","梁山县","济宁高新技术产业开发区","曲阜市","邹城市"],"泰安市":["泰山区","岱岳区","宁阳县","东平县","新泰市","肥城市"],"威海市":["环翠区","文登区","威海火炬高技术产业开发区","威海经济技术开发区","威海临港经济技术开发区","荣成市","乳山市"],"日照市":["东港区","岚山区","五莲县","莒县","日照经济技术开发区"],"临沂市":["兰山区","罗庄区","河东区","沂南县","郯城县","沂水县","兰陵县","费县","平邑县","莒南县","蒙阴县","临沭县","临沂高新技术产业开发区"],"德州市":["德城区","陵城区","宁津县","庆云县","临邑县","齐河县","平原县","夏津县","武城县","德州天衢新区","乐陵市","禹城市"],"聊城市":["东昌府区","茌平区","阳谷县","莘县","东阿县","冠县","高唐县","临清市"],"滨州市":["滨城区","沾化区","惠民县","阳信县","无棣县","博兴县","邹平市"],"菏泽市":["牡丹区","定陶区","曹县","单县","成武县","巨野县","郓城县","鄄城县","东明县","菏泽经济技术开发区","菏泽高新技术开发区"]},"河南省":{"郑州市":["中原区","二七区","管城回族区","金水区","上街区","惠济区","中牟县","郑州经济技术开发区","郑州高新技术产业开发区","郑州航空港经济综合实验区","巩义市","荥阳市","新密市","新郑市","登封市"],"开封市":["龙亭区","顺河回族区","鼓楼区","禹王台区","祥符区","杞县","通许县","尉氏县","兰考县"],"洛阳市":["老城区","西工区","瀍河回族区","涧西区","偃师区","孟津区","洛龙区","新安县","栾川县","嵩县","汝阳县","宜阳县","洛宁县","伊川县","洛阳高新技术产业开发区"],"平顶山市":["新华区","卫东区","石龙区","湛河区","宝丰县","叶县","鲁山县","郏县","平顶山高新技术产业开发区","平顶山市城乡一体化示范区","舞钢市","汝州市"],"安阳市":["文峰区","北关区","殷都区","龙安区","安阳县","汤阴县","滑县","内黄县","安阳高新技术产业开发区","林州市"],"鹤壁市":["鹤山区","山城区","淇滨区","浚县","淇县","鹤壁经济技术开发区"],"新乡市":["红旗区","卫滨区","凤泉区","牧野区","新乡县","获嘉县","原阳县","延津县","封丘县","新乡高新技术产业开发区","新乡经济技术开发区","新乡市平原城乡一体化示范区","卫辉市","辉县市","长垣市"],"焦作市":["解放区","中站区","马村区","山阳区","修武县","博爱县","武陟县","温县","焦作城乡一体化示范区","沁阳市","孟州市"],"濮阳市":["华龙区","清丰县","南乐县","范县","台前县","濮阳县","河南濮阳工业园区","濮阳经济技术开发区"],"许昌市":["魏都区","建安区","鄢陵县","襄城县","许昌经济技术开发区","禹州市","长葛市"],"漯河市":["源汇区","郾城区","召陵区","舞阳县","临颍县","漯河经济技术开发区"],"三门峡市":["湖滨区","陕州区","渑池县","卢氏县","河南三门峡经济开发区","义马市","灵宝市"],"南阳市":["宛城区","卧龙区","南召县","方城县","西峡县","镇平县","内乡县","淅川县","社旗县","唐河县","新野县","桐柏县","南阳高新技术产业开发区","南阳市城乡一体化示范区","邓州市"],"商丘市":["梁园区","睢阳区","民权县","睢县","宁陵县","柘城县","虞城县","夏邑县","豫东综合物流产业聚集区","河南商丘经济开发区","永城市"],"信阳市":["浉河区","平桥区","罗山县","光山县","新县","商城县","固始县","潢川县","淮滨县","息县","信阳高新技术产业开发区"],"周口市":["川汇区","淮阳区","扶沟县","西华县","商水县","沈丘县","郸城县","太康县","鹿邑县","周口临港开发区","项城市"],"驻马店市":["驿城区","西平县","上蔡县","平舆县","正阳县","确山县","泌阳县","汝南县","遂平县","新蔡县","河南驻马店经济开发区"],"省直辖":["济源市"]},"湖北省":{"武汉市":["江岸区","江汉区","硚口区","汉阳区","武昌区","青山区","洪山区","东西湖区","汉南区","蔡甸区","江夏区","黄陂区","新洲区"],"黄石市":["黄石港区","西塞山区","下陆区","铁山区","阳新县","大冶市"],"十堰市":["茅箭区","张湾区","郧阳区","郧西县","竹山县","竹溪县","房县","丹江口市"],"宜昌市":["西陵区","伍家岗区","点军区","猇亭区","夷陵区","远安县","兴山县","秭归县","长阳土家族自治县","五峰土家族自治县","宜都市","当阳市","枝江市"],"襄阳市":["襄城区","樊城区","襄州区","南漳县","谷城县","保康县","老河口市","枣阳市","宜城市"],"鄂州市":["梁子湖区","华容区","鄂城区"],"荆门市":["东宝区","掇刀区","沙洋县","钟祥市","京山市"],"孝感市":["孝南区","孝昌县","大悟县","云梦县","应城市","安陆市","汉川市"],"荆州市":["沙市区","荆州区","公安县","江陵县","荆州经济技术开发区","石首市","洪湖市","松滋市","监利市"],"黄冈市":["黄州区","团风县","红安县","罗田县","英山县","浠水县","蕲春县","黄梅县","龙感湖管理区","麻城市","武穴市"],"咸宁市":["咸安区","嘉鱼县","通城县","崇阳县","通山县","赤壁市"],"随州市":["曾都区","随县","广水市"],"恩施土家族苗族自治州":["恩施市","利川市","建始县","巴东县","宣恩县","咸丰县","来凤县","鹤峰县"],"省直辖":["仙桃市","潜江市","天门市","神农架林区"]},"湖南省":{"长沙市":["芙蓉区","天心区","岳麓区","开福区","雨花区","望城区","长沙县","浏阳市","宁乡市"],"株洲市":["荷塘区","芦淞区","石峰区","天元区","渌口区","攸县","茶陵县","炎陵县","醴陵市"],"湘潭市":["雨湖区","岳塘区","湘潭县","湖南湘潭高新技术产业园区","湘潭昭山示范区","湘潭九华示范区","湘乡市","韶山市"],"衡阳市":["珠晖区","雁峰区","石鼓区","蒸湘区","南岳区","衡阳县","衡南县","衡山县","衡东县","祁东县","湖南衡阳松木经济开发区","湖南衡阳高新技术产业园区","耒阳市","常宁市"],"邵阳市":["双清区","大祥区","北塔区","新邵县","邵阳县","隆回县","洞口县","绥宁县","新宁县","城步苗族自治县","武冈市","邵东市"],"岳阳市":["岳阳楼区","云溪区","君山区","岳阳县","华容县","湘阴县","平江县","岳阳市屈原管理区","汨罗市","临湘市"],"常德市":["武陵区","鼎城区","安乡县","汉寿县","澧县","临澧县","桃源县","石门县","常德市西洞庭管理区","津市市"],"张家界市":["永定区","武陵源区","慈利县","桑植县"],"益阳市":["资阳区","赫山区","南县","桃江县","安化县","益阳市大通湖管理区","湖南益阳高新技术产业园区","沅江市"],"郴州市":["北湖区","苏仙区","桂阳县","宜章县","永兴县","嘉禾县","临武县","汝城县","桂东县","安仁县","资兴市"],"永州市":["零陵区","冷水滩区","东安县","双牌县","道县","江永县","宁远县","蓝山县","新田县","江华瑶族自治县","永州经济技术开发区","永州市回龙圩管理区","祁阳市"],"怀化市":["鹤城区","中方县","沅陵县","辰溪县","溆浦县","会同县","麻阳苗族自治县","新晃侗族自治县","芷江侗族自治县","靖州苗族侗族自治县","通道侗族自治县","怀化市洪江管理区","洪江市"],"娄底市":["娄星区","双峰县","新化县","冷水江市","涟源市"],"湘西土家族苗族自治州":["吉首市","泸溪县","凤凰县","花垣县","保靖县","古丈县","永顺县","龙山县"]},"广东省":{"广州市":["荔湾区","越秀区","海珠区","天河区","白云区","黄埔区","番禺区","花都区","南沙区","从化区","增城区"],"韶关市":["武江区","浈江区","曲江区","始兴县","仁化县","翁源县","乳源瑶族自治县","新丰县","乐昌市","南雄市"],"深圳市":["罗湖区","福田区","南山区","宝安区","龙岗区","盐田区","龙华区","坪山区","光明区"],"珠海市":["香洲区","斗门区","金湾区"],"汕头市":["龙湖区","金平区","濠江区","潮阳区","潮南区","澄海区","南澳县"],"佛山市":["禅城区","南海区","顺德区","三水区","高明区"],"江门市":["蓬江区","江海区","新会区","台山市","开平市","鹤山市","恩平市"],"湛江市":["赤坎区","霞山区","坡头区","麻章区","遂溪县","徐闻县","廉江市","雷州市","吴川市"],"茂名市":["茂南区","电白区","高州市","化州市","信宜市"],"肇庆市":["端州区","鼎湖区","高要区","广宁县","怀集县","封开县","德庆县","四会市"],"惠州市":["惠城区","惠阳区","博罗县","惠东县","龙门县"],"梅州市":["梅江区","梅县区","大埔县","丰顺县","五华县","平远县","蕉岭县","兴宁市"],"汕尾市":["城区","海丰县","陆河县","陆丰市"],"河源市":["源城区","紫金县","龙川县","连平县","和平县","东源县"],"阳江市":["江城区","阳东区","阳西县","阳春市"],"清远市":["清城区","清新区","佛冈县","阳山县","连山壮族瑶族自治县","连南瑶族自治县","英德市","连州市"],"东莞市":["东莞市"],"中山市":["中山市"],"潮州市":["湘桥区","潮安区","饶平县"],"揭阳市":["榕城区","揭东区","揭西县","惠来县","普宁市"],"云浮市":["云城区","云安区","新兴县","郁南县","罗定市"]},"广西壮族自治区":{"南宁市":["兴宁区","青秀区","江南区","西乡塘区","良庆区","邕宁区","武鸣区","隆安县","马山县","上林县","宾阳县","横州市"],"柳州市":["城中区","鱼峰区","柳南区","柳北区","柳江区","柳城县","鹿寨县","融安县","融水苗族自治县","三江侗族自治县"],"桂林市":["秀峰区","叠彩区","象山区","七星区","雁山区","临桂区","阳朔县","灵川县","全州县","兴安县","永福县","灌阳县","龙胜各族自治县","资源县","平乐县","恭城瑶族自治县","荔浦市"],"梧州市":["万秀区","长洲区","龙圩区","苍梧县","藤县","蒙山县","岑溪市"],"北海市":["海城区","银海区","铁山港区","合浦县"],"防城港市":["港口区","防城区","上思县","东兴市"],"钦州市":["钦南区","钦北区","灵山县","浦北县"],"贵港市":["港北区","港南区","覃塘区","平南县","桂平市"],"玉林市":["玉州区","福绵区","容县","陆川县","博白县","兴业县","北流市"],"百色市":["右江区","田阳区","田东县","德保县","那坡县","凌云县","乐业县","田林县","西林县","隆林各族自治县","靖西市","平果市"],"贺州市":["八步区","平桂区","昭平县","钟山县","富川瑶族自治县"],"河池市":["金城江区","宜州区","南丹县","天峨县","凤山县","东兰县","罗城仫佬族自治县","环江毛南族自治县","巴马瑶族自治县","都安瑶族自治县","大化瑶族自治县"],"来宾市":["兴宾区","忻城县","象州县","武宣县","金秀瑶族自治县","合山市"],"崇左市":["江州区","扶绥县","宁明县","龙州县","大新县","天等县","凭祥市"]},"海南省":{"海口市":["秀英区","龙华区","琼山区","美兰区"],"三亚市":["海棠区","吉阳区","天涯区","崖州区"],"三沙市":["西沙群岛","南沙群岛","中沙群岛的岛礁及其海域"],"儋州市":["儋州市"],"省直辖":["五指山市","琼海市","文昌市","万宁市","东方市","定安县","屯昌县","澄迈县","临高县","白沙黎族自治县","昌江黎族自治县","乐东黎族自治县","陵水黎族自治县","保亭黎族苗族自治县","琼中黎族苗族自治县"]},"重庆市":{"重庆市":["万州区","涪陵区","渝中区","大渡口区","江北区","沙坪坝区","九龙坡区","南岸区","北碚区","綦江区","大足区","渝北区","巴南区","黔江区","长寿区","江津区","合川区","永川区","南川区","璧山区","铜梁区","潼南区","荣昌区","开州区","梁平区","武隆区","城口县","丰都县","垫江县","忠县","云阳县","奉节县","巫山县","巫溪县","石柱土家族自治县","秀山土家族苗族自治县","酉阳土家族苗族自治县","彭水苗族土家族自治县"]},"四川省":{"成都市":["锦江区","青羊区","金牛区","武侯区","成华区","龙泉驿区","青白江区","新都区","温江区","双流区","郫都区","新津区","金堂县","大邑县","蒲江县","都江堰市","彭州市","邛崃市","崇州市","简阳市"],"自贡市":["自流井区","贡井区","大安区","沿滩区","荣县","富顺县"],"攀枝花市":["东区","西区","仁和区","米易县","盐边县"],"泸州市":["江阳区","纳溪区","龙马潭区","泸县","合江县","叙永县","古蔺县"],"德阳市":["旌阳区","罗江区","中江县","广汉市","什邡市","绵竹市"],"绵阳市":["涪城区","游仙区","安州区","三台县","盐亭县","梓潼县","北川羌族自治县","平武县","江油市"],"广元市":["利州区","昭化区","朝天区","旺苍县","青川县","剑阁县","苍溪县"],"遂宁市":["船山区","安居区","蓬溪县","大英县","射洪市"],"内江市":["市中区","东兴区","威远县","资中县","隆昌市"],"乐山市":["市中区","沙湾区","五通桥区","金口河区","犍为县","井研县","夹江县","沐川县","峨边彝族自治县","马边彝族自治县","峨眉山市"],"南充市":["顺庆区","高坪区","嘉陵区","南部县","营山县","蓬安县","仪陇县","西充县","阆中市"],"眉山市":["东坡区","彭山区","仁寿县","洪雅县","丹棱县","青神县"],"宜宾市":["翠屏区","南溪区","叙州区","江安县","长宁县","高县","珙县","筠连县","兴文县","屏山县"],"广安市":["广安区","前锋区","岳池县","武胜县","邻水县","华蓥市"],"达州市":["通川区","达川区","宣汉县","开江县","大竹县","渠县","万源市"],"雅安市":["雨城区","名山区","荥经县","汉源县","石棉县","天全县","芦山县","宝兴县"],"巴中市":["巴州区","恩阳区","通江县","南江县","平昌县"],"资阳市":["雁江区","安岳县","乐至县"],"阿坝藏族羌族自治州":["马尔康市","汶川县","理县","茂县","松潘县","九寨沟县","金川县","小金县","黑水县","壤塘县","阿坝县","若尔盖县","红原县"],"甘孜藏族自治州":["康定市","泸定县","丹巴县","九龙县","雅江县","道孚县","炉霍县","甘孜县","新龙县","德格县","白玉县","石渠县","色达县","理塘县","巴塘县","乡城县","稻城县","得荣县"],"凉山彝族自治州":["西昌市","会理市","木里藏族自治县","盐源县","德昌县","会东县","宁南县","普格县","布拖县","金阳县","昭觉县","喜德县","冕宁县","越西县","甘洛县","美姑县","雷波县"]},"贵州省":{"贵阳市":["南明区","云岩区","花溪区","乌当区","白云区","观山湖区","开阳县","息烽县","修文县","清镇市"],"六盘水市":["钟山区","六枝特区","水城区","盘州市"],"遵义市":["红花岗区","汇川区","播州区","桐梓县","绥阳县","正安县","道真仡佬族苗族自治县","务川仡佬族苗族自治县","凤冈县","湄潭县","余庆县","习水县","赤水市","仁怀市"],"安顺市":["西秀区","平坝区","普定县","镇宁布依族苗族自治县","关岭布依族苗族自治县","紫云苗族布依族自治县"],"毕节市":["七星关区","大方县","金沙县","织金县","纳雍县","威宁彝族回族苗族自治县","赫章县","黔西市"],"铜仁市":["碧江区","万山区","江口县","玉屏侗族自治县","石阡县","思南县","印江土家族苗族自治县","德江县","沿河土家族自治县","松桃苗族自治县"],"黔西南布依族苗族自治州":["兴义市","兴仁市","普安县","晴隆县","贞丰县","望谟县","册亨县","安龙县"],"黔东南苗族侗族自治州":["凯里市","黄平县","施秉县","三穗县","镇远县","岑巩县","天柱县","锦屏县","剑河县","台江县","黎平县","榕江县","从江县","雷山县","麻江县","丹寨县"],"黔南布依族苗族自治州":["都匀市","福泉市","荔波县","贵定县","瓮安县","独山县","平塘县","罗甸县","长顺县","龙里县","惠水县","三都水族自治县"]},"云南省":{"昆明市":["五华区","盘龙区","官渡区","西山区","东川区","呈贡区","晋宁区","富民县","宜良县","石林彝族自治县","嵩明县","禄劝彝族苗族自治县","寻甸回族彝族自治县","安宁市"],"曲靖市":["麒麟区","沾益区","马龙区","陆良县","师宗县","罗平县","富源县","会泽县","宣威市"],"玉溪市":["红塔区","江川区","通海县","华宁县","易门县","峨山彝族自治县","新平彝族傣族自治县","元江哈尼族彝族傣族自治县","澄江市"],"保山市":["隆阳区","施甸县","龙陵县","昌宁县","腾冲市"],"昭通市":["昭阳区","鲁甸县","巧家县","盐津县","大关县","永善县","绥江县","镇雄县","彝良县","威信县","水富市"],"丽江市":["古城区","玉龙纳西族自治县","永胜县","华坪县","宁蒗彝族自治县"],"普洱市":["思茅区","宁洱哈尼族彝族自治县","墨江哈尼族自治县","景东彝族自治县","景谷傣族彝族自治县","镇沅彝族哈尼族拉祜族自治县","江城哈尼族彝族自治县","孟连傣族拉祜族佤族自治县","澜沧拉祜族自治县","西盟佤族自治县"],"临沧市":["临翔区","凤庆县","云县","永德县","镇康县","双江拉祜族佤族布朗族傣族自治县","耿马傣族佤族自治县","沧源佤族自治县"],"楚雄彝族自治州":["楚雄市","禄丰市","双柏县","牟定县","南华县","姚安县","大姚县","永仁县","元谋县","武定县"],"红河哈尼族彝族自治州":["个旧市","开远市","蒙自市","弥勒市","屏边苗族自治县","建水县","石屏县","泸西县","元阳县","红河县","金平苗族瑶族傣族自治县","绿春县","河口瑶族自治县"],"文山壮族苗族自治州":["文山市","砚山县","西畴县","麻栗坡县","马关县","丘北县","广南县","富宁县"],"西双版纳傣族自治州":["景洪市","勐海县","勐腊县"],"大理白族自治州":["大理市","漾濞彝族自治县","祥云县","宾川县","弥渡县","南涧彝族自治县","巍山彝族回族自治县","永平县","云龙县","洱源县","剑川县","鹤庆县"],"德宏傣族景颇族自治州":["瑞丽市","芒市","梁河县","盈江县","陇川县"],"怒江傈僳族自治州":["泸水市","福贡县","贡山独龙族怒族自治县","兰坪白族普米族自治县"],"迪庆藏族自治州":["香格里拉市","德钦县","维西傈僳族自治县"]},"西藏自治区":{"拉萨市":["城关区","堆龙德庆区","达孜区","林周县","当雄县","尼木县","曲水县","墨竹工卡县","格尔木藏青工业园区","拉萨经济技术开发区","西藏文化旅游创意园区","达孜工业园区"],"日喀则市":["桑珠孜区","南木林县","江孜县","定日县","萨迦县","拉孜县","昂仁县","谢通门县","白朗县","仁布县","康马县","定结县","仲巴县","亚东县","吉隆县","聂拉木县","萨嘎县","岗巴县"],"昌都市":["卡若区","江达县","贡觉县","类乌齐县","丁青县","察雅县","八宿县","左贡县","芒康县","洛隆县","边坝县"],"林芝市":["巴宜区","工布江达县","墨脱县","波密县","察隅县","朗县","米林市"],"山南市":["乃东区","扎囊县","贡嘎县","桑日县","琼结县","曲松县","措美县","洛扎县","加查县","隆子县","浪卡子县","错那市"],"那曲市":["色尼区","嘉黎县","比如县","聂荣县","安多县","申扎县","索县","班戈县","巴青县","尼玛县","双湖县"],"阿里地区":["普兰县","札达县","噶尔县","日土县","革吉县","改则县","措勤县"]},"陕西省":{"西安市":["新城区","碑林区","莲湖区","灞桥区","未央区","雁塔区","阎良区","临潼区","长安区","高陵区","鄠邑区","蓝田县","周至县"],"铜川市":["王益区","印台区","耀州区","宜君县"],"宝鸡市":["渭滨区","金台区","陈仓区","凤翔区","岐山县","扶风县","眉县","陇县","千阳县","麟游县","凤县","太白县"],"咸阳市":["秦都区","杨陵区","渭城区","三原县","泾阳县","乾县","礼泉县","永寿县","长武县","旬邑县","淳化县","武功县","兴平市","彬州市"],"渭南市":["临渭区","华州区","潼关县","大荔县","合阳县","澄城县","蒲城县","白水县","富平县","韩城市","华阴市"],"延安市":["宝塔区","安塞区","延长县","延川县","志丹县","吴起县","甘泉县","富县","洛川县","宜川县","黄龙县","黄陵县","子长市"],"汉中市":["汉台区","南郑区","城固县","洋县","西乡县","勉县","宁强县","略阳县","镇巴县","留坝县","佛坪县"],"榆林市":["榆阳区","横山区","府谷县","靖边县","定边县","绥德县","米脂县","佳县","吴堡县","清涧县","子洲县","神木市"],"安康市":["汉滨区","汉阴县","石泉县","宁陕县","紫阳县","岚皋县","平利县","镇坪县","白河县","旬阳市"],"商洛市":["商州区","洛南县","丹凤县","商南县","山阳县","镇安县","柞水县"]},"甘肃省":{"兰州市":["城关区","七里河区","西固区","安宁区","红古区","永登县","皋兰县","榆中县","兰州新区"],"嘉峪关市":["嘉峪关市"],"金昌市":["金川区","永昌县"],"白银市":["白银区","平川区","靖远县","会宁县","景泰县"],"天水市":["秦州区","麦积区","清水县","秦安县","甘谷县","武山县","张家川回族自治县"],"武威市":["凉州区","民勤县","古浪县","天祝藏族自治县"],"张掖市":["甘州区","肃南裕固族自治县","民乐县","临泽县","高台县","山丹县"],"平凉市":["崆峒区","泾川县","灵台县","崇信县","庄浪县","静宁县","华亭市"],"酒泉市":["肃州区","金塔县","瓜州县","肃北蒙古族自治县","阿克塞哈萨克族自治县","玉门市","敦煌市"],"庆阳市":["西峰区","庆城县","环县","华池县","合水县","正宁县","宁县","镇原县"],"定西市":["安定区","通渭县","陇西县","渭源县","临洮县","漳县","岷县"],"陇南市":["武都区","成县","文县","宕昌县","康县","西和县","礼县","徽县","两当县"],"临夏回族自治州":["临夏市","临夏县","康乐县","永靖县","广河县","和政县","东乡族自治县","积石山保安族东乡族撒拉族自治县"],"甘南藏族自治州":["合作市","临潭县","卓尼县","舟曲县","迭部县","玛曲县","碌曲县","夏河县"]},"青海省":{"西宁市":["城东区","城中区","城西区","城北区","湟中区","大通回族土族自治县","湟源县"],"海东市":["乐都区","平安区","民和回族土族自治县","互助土族自治县","化隆回族自治县","循化撒拉族自治县"],"海北藏族自治州":["门源回族自治县","祁连县","海晏县","刚察县"],"黄南藏族自治州":["同仁市","尖扎县","泽库县","河南蒙古族自治县"],"海南藏族自治州":["共和县","同德县","贵德县","兴海县","贵南县"],"果洛藏族自治州":["玛沁县","班玛县","甘德县","达日县","久治县","玛多县"],"玉树藏族自治州":["玉树市","杂多县","称多县","治多县","囊谦县","曲麻莱县"],"海西蒙古族藏族自治州":["格尔木市","德令哈市","茫崖市","乌兰县","都兰县","天峻县","大柴旦行政委员会"]},"宁夏回族自治区":{"银川市":["兴庆区","西夏区","金凤区","永宁县","贺兰县","灵武市"],"石嘴山市":["大武口区","惠农区","平罗县"],"吴忠市":["利通区","红寺堡区","盐池县","同心县","青铜峡市"],"固原市":["原州区","西吉县","隆德县","泾源县","彭阳县"],"中卫市":["沙坡头区","中宁县","海原县"]},"新疆维吾尔自治区":{"乌鲁木齐市":["天山区","沙依巴克区","新市区","水磨沟区","头屯河区","达坂城区","米东区","乌鲁木齐县"],"克拉玛依市":["独山子区","克拉玛依区","白碱滩区","乌尔禾区"],"吐鲁番市":["高昌区","鄯善县","托克逊县"],"哈密市":["伊州区","巴里坤哈萨克自治县","伊吾县"],"昌吉回族自治州":["昌吉市","阜康市","呼图壁县","玛纳斯县","奇台县","吉木萨尔县","木垒哈萨克自治县"],"博尔塔拉蒙古自治州":["博乐市","阿拉山口市","精河县","温泉县"],"巴音郭楞蒙古自治州":["库尔勒市","轮台县","尉犁县","若羌县","且末县","焉耆回族自治县","和静县","和硕县","博湖县"],"阿克苏地区":["阿克苏市","库车市","温宿县","沙雅县","新和县","拜城县","乌什县","阿瓦提县","柯坪县"],"克孜勒苏柯尔克孜自治州":["阿图什市","阿克陶县","阿合奇县","乌恰县"],"喀什地区":["喀什市","疏附县","疏勒县","英吉沙县","泽普县","莎车县","叶城县","麦盖提县","岳普湖县","伽师县","巴楚县","塔什库尔干塔吉克自治县"],"和田地区":["和田市","和田县","墨玉县","皮山县","洛浦县","策勒县","于田县","民丰县"],"伊犁哈萨克自治州":["伊宁市","奎屯市","霍尔果斯市","伊宁县","察布查尔锡伯自治县","霍城县","巩留县","新源县","昭苏县","特克斯县","尼勒克县"],"塔城地区":["塔城市","乌苏市","沙湾市","额敏县","托里县","裕民县","和布克赛尔蒙古自治县"],"阿勒泰地区":["阿勒泰市","布尔津县","富蕴县","福海县","哈巴河县","青河县","吉木乃县"],"省直辖":["石河子市","阿拉尔市","图木舒克市","五家渠市","北屯市","铁门关市","双河市","可克达拉市","昆玉市","胡杨河市","新星市","白杨市"]},"香港特别行政区":{"香港岛":["中西区","湾仔区","东区","南区"],"九龙":["油尖旺区","深水埗区","九龙城区","黄大仙区","观塘区"],"新界":["葵青区","荃湾区","屯门区","元朗区","北区","大埔区","西贡区","沙田区","离岛区"]},"澳门特别行政区":{"澳门半岛":["花地玛堂区","圣安多尼堂区","大堂区","望德堂区","风顺堂区"],"离岛":["嘉模堂区","圣方济各堂区"]},"台湾省":{"台北市":["中正区","大同区","中山区","松山区","大安区","万华区","信义区","士林区","北投区","内湖区","南港区","文山区"],"新北市":["板桥区","三重区","中和区","永和区","新庄区","新店区","土城区","淡水区"],"桃园市":["桃园区","中坜区","平镇区","八德区"],"台中市":["中区","东区","南区","西区","北区","西屯区","南屯区","北屯区"],"台南市":["中西区","东区","南区","北区","安平区","安南区"],"高雄市":["新兴区","前金区","苓雅区","盐埕区","鼓山区","左营区","三民区"],"基隆市":["仁爱区","信义区","中正区","中山区","安乐区","暖暖区","七堵区"],"新竹市":["东区","北区","香山区"],"嘉义市":["东区","西区"],"宜兰县":["宜兰市","罗东镇","苏澳镇"],"花莲县":["花莲市","凤林镇","玉里镇"],"台东县":["台东市","成功镇","关山镇"],"澎湖县":["马公市","湖西乡","白沙乡"]}};
+
+const $ = id => document.getElementById(id);
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ================= 认证状态 ================= */
+const ST = {
+  0:{t:'未提交', c:'st-0'},
+  1:{t:'待审核', c:'st-1'},
+  2:{t:'审核中', c:'st-2'},
+  3:{t:'已通过', c:'st-3'},
+  4:{t:'已驳回', c:'st-4'}
+};
+const REJECT_TEXT = '营业执照照片边角被裁切，统一社会信用代码第 9 位无法辨认，请重新上传四角完整的原件扫描件。';
+let APP_STATUS = 0;
+
+/* ================= 工作地点 ================= */
+(function initArea(){
+  const p = $('f-prov');
+  p.innerHTML = '<option value="">请选择省份</option>'
+    + Object.keys(AREA_DATA).map(x => '<option value="' + x + '">' + x + '</option>').join('');
+})();
+
+function fillSel(sel, list, ph){
+  sel.innerHTML = '<option value="">' + ph + '</option>'
+    + list.map(x => '<option value="' + x + '">' + x + '</option>').join('');
+}
+
+$('f-prov').addEventListener('change', e => {
+  const pv = e.target.value;
+  fillSel($('f-city'), pv ? Object.keys(AREA_DATA[pv] || {}) : [], '请选择城市');
+  $('f-city').disabled = !pv || isLocked();
+  fillSel($('f-dist'), [], '请选择区县');
+  $('f-dist').disabled = true;
+  updateFillCount();
+});
+
+$('f-city').addEventListener('change', e => {
+  const pv = $('f-prov').value, cv = e.target.value;
+  const list = (pv && cv && AREA_DATA[pv] && AREA_DATA[pv][cv]) ? AREA_DATA[pv][cv] : [];
+  fillSel($('f-dist'), list, '请选择区县');
+  $('f-dist').disabled = !cv || isLocked();
+  updateFillCount();
+});
+
+$('f-dist').addEventListener('change', () => { updateFillCount(); MapPicker.syncThumb(); });
+$('f-prov').addEventListener('change', () => MapPicker.syncThumb());
+$('f-city').addEventListener('change', () => MapPicker.syncThumb());
+
+/* ================================================================
+   地图选点（1:1 复刻 Position_Management 的工作地点地图）
+   ================================================================ */
+MapPicker.init({
+  getArea: function(){
+    return {
+      prov: $('f-prov').value,
+      city: $('f-city').value,
+      district: $('f-dist').value
+    };
+  },
+  onApply: function(s){
+    if(isLocked()){ toast('审核期间不可修改资料'); return; }
+    /* 依次赋值并触发 change，保证省→市→区级联正确 */
+    $('f-prov').value = s.prov;
+    $('f-prov').dispatchEvent(new Event('change'));
+    $('f-city').value = s.city;
+    $('f-city').dispatchEvent(new Event('change'));
+    $('f-dist').value = s.district;
+    $('f-dist').dispatchEvent(new Event('change'));
+    $('f-addr').value = s.addr;
+    updateAddrCount();
+    updateFillCount();
+    toast('已填入地址：' + s.city + s.district + ' ' + s.addr, 'ok');
+  }
+});
+
+/* 详细地址字数 */
+function updateAddrCount(){
+  const v = $('f-addr').value || '';
+  $('addrCount').textContent = v.length + '/200';
+}
+$('f-addr').addEventListener('input', updateAddrCount);
+
+/* 自动定位：模拟读取当前位置后回填省市区与街道 */
+let LOCATING = false;
+$('btnLocate').onclick = () => {
+  if(isLocked()){ toast('审核期间不可修改资料'); return; }
+  if(LOCATING) return;
+  LOCATING = true;
+  const btn = $('btnLocate');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loc-spin">◌</span>定位中…';
+
+  setTimeout(() => {
+    $('f-prov').value = '广东省';
+    $('f-prov').dispatchEvent(new Event('change'));
+    $('f-city').value = '深圳市';
+    $('f-city').dispatchEvent(new Event('change'));
+    $('f-dist').value = '南山区';
+    if(!($('f-addr').value || '').trim()){
+      $('f-addr').value = '科技园中科苑路 8 号 3 栋 12 层';
+    }
+    updateAddrCount();
+    updateFillCount();
+    btn.disabled = false;
+    btn.innerHTML = orig.replace('自动定位', '重新定位');
+    LOCATING = false;
+    toast('已按当前网络位置填写，可手动调整');
+  }, 1100);
+};
+
+/* ================= 营业执照 ================= */
+let LIC = { state:'idle', file:'' };
+const CFG = { verify:true, mode:'ocr' };
+
+const LIC_SVG = '<svg width="68" height="46" viewBox="0 0 58 40" aria-hidden="true">'
+  + '<rect x=".8" y=".8" width="56.4" height="38.4" rx="3.2" fill="#fff" stroke="#CBD8EC"/>'
+  + '<rect x="6" y="7" width="21" height="3.4" rx="1.7" fill="#A8BAD6"/>'
+  + '<rect x="6" y="14.5" width="35" height="2.6" rx="1.3" fill="#DCE4F0"/>'
+  + '<rect x="6" y="20.5" width="30" height="2.6" rx="1.3" fill="#DCE4F0"/>'
+  + '<rect x="6" y="26.5" width="22" height="2.6" rx="1.3" fill="#DCE4F0"/>'
+  + '<circle cx="45" cy="27.5" r="6.2" fill="none" stroke="#E5484D" stroke-opacity=".34" stroke-width="1.5"/>'
+  + '</svg>';
+
+const OCR_PAYLOAD = {
+  legal: '陈立恒',
+  capital: '1000',
+  est: '2019-03-12',
+  scope: '人工智能应用软件开发；数据处理和存储支持服务；计算机系统集成；技术开发、技术咨询、技术转让；企业管理咨询；人力资源服务（不含职业中介活动、劳务派遣服务）。',
+  addr: '高新南七道 18 号德维森大厦 12 层'
+};
+
+function renderLic(){
+  const has = !!LIC.file;
+  $('drop').classList.toggle('has', has);
+  $('thumb').classList.toggle('has', has);
+  $('licClear').style.display = has ? '' : 'none';
+
+  if(has){
+    $('thumb').innerHTML = LIC_SVG + (LIC.state === 'ok' ? '<span class="stamp">已识别</span>' : '');
+    $('licName').textContent = LIC.file;
+    $('licName').classList.remove('na');
+    $('licTip').textContent = '已上传 · 2.4 MB · JPG · 2026-10-20 17:20';
+  } else {
+    $('thumb').innerHTML = '未上传';
+    $('licName').textContent = '点击此处上传营业执照';
+    $('licName').classList.add('na');
+    $('licTip').textContent = '支持 JPG / PNG / PDF，单个不超过 5 MB；须为原件彩色照片或扫描件，四角完整、无遮挡、无涂改';
+  }
+
+  const box = $('licVerify');
+  if(!has){
+    box.innerHTML = '<div class="lv lv-wait"><span class="ic">◈</span><div class="bd"><b>等待上传</b><div class="sub">上传后将自动 OCR 识别</div></div></div>';
+    return;
+  }
+  if(LIC.state === 'running'){
+    box.innerHTML = '<div class="lv lv-run"><span class="ic"><span class="spin">◌</span></span><div class="bd"><b>正在识别执照信息…</b><div class="sub">预计 3 秒内返回，请勿关闭页面</div></div></div>';
+    return;
+  }
+  if(LIC.state === 'ok'){
+    box.innerHTML = '<div class="lv lv-ok"><span class="ic">✓</span><div class="bd"><b>识别成功，已回填 5 项执照信息</b>'
+      + '<div class="sub">回填项已在表单中标黄，请核对后提交</div>'
+      + '<div class="chips"><span>企业名称</span><span>信用代码</span><span>法定代表人</span><span>注册资本</span><span>成立日期</span><span>经营范围</span></div></div></div>';
+    return;
+  }
+  box.innerHTML = '<div class="lv lv-manual"><span class="ic">◷</span><div class="bd"><b>已上传，待人工比对</b><div class="sub">审核员将核对执照照片与所填信息，一般 1 个工作日内完成。</div></div></div>';
+}
+
+function pickLicense(){
+  if(isLocked()){ toast('审核期间不可修改资料'); return; }
+  $('licFile').click();
+}
+$('licPick').addEventListener('click', e => { e.stopPropagation(); pickLicense(); });
+$('drop').addEventListener('click', () => { if(!LIC.file) pickLicense(); });
+$('licFile').addEventListener('change', e => {
+  if(!e.target.files.length) return;
+  LIC.file = e.target.files[0].name;
+  startVerify();
+});
+$('licClear').addEventListener('click', e => {
+  e.stopPropagation();
+  if(isLocked()){ toast('审核期间不可修改资料'); return; }
+  LIC = { state:'idle', file:'' };
+  renderLic(); updateFillCount();
+  toast('已移除营业执照');
+});
+
+function startVerify(){
+  LIC.state = 'running';
+  renderLic();
+  setTimeout(() => {
+    LIC.state = 'ok';
+    fillFromOcr();
+    renderLic(); updateFillCount();
+  }, 1400);
+}
+
+function fillFromOcr(){
+  const set = (id, val) => {
+    const el = $(id);
+    if(!el || el.value) return;
+    el.value = val;
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 2300);
+  };
+  set('f-legal',   OCR_PAYLOAD.legal);
+  set('f-capital', OCR_PAYLOAD.capital);
+  set('f-est',     OCR_PAYLOAD.est);
+  set('f-scope',   OCR_PAYLOAD.scope);
+
+  if(!$('f-prov').value){
+    $('f-prov').value = '广东省';
+    $('f-prov').dispatchEvent(new Event('change'));
+    $('f-city').value = '深圳市';
+    $('f-city').dispatchEvent(new Event('change'));
+    $('f-dist').value = '南山区';
+  }
+  set('f-addr', OCR_PAYLOAD.addr);
+  updateAddrCount();
+  updateFillCount();
+}
+
+/* ================= 锁定 ================= */
+function isLocked(){ return APP_STATUS === 1 || APP_STATUS === 2 || APP_STATUS === 3; }
+
+/* ================= 状态渲染 ================= */
+function applyStatus(){
+  const st = ST[APP_STATUS];
+  const pill = $('stPill');
+  pill.className = 'st-pill ' + st.c;
+  pill.textContent = st.t;
+
+  const locked = isLocked();
+  document.querySelectorAll('[data-editable]').forEach(el => { el.disabled = locked; });
+  if(!locked){
+    $('f-city').disabled = !$('f-prov').value;
+    $('f-dist').disabled = !$('f-city').value;
+  }
+
+  const rj = $('progReject');
+  if(APP_STATUS === 4){
+    rj.innerHTML = '<b>认证被驳回</b>：' + REJECT_TEXT;
+    rj.classList.add('show');
+    $('footTip').textContent = '修改后重新提交，将回到待审核';
+  } else {
+    rj.classList.remove('show');
+    rj.innerHTML = '';
+    $('footTip').textContent = APP_STATUS === 0 ? '资料可随时保存，提交后进入平台审核队列'
+      : (APP_STATUS === 3 ? '认证已通过' : '审核期间不可编辑');
+  }
+
+  const steps = $('progTrack').children;
+  const nodes = [steps[0], steps[2], steps[4], steps[6]];
+  const lines = [steps[1], steps[3], steps[5]];
+
+  let doneCount, curIdx;
+  if(APP_STATUS === 0 || APP_STATUS === 4){ doneCount = 1; curIdx = 1; }
+  else if(APP_STATUS === 1 || APP_STATUS === 2){ doneCount = 2; curIdx = 2; }
+  else { doneCount = 4; curIdx = -1; }
+
+  nodes.forEach((n, i) => {
+    n.className = 'pstep' + (i < doneCount ? ' done' : (i === curIdx ? ' cur' : ' todo'));
+    n.querySelector('.num').textContent = i < doneCount ? '✓' : String(i + 1);
+    let tag = n.querySelector('.now');
+    if(i === curIdx){
+      if(!tag){ tag = document.createElement('span'); tag.className = 'now'; n.appendChild(tag); }
+      tag.textContent = '当前';
+    } else if(tag){ tag.remove(); }
+  });
+  lines.forEach((l, i) => { l.className = 'pline' + (i < doneCount - 1 ? ' done' : ''); });
+
+  const CV = {0:'0 未认证',1:'1 待审核',2:'1 待审核',3:'2 已通过',4:'0 未认证'};
+  const cv = $('ro-cverify');
+  cv.textContent = CV[APP_STATUS];
+  cv.classList.toggle('na', APP_STATUS === 0 || APP_STATUS === 4);
+
+  const bD = $('bDraft'), bS = $('bSubmit');
+  if(APP_STATUS === 0){
+    bD.style.display = ''; bD.textContent = '保存草稿';
+    bS.style.display = ''; bS.textContent = '提交认证';
+  } else if(APP_STATUS === 4){
+    bD.style.display = ''; bD.textContent = '保存草稿';
+    bS.style.display = ''; bS.textContent = '重新提交认证';
+  } else if(APP_STATUS === 1 || APP_STATUS === 2){
+    bD.style.display = ''; bD.textContent = '撤回并修改';
+    bS.style.display = 'none';
+  } else {
+    bD.style.display = ''; bD.textContent = '申请修改主体信息';
+    bS.style.display = 'none';
+  }
+  updateFillCount();
+}
+
+$('bDraft').onclick = () => {
+  if(APP_STATUS === 1 || APP_STATUS === 2){ setStatus(0); toast('已撤回，资料恢复可编辑'); return; }
+  if(APP_STATUS === 3){ setStatus(0); toast('已发起主体信息变更，请修改后重新提交'); return; }
+  toast('草稿已保存');
+};
+$('bSubmit').onclick = () => submitApply();
+
+function setStatus(n){
+  APP_STATUS = n;
+  document.querySelectorAll('#demoSwitch button').forEach(b => {
+    b.classList.toggle('on', +b.dataset.st === n);
+  });
+  applyStatus();
+}
+document.querySelectorAll('#demoSwitch button').forEach(b => {
+  b.onclick = () => setStatus(+b.dataset.st);
+});
+
+/* ================= 必填与校验 ================= */
+function requiredList(){
+  return [
+    ['f-name',    '企业名称'],
+    ['f-uscc',    '统一社会信用代码'],
+    ['f-ctype',   '企业类型'],
+    ['f-size',    '人员范围'],
+    ['f-prov',    '所在地区'],
+    ['f-city',    '所在城市'],
+    ['f-dist',    '所在区县'],
+    ['f-addr',    '详细地址'],
+    ['f-legal',   '法定代表人'],
+    ['f-license', '营业执照'],
+    ['f-cname',   '联系人姓名'],
+    ['f-cmobile', '手机号'],
+    ['f-ctitle',  '职务'],
+    ['f-cid',     '身份证号']
+  ];
+}
+
+function isFilled(id){
+  if(id === 'f-license') return !!LIC.file;
+  const el = $(id);
+  return !!(el && (el.value || '').trim());
+}
+
+function updateFillCount(){
+  const list = requiredList();
+  const n = list.filter(([id]) => isFilled(id)).length;
+  const el = $('fillCount');
+  el.textContent = n + ' / ' + list.length + ' 必填';
+  const full = n === list.length;
+  el.style.color = full ? '#0E8A4E' : '';
+  el.style.background = full ? '#E9F8F0' : '';
+  el.style.borderColor = full ? '#C9EDDB' : '';
+}
+
+function submitApply(){
+  const probs = [];
+  for(const [id, lb] of requiredList()){
+    if(!isFilled(id)) probs.push({ lb, el: (id === 'f-license' ? $('licCard') : $(id)), msg:'请填写「' + lb + '」' });
+  }
+
+  const fmt = [
+    ['f-uscc',    '统一社会信用代码', /^[0-9A-Z]{18}$/, '统一社会信用代码应为 18 位大写字母或数字'],
+    ['f-cmobile', '手机号',           /^1[3-9]\d{9}$/,  '请输入正确的 11 位手机号'],
+    ['f-cid',     '身份证号',         /^\d{17}[\dXx]$/, '请输入正确的 18 位身份证号']
+  ];
+  for(const [id, lb, re, msg] of fmt){
+    const el = $(id);
+    const v = (el.value || '').trim();
+    if(v && !re.test(v)) probs.push({ lb, el, msg });
+  }
+
+  if(probs.length){
+    probs.forEach(p => p.el && p.el.classList.add('err'));
+    if(probs.length === 1){
+      toast(probs[0].msg);
+    } else {
+      const ns = probs.map(p => p.lb);
+      toast('还有 ' + ns.length + ' 项待处理已标红：' + ns.slice(0, 3).join('、') + (ns.length > 3 ? ' 等' : ''));
+    }
+    const first = probs[0].el;
+    if(first){
+      first.scrollIntoView({ block:'center', behavior:'smooth' });
+      if(first.focus) first.focus({ preventScroll:true });
+    }
+    return;
+  }
+
+  if(LIC.state === 'running'){ toast('营业执照校验中，请稍候再提交'); return; }
+
+  setStatus(1);
+  toast('已提交认证，等待平台审核');
+}
+
+document.addEventListener('input',  e => {
+  if(e.target.classList) e.target.classList.remove('err');
+  updateFillCount();
+});
+document.addEventListener('change', e => {
+  if(e.target.classList) e.target.classList.remove('err');
+  updateFillCount();
+});
+
+/* ================= 菜单 ================= */
+const MODULES = {
+  job:     { name:'岗位招聘', desc:'该模块页面已单独产出，菜单互通后可直接跳转。' },
+  project: { name:'项目外包', desc:'完成企业认证后开放。规划包含：项目发布、对接进度、交付与验收记录。' },
+  talent:  { name:'大咖管理', desc:'完成企业认证后开放。规划包含：已合作大咖、收藏夹、履约评价与黑名单。' }
+};
+
+const ICONS = {};
+document.querySelectorAll('.nav-item').forEach(el => {
+  ICONS[el.dataset.page] = el.querySelector('.ico').outerHTML;
+});
+
+const NAV_URL = { job:'岗位管理.html', project:'项目管理.html', jobouts:'岗位外包.html', consult:'数智化咨询.html', train:'AI培训.html', coach:'AI私教.html', career:'AI职业规划.html', intern:'AI实习.html', expert:'大咖搜索.html', apply:'申请管理.html', rule:'规则说明.html' };
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.onclick = () => {
+    const key = el.dataset.page;
+    if(NAV_URL[key]){ location.href = encodeURI(NAV_URL[key]); return; }
+    if(key === 'setting'){
+      document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x === el));
+      $('page-form').style.display = '';
+      $('page-stage').style.display = 'none';
+      $('crumbParent').textContent = '设置';
+      $('crumbNow').textContent = '企业信息';
+    }
+  };
+});
+
+$('btnMsg').onclick = () => toast('消息中心页面待填充');
+$('btnMe').onclick  = () => toast('个人中心页面待填充');
+
+/* ================= 初始化 ================= */
+renderLic();
+applyStatus();
+</script>
+
+
+
+
+
+
+<!-- PC-CENTER:BEGIN -->
+<style id="pcStyle">
+/* ============ 个人中心 · 统一组件（各页共用） ============ */
+.pc-trigger{
+  display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 12px 0 5px;
+  border:1px solid #E1E9F5;border-radius:999px;background:#fff;color:#1A2231;
+  font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.18s;white-space:nowrap;line-height:1;
+}
+.pc-trigger:hover{border-color:#BBD0F2;background:#F5F9FF;color:#1657F0;box-shadow:0 4px 12px rgba(22,87,240,.10)}
+.pc-trigger .pc-t-av{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#3D86FF,#1657F0);color:#fff;font-size:12px;font-weight:700;flex:0 0 26px;
+}
+.pc-trigger .pc-t-chev{font-size:9px;color:#8A97A8;transition:transform .2s;margin-left:-1px}
+.pc-trigger.on .pc-t-chev{transform:rotate(180deg);color:#1657F0}
+
+#pcRoot{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;color:#1A2231;font-size:14px;line-height:1.5}
+#pcRoot *{box-sizing:border-box}
+#pcRoot button{font-family:inherit;border:0;background:none;cursor:pointer;color:inherit;padding:0}
+#pcRoot svg{display:block}
+
+/* ---------- 遮罩 / 抽屉 ---------- */
+#pcRoot .pc-mask{
+  position:fixed;inset:0;background:rgba(16,28,48,.42);opacity:0;pointer-events:none;
+  transition:opacity .26s ease;z-index:9000;
+}
+#pcRoot.open .pc-mask{opacity:1;pointer-events:auto}
+#pcRoot .pc-drawer{
+  position:fixed;top:0;right:0;bottom:0;width:392px;max-width:94vw;background:#fff;z-index:9001;
+  transform:translateX(103%);transition:transform .34s cubic-bezier(.32,.72,.28,1);
+  box-shadow:-20px 0 50px rgba(15,32,60,.16);display:flex;flex-direction:column;
+  border-radius:18px 0 0 18px;
+}
+#pcRoot.open .pc-drawer{transform:translateX(0)}
+/* 打开充值面板时抽屉先滑出，关闭充值后复位 */
+#pcRoot.recharging .pc-drawer{transform:translateX(103%)}
+#pcRoot .pc-d-head{
+  flex:0 0 54px;height:54px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px 0 22px;border-bottom:1px solid #F0F4FA;
+}
+#pcRoot .pc-d-head>span{font-size:14.5px;font-weight:700;letter-spacing:.2px}
+#pcRoot .pc-x{
+  width:30px;height:30px;border-radius:9px;color:#8A97A8;font-size:15px;line-height:1;
+  display:flex;align-items:center;justify-content:center;transition:.15s;flex:0 0 auto;
+}
+#pcRoot .pc-x:hover{background:#F1F5FB;color:#1A2231}
+#pcRoot .pc-d-body{padding:20px 22px 24px;overflow:auto;flex:1}
+
+/* ---------- 用户信息 ---------- */
+#pcRoot .pc-user{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+#pcRoot .pc-av{
+  width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:17px;font-weight:700;flex:0 0 48px;
+  background:linear-gradient(135deg,#3D86FF,#1657F0);box-shadow:0 6px 14px rgba(22,87,240,.26);
+}
+#pcRoot .pc-av.gray{background:linear-gradient(135deg,#9AA8BD,#6F7D93);box-shadow:0 6px 14px rgba(80,96,120,.22)}
+#pcRoot .pc-name{font-size:15.5px;font-weight:700;letter-spacing:.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#pcRoot .pc-role{font-size:12px;color:#8A97A8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- 次数 ---------- */
+#pcRoot .pc-quota{display:flex;background:#F4F7FD;border-radius:12px;padding:13px 0;margin-bottom:16px}
+#pcRoot .pc-q{flex:1;text-align:center;position:relative}
+#pcRoot .pc-q+.pc-q::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:1px;background:#E3EAF7}
+#pcRoot .pc-q span{display:block;font-size:12px;color:#8A97A8}
+#pcRoot .pc-q b{display:block;margin-top:3px;font-size:20px;font-weight:700;color:#2E7CFF;line-height:1.25;font-variant-numeric:tabular-nums}
+#pcRoot .pc-q b.zero{color:#E5484D}
+
+/* ---------- 切换账号 ---------- */
+#pcRoot .pc-acc{background:#F5F8FD;border-radius:12px;padding:6px;margin-bottom:14px}
+#pcRoot .pc-acc-h{display:flex;align-items:center;justify-content:space-between;padding:7px 10px 6px}
+#pcRoot .pc-acc-h b{font-size:12.5px;color:#4A5568;font-weight:600}
+#pcRoot .pc-acc-h span{font-size:12px;color:#9AA6B8}
+#pcRoot .pc-acc-item{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;
+  border-radius:10px;padding:10px;margin-top:6px;transition:.16s;
+}
+#pcRoot .pc-acc-item.on{background:#EDF4FF}
+#pcRoot .pc-acc-item:hover{background:#EAF2FF}
+#pcRoot .pc-aav{
+  width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:700;color:#fff;flex:0 0 30px;
+}
+#pcRoot .pc-aav.blue{background:linear-gradient(135deg,#3D86FF,#1657F0)}
+#pcRoot .pc-aav.gray{background:#8E9BB0}
+#pcRoot .pc-acc-m{display:flex;flex-direction:column;gap:2px;min-width:0}
+#pcRoot .pc-acc-n{font-size:13px;font-weight:700;color:#1A2231;white-space:nowrap}
+#pcRoot .pc-acc-item.on .pc-acc-n{color:#1657F0}
+#pcRoot .pc-acc-r{font-size:11px;color:#8A97A8;white-space:nowrap}
+#pcRoot .pc-acc-tags{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+#pcRoot .pc-acc-tags i{
+  font-style:normal;font-size:10.5px;padding:2px 6px;border-radius:5px;background:#EEF2F8;color:#8A97A8;white-space:nowrap;
+}
+#pcRoot .pc-acc-tags i.b{background:#E3EFFF;color:#2E7CFF;font-weight:600}
+#pcRoot .pc-check{width:15px;height:15px;color:#1657F0;flex:0 0 15px;margin-left:2px}
+
+/* ---------- 菜单 ---------- */
+#pcRoot .pc-mi{
+  display:flex;align-items:center;gap:12px;width:100%;height:44px;padding:0 8px;border-radius:9px;
+  font-size:13.5px;color:#2B3547;transition:.15s;text-align:left;
+}
+#pcRoot .pc-mi:hover{background:#F4F8FF;color:#1657F0}
+#pcRoot .pc-mi svg{width:17px;height:17px;color:#7E8CA1;flex:0 0 17px}
+#pcRoot .pc-mi:hover svg{color:#1657F0}
+#pcRoot .pc-sep{height:1px;background:#EFF3F9;margin:10px 0}
+#pcRoot .pc-pay{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:46px;border-radius:10px;
+  background:linear-gradient(135deg,#2E7CFF,#1657F0);color:#fff;font-size:14px;font-weight:700;
+  box-shadow:0 8px 18px rgba(22,87,240,.28);transition:.18s;letter-spacing:.2px;
+}
+#pcRoot .pc-pay svg,.pc-pay svg{width:15px;height:15px}
+#pcRoot .pc-pay:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(22,87,240,.36)}
+#pcRoot .pc-logout{
+  display:flex;align-items:center;gap:12px;width:100%;height:44px;padding:0 8px;border-radius:9px;
+  font-size:13.5px;color:#8A97A8;transition:.15s;
+}
+#pcRoot .pc-logout:hover{background:#F6F8FB;color:#4A5568}
+#pcRoot .pc-logout svg{width:17px;height:17px;flex:0 0 17px}
+
+/* ---------- 弹层通用 ---------- */
+#pcRoot .pc-modal{
+  position:fixed;inset:0;z-index:9200;display:none;align-items:center;justify-content:center;padding:26px;
+  background:rgba(13,24,42,.48);
+}
+#pcRoot .pc-modal.show{display:flex;animation:pcFade .18s ease}
+@keyframes pcFade{from{opacity:0}to{opacity:1}}
+@keyframes pcUp{from{transform:translateY(16px) scale(.985);opacity:0}to{transform:none;opacity:1}}
+@keyframes pcPop{from{transform:scale(.9);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- 充值 ---------- */
+#pcRoot .pc-re{
+  width:min(1040px,100%);max-height:calc(100vh - 52px);overflow:auto;background:#fff;border-radius:18px;
+  box-shadow:0 30px 80px rgba(9,24,56,.34);animation:pcUp .26s cubic-bezier(.2,.8,.2,1);
+}
+#pcRoot .pc-re-hero{
+  position:relative;padding:24px 32px 30px;color:#fff;overflow:hidden;border-radius:18px 18px 0 0;
+  background:linear-gradient(102deg,#1B5BF5 0%,#2B6BFA 44%,#3F87FF 100%);
+}
+#pcRoot .pc-re-hero::after{
+  content:"";position:absolute;right:-60px;top:-90px;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.20),rgba(255,255,255,0) 68%);
+}
+#pcRoot .pc-badge{
+  display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;
+  background:rgba(255,255,255,.18);font-size:12px;font-weight:600;letter-spacing:.3px;
+}
+#pcRoot .pc-badge svg{width:13px;height:13px}
+#pcRoot .pc-re-hero h2{position:relative;margin:14px 0 8px;font-size:23px;font-weight:800;letter-spacing:.2px;line-height:1.3}
+#pcRoot .pc-re-hero p{position:relative;font-size:13px;color:rgba(255,255,255,.86);max-width:70%}
+#pcRoot .pc-balance{
+  position:absolute;right:74px;top:50%;transform:translateY(-50%);text-align:center;
+  font-size:12px;color:rgba(255,255,255,.78);z-index:2;
+}
+#pcRoot .pc-balance span{display:block}
+#pcRoot .pc-balance div{margin-top:2px;font-size:12px}
+#pcRoot .pc-balance b{font-size:26px;font-weight:800;color:#fff;margin-right:3px;line-height:1.1}
+#pcRoot .pc-re-hero .pc-x.light{
+  position:absolute;right:16px;top:14px;width:32px;height:32px;border-radius:10px;z-index:3;
+  background:rgba(255,255,255,.16);color:#fff;font-size:15px;
+}
+#pcRoot .pc-re-hero .pc-x.light:hover{background:rgba(255,255,255,.3)}
+
+#pcRoot .pc-plans{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:28px 32px 6px}
+#pcRoot .pc-plan{
+  position:relative;border:1px solid #E9EEF7;border-radius:14px;padding:18px 18px 16px;background:#fff;
+  display:flex;flex-direction:column;transition:.18s;
+}
+#pcRoot .pc-plan:hover{border-color:#C9DBFA;box-shadow:0 12px 28px rgba(22,87,240,.10);transform:translateY(-2px)}
+#pcRoot .pc-plan.pc-hot-plan{border:2px solid #1657F0;box-shadow:0 14px 30px rgba(22,87,240,.16);padding:17px 17px 15px}
+#pcRoot .pc-plan h3{font-size:16px;font-weight:700}
+#pcRoot .pc-plan .pc-desc{font-size:12px;color:#8A97A8;margin-top:5px;min-height:18px}
+#pcRoot .pc-price{display:flex;align-items:flex-end;gap:3px;margin:12px 0 14px}
+#pcRoot .pc-price .cur{font-size:16px;font-weight:700;color:#1657F0;line-height:1.9}
+#pcRoot .pc-price b{font-size:31px;font-weight:800;color:#1657F0;line-height:1.05;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+#pcRoot .pc-price .unit{font-size:12px;color:#8A97A8;margin-bottom:5px}
+#pcRoot .pc-feats{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:18px;flex:1}
+#pcRoot .pc-feats li{display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:#4A5568;line-height:1.45}
+#pcRoot .pc-feats svg{width:14px;height:14px;color:#8FB4F7;flex:0 0 14px;margin-top:1px}
+#pcRoot .pc-buy{
+  height:40px;border-radius:9px;border:1px solid #C9DBFA;background:#fff;color:#1657F0;
+  font-size:13.5px;font-weight:600;transition:.16s;
+}
+#pcRoot .pc-buy:hover{background:#F2F7FF;border-color:#9CBCF5}
+#pcRoot .pc-buy.solid{border-color:transparent;background:linear-gradient(135deg,#2E7CFF,#1657F0);color:#fff;box-shadow:0 8px 16px rgba(22,87,240,.24)}
+#pcRoot .pc-buy.solid:hover{background:linear-gradient(135deg,#4A8DFF,#1D63FF)}
+#pcRoot .pc-hot{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);height:24px;padding:0 12px;border-radius:999px;
+  background:linear-gradient(135deg,#2E7CFF,#1657F0);color:#fff;font-size:11.5px;font-weight:600;
+  display:flex;align-items:center;gap:4px;white-space:nowrap;box-shadow:0 6px 14px rgba(22,87,240,.3);
+}
+#pcRoot .pc-hot svg{width:11px;height:11px}
+#pcRoot .pc-re-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 32px 20px;font-size:11.5px;color:#9AA6B8;
+}
+#pcRoot .pc-re-foot .l{display:flex;align-items:center;gap:6px}
+#pcRoot .pc-re-foot svg{width:13px;height:13px;flex:0 0 13px}
+
+/* ---------- 收银台 ---------- */
+#pcRoot .pc-modal-pay{z-index:9300;background:rgba(13,24,42,.30)}
+#pcRoot .pc-paycard{
+  width:min(420px,100%);background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(9,24,56,.38);animation:pcUp .22s ease;
+}
+#pcRoot .pc-pay-h{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 15px 20px;border-bottom:1px solid #F0F4FA}
+#pcRoot .pc-pay-h b{font-size:15px;font-weight:700}
+#pcRoot .pc-pay-body{padding:16px 20px 2px}
+#pcRoot .pc-order{display:flex;align-items:center;gap:12px;background:#F6F9FF;border:1px solid #E4EDFC;border-radius:11px;padding:12px 14px}
+#pcRoot .pc-order-n{font-size:13.5px;font-weight:700}
+#pcRoot .pc-order-s{font-size:11.5px;color:#8A97A8;margin-top:4px}
+#pcRoot .pc-order-p{margin-left:auto;font-size:12px;color:#1657F0;font-weight:600;white-space:nowrap}
+#pcRoot .pc-order-p b{font-size:19px;font-weight:800}
+#pcRoot .pc-pay-t{font-size:12.5px;color:#8A97A8;margin:16px 0 9px}
+#pcRoot .pc-methods{display:flex;flex-direction:column;gap:8px;padding-bottom:14px}
+#pcRoot .pc-m{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;
+  border:1px solid #E6ECF5;border-radius:10px;padding:11px 13px;transition:.15s;
+}
+#pcRoot .pc-m.on{border-color:#1657F0;background:#F5F9FF;box-shadow:0 0 0 3px rgba(22,87,240,.10)}
+#pcRoot .pc-m .ico{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:0 0 26px}
+#pcRoot .pc-m .ico.wx{background:#22AC38}
+#pcRoot .pc-m .ico.ali{background:#1677FF}
+#pcRoot .pc-m .ico.bank{background:#5B6B84}
+#pcRoot .pc-m .tx{display:flex;flex-direction:column;gap:2px}
+#pcRoot .pc-m .tx b{font-size:13px;font-weight:600}
+#pcRoot .pc-m .tx span{font-size:11px;color:#8A97A8}
+#pcRoot .pc-m .rd{
+  margin-left:auto;width:16px;height:16px;border-radius:50%;border:1.5px solid #CBD5E5;flex:0 0 16px;position:relative;transition:.15s;
+}
+#pcRoot .pc-m.on .rd{border-color:#1657F0;background:#1657F0}
+#pcRoot .pc-m.on .rd::after{content:"";position:absolute;inset:4px;border-radius:50%;background:#fff}
+#pcRoot .pc-pay-f{display:flex;align-items:center;gap:14px;padding:14px 20px 18px;border-top:1px solid #F2F5FA;background:#FCFDFF}
+#pcRoot .pc-pay-amt{font-size:12.5px;color:#8A97A8}
+#pcRoot .pc-pay-amt b{font-size:20px;color:#E5484D;font-weight:800;margin-left:5px}
+#pcRoot .pc-pay-go{
+  margin-left:auto;height:42px;padding:0 26px;border-radius:10px;color:#fff;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,#2E7CFF,#1657F0);box-shadow:0 8px 18px rgba(22,87,240,.26);
+  transition:.16s;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+}
+#pcRoot .pc-pay-go:hover{box-shadow:0 10px 22px rgba(22,87,240,.34)}
+#pcRoot .pc-pay-go:disabled{opacity:.75;cursor:default;box-shadow:none}
+#pcRoot .pc-pay-go.full{width:100%;margin-left:0}
+#pcRoot .pc-spin{
+  width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;
+  animation:pcSpin .7s linear infinite;
+}
+@keyframes pcSpin{to{transform:rotate(360deg)}}
+
+/* ---------- 支付成功 ---------- */
+#pcRoot .pc-modal-succ{z-index:9400;background:rgba(13,24,42,.24)}
+#pcRoot .pc-succ{
+  width:min(360px,100%);background:#fff;border-radius:16px;padding:28px 24px 22px;text-align:center;
+  box-shadow:0 30px 70px rgba(9,24,56,.38);animation:pcPop .28s cubic-bezier(.2,.9,.3,1.15);
+}
+#pcRoot .pc-succ-ico{
+  width:58px;height:58px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;
+  background:#E9F9F0;color:#12A150;
+}
+#pcRoot .pc-succ-ico svg{width:26px;height:26px}
+#pcRoot .pc-succ-t{font-size:17px;font-weight:700}
+#pcRoot .pc-succ-s{font-size:12.5px;color:#8A97A8;margin-top:7px;line-height:1.6}
+#pcRoot .pc-succ-rows{margin:16px 0 18px;border-top:1px dashed #E9EEF7;padding-top:14px;display:flex;flex-direction:column;gap:9px}
+#pcRoot .pc-row{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#8A97A8}
+#pcRoot .pc-row b{color:#2B3547;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ---------- 轻提示 ---------- */
+#pcRoot .pc-toast{
+  position:fixed;left:50%;top:78px;transform:translate(-50%,-12px);background:rgba(20,32,52,.92);color:#fff;
+  font-size:13px;padding:10px 18px;border-radius:10px;z-index:9500;opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;max-width:80vw;text-align:center;
+}
+#pcRoot .pc-toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1080px){
+  #pcRoot .pc-plans{grid-template-columns:repeat(2,1fr);padding:24px 22px 6px}
+  #pcRoot .pc-re-hero{padding:22px 22px 26px}
+  #pcRoot .pc-re-hero p{max-width:100%;padding-right:100px}
+  #pcRoot .pc-re-foot{padding:12px 22px 18px;flex-direction:column;align-items:flex-start;gap:6px}
+}
+</style>
+
+<div id="pcRoot">
+  <div class="pc-mask" data-pc-close="all"></div>
+
+  <!-- ============ 个人中心抽屉 ============ -->
+  <aside class="pc-drawer" id="pcDrawer" role="dialog" aria-modal="true" aria-label="个人中心">
+    <div class="pc-d-head">
+      <span>个人中心</span>
+      <button type="button" class="pc-x" data-pc-close="all" aria-label="关闭">✕</button>
+    </div>
+    <div class="pc-d-body">
+      <div class="pc-user">
+        <div class="pc-av" id="pcAv">云</div>
+        <div style="min-width:0">
+          <div class="pc-name" id="pcName">云启科技</div>
+          <div class="pc-role" id="pcRole">李鹏 · 企业管理员 · 已实名认证</div>
+        </div>
+      </div>
+
+      <div class="pc-quota">
+        <div class="pc-q"><span>岗位剩余</span><b id="pcQJob">2</b></div>
+        <div class="pc-q"><span>项目剩余</span><b id="pcQProj" class="zero">0</b></div>
+      </div>
+
+      <div class="pc-acc">
+        <div class="pc-acc-h"><b>切换账号</b><span>2 个账号</span></div>
+        <div id="pcAccList"></div>
+      </div>
+
+      <div class="pc-menu">
+        <button type="button" class="pc-mi" data-pc-act="account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.4" r="3.4"/><path d="M5 19.6c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"/></svg>
+          账号设置
+        </button>
+        <button type="button" class="pc-mi" data-pc-act="invoice">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.4h12v17l-3-2-3 2-3-2-3 2v-17Z"/><path d="M9.2 8.4h5.6"/><path d="M9.2 12.4h5.6"/></svg>
+          发票管理
+        </button>
+        <button type="button" class="pc-mi" data-pc-act="service">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.4 13.6v-2a7.6 7.6 0 0 1 15.2 0v2"/><rect x="2.8" y="13" width="4" height="6" rx="1.8"/><rect x="17.2" y="13" width="4" height="6" rx="1.8"/><path d="M19.2 19v.8a2.2 2.2 0 0 1-2.2 2.2H13"/></svg>
+          联系客服
+        </button>
+      </div>
+
+      <div class="pc-sep"></div>
+
+      <button type="button" class="pc-pay" id="pcRechargeBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        充值次数
+      </button>
+
+      <div class="pc-sep"></div>
+
+      <button type="button" class="pc-logout" data-pc-act="logout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.6 8V5.6A2.2 2.2 0 0 0 12.4 3.4H6.2A2.2 2.2 0 0 0 4 5.6v12.8a2.2 2.2 0 0 0 2.2 2.2h6.2a2.2 2.2 0 0 0 2.2-2.2V16"/><path d="M9.6 12h10.4"/><path d="m17 8.6 3.4 3.4-3.4 3.4"/></svg>
+        退出登录
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ 充值次数包 ============ -->
+  <div class="pc-modal" id="pcRecharge" role="dialog" aria-modal="true" aria-label="充值联系次数">
+    <div class="pc-re">
+      <div class="pc-re-hero">
+        <span class="pc-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4.6 13.4h6.1L10.4 22 19 10.4h-6.2L13 2Z"/></svg>
+          DAKA PRO · 联系次数包
+        </span>
+        <h2>充值联系次数，解锁更多大咖联系方式</h2>
+        <p>岗位招聘与项目合作共享同一套大咖库，购买后立即到账，可随时用于发起联系。</p>
+        <div class="pc-balance">
+          <span>账户余额</span>
+          <div><b id="pcBal">2</b>次可用</div>
+        </div>
+        <button type="button" class="pc-x light" data-pc-close="recharge" aria-label="关闭">✕</button>
+      </div>
+
+      <div class="pc-plans" id="pcPlans"></div>
+
+      <div class="pc-re-foot">
+        <span class="l">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 11v5.4"/><path d="M12 7.8h.01"/></svg>
+          套餐按月生效，次数有效期内有效；购买后不支持退款，可开具企业发票。
+        </span>
+        <span>演示环境 · 支付为模拟流程</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 收银台 ============ -->
+  <div class="pc-modal pc-modal-pay" id="pcPay" role="dialog" aria-modal="true" aria-label="订单支付">
+    <div class="pc-paycard">
+      <div class="pc-pay-h">
+        <b>收银台</b>
+        <button type="button" class="pc-x" data-pc-close="pay" aria-label="关闭">✕</button>
+      </div>
+      <div class="pc-pay-body">
+        <div class="pc-order">
+          <div>
+            <div class="pc-order-n" id="pcOrderName">—</div>
+            <div class="pc-order-s" id="pcOrderDesc">—</div>
+          </div>
+          <div class="pc-order-p">¥<b id="pcOrderPrice">0</b></div>
+        </div>
+        <div class="pc-pay-t">支付方式</div>
+        <div class="pc-methods" id="pcMethods"></div>
+      </div>
+      <div class="pc-pay-f">
+        <div class="pc-pay-amt">应付金额<b>¥<span id="pcPayAmt">0</span></b></div>
+        <button type="button" class="pc-pay-go" id="pcPayGo">确认支付</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 支付成功 ============ -->
+  <div class="pc-modal pc-modal-succ" id="pcSucc" role="dialog" aria-modal="true" aria-label="支付成功">
+    <div class="pc-succ">
+      <div class="pc-succ-ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.6 4.5L19 7.4"/></svg>
+      </div>
+      <div class="pc-succ-t">支付成功</div>
+      <div class="pc-succ-s" id="pcSuccDesc">联系次数已到账</div>
+      <div class="pc-succ-rows">
+        <div class="pc-row"><span>订单编号</span><b id="pcOrderNo">—</b></div>
+        <div class="pc-row"><span>支付金额</span><b id="pcSuccAmt">—</b></div>
+      </div>
+      <button type="button" class="pc-pay-go full" id="pcSuccDone">完成</button>
+    </div>
+  </div>
+
+  <div class="pc-toast" id="pcToast"></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  if (window.__pcCenterReady) return;
+  window.__pcCenterReady = true;
+
+  var root = document.getElementById('pcRoot');
+  if (!root) return;
+
+  /* ---------------- 数据 ---------------- */
+  var ACCOUNTS = [
+    { name:'云启科技', av:'云', tone:'blue', sub:'李鹏 · 企业管理员', role:'李鹏 · 企业管理员 · 已实名认证', job:2, proj:0 },
+    { name:'恒锐智造', av:'恒', tone:'gray', sub:'张敏 · 企业管理员', role:'张敏 · 企业管理员 · 未认证', job:0, proj:0 }
+  ];
+  var cur = 0;
+
+  var PLANS = [
+    { name:'基础版', desc:'适合轻量试水', price:79, hot:false,
+      feats:['3 次 岗位联系次数','3 次 项目联系次数','大咖库全量搜索'], gain:{job:3,proj:3} },
+    { name:'尊享版', desc:'高频招聘 / 项目团队首选', price:249, hot:true,
+      feats:['15 次 岗位联系次数','15 次 项目联系次数','优先推荐 + 专属顾问'], gain:{job:15,proj:15} },
+    { name:'岗位专享', desc:'专注招聘场景', price:199, hot:false,
+      feats:['20 次 岗位联系次数','不含项目联系次数','岗位匹配报告'], gain:{job:20,proj:0} },
+    { name:'项目专享', desc:'专注项目合作', price:199, hot:false,
+      feats:['20 次 项目联系次数','不含岗位联系次数','项目顾问协助对接'], gain:{job:0,proj:20} }
+  ];
+
+  var METHODS = [
+    { id:'wx',   name:'微信支付', desc:'推荐使用微信扫码支付', ico:'微', cls:'wx' },
+    { id:'ali',  name:'支付宝',   desc:'支持花呗 / 账户余额', ico:'支', cls:'ali' },
+    { id:'bank', name:'对公转账', desc:'企业账户转账，1-3 个工作日到账', ico:'企', cls:'bank' }
+  ];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var curPay = null, curMethod = 0, toastTimer = null;
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.6 4.4 4.4L19 7.6"/></svg>';
+
+  /* ---------------- 渲染 ---------------- */
+  function tagsOf(a){
+    if (!a.job && !a.proj) return '<i>无付费次数</i>';
+    return '<i class="b">岗位 ' + a.job + '</i><i>项目 ' + a.proj + '</i>';
+  }
+  function renderAccList(){
+    $('pcAccList').innerHTML = ACCOUNTS.map(function(a, i){
+      var on = i === cur;
+      return '<button type="button" class="pc-acc-item' + (on ? ' on' : '') + '" data-acc="' + i + '">' +
+        '<span class="pc-aav ' + a.tone + '">' + a.av + '</span>' +
+        '<span class="pc-acc-m"><span class="pc-acc-n">' + a.name + '</span>' +
+        '<span class="pc-acc-r">' + a.sub + '</span></span>' +
+        '<span class="pc-acc-tags">' + tagsOf(a) + '</span>' +
+        (on ? '<span class="pc-check">' + CHECK + '</span>' : '') +
+        '</button>';
+    }).join('');
+    Array.prototype.forEach.call($('pcAccList').querySelectorAll('[data-acc]'), function(b){
+      b.onclick = function(){
+        var i = Number(b.getAttribute('data-acc'));
+        if (i === cur) return;
+        cur = i;
+        renderAccList(); syncUI();
+        toast('已切换至 ' + ACCOUNTS[cur].name);
+      };
+    });
+  }
+
+  function renderPlans(){
+    $('pcPlans').innerHTML = PLANS.map(function(p, i){
+      return '<div class="pc-plan' + (p.hot ? ' pc-hot-plan' : '') + '">' +
+        (p.hot ? '<span class="pc-hot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.6 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2Z"/></svg>最受欢迎</span>' : '') +
+        '<h3>' + p.name + '</h3>' +
+        '<div class="pc-desc">' + p.desc + '</div>' +
+        '<div class="pc-price"><span class="cur">¥</span><b>' + p.price + '</b><span class="unit">/月</span></div>' +
+        '<ul class="pc-feats">' + p.feats.map(function(f){
+          return '<li>' + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.6 4.4 4.4L19 7.6"/></svg>' + '<span>' + f + '</span></li>';
+        }).join('') + '</ul>' +
+        '<button type="button" class="pc-buy' + (p.hot ? ' solid' : '') + '" data-plan="' + i + '">立即购买</button>' +
+        '</div>';
+    }).join('');
+    Array.prototype.forEach.call($('pcPlans').querySelectorAll('[data-plan]'), function(b){
+      b.onclick = function(){ openPay(PLANS[Number(b.getAttribute('data-plan'))]); };
+    });
+  }
+
+  function renderMethods(){
+    $('pcMethods').innerHTML = METHODS.map(function(m, i){
+      return '<button type="button" class="pc-m' + (i === curMethod ? ' on' : '') + '" data-m="' + i + '">' +
+        '<span class="ico ' + m.cls + '">' + m.ico + '</span>' +
+        '<span class="tx"><b>' + m.name + '</b><span>' + m.desc + '</span></span>' +
+        '<span class="rd"></span></button>';
+    }).join('');
+    Array.prototype.forEach.call($('pcMethods').querySelectorAll('[data-m]'), function(b){
+      b.onclick = function(){ curMethod = Number(b.getAttribute('data-m')); renderMethods(); };
+    });
+  }
+
+  /* ---------------- 同步 ---------------- */
+  function syncUI(){
+    var a = ACCOUNTS[cur];
+    $('pcAv').textContent = a.av;
+    $('pcAv').className = 'pc-av' + (a.tone === 'gray' ? ' gray' : '');
+    $('pcName').textContent = a.name;
+    $('pcRole').textContent = a.role;
+    $('pcQJob').textContent = a.job;
+    $('pcQProj').textContent = a.proj;
+    $('pcQProj').className = a.proj ? '' : 'zero';
+    $('pcQJob').className = a.job ? '' : 'zero';
+    $('pcBal').textContent = a.job + a.proj;
+
+    var tav = document.getElementById('pcTAv');
+    if (tav) tav.textContent = a.av;
+
+    /* 兼容旧版头像下拉 / 页面内的次数展示 */
+    var setTxt = function(id, v){ var el = document.getElementById(id); if (el) el.textContent = v; };
+    setTxt('pmQJob', a.job); setTxt('pmQProj', a.proj);
+    setTxt('pmName', a.name); setTxt('pmAv', a.av); setTxt('pName', a.name);
+    var b1 = document.getElementById('pmQJobBox'); if (b1) b1.classList.toggle('zero', !a.job);
+    var b2 = document.getElementById('pmQProjBox'); if (b2) b2.classList.toggle('zero', !a.proj);
+    Array.prototype.forEach.call(document.querySelectorAll('#tpQuota, .quota-chip b'), function(el){
+      el.textContent = a.job;
+    });
+  }
+
+  function toast(msg){
+    var el = $('pcToast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2200);
+  }
+
+  /* ---------------- 打开 / 关闭 ---------------- */
+  function openDrawer(){
+    root.classList.add('open');
+    var t = document.getElementById('pcTrigger'); if (t) t.classList.add('on');
+    syncUI();
+  }
+  function closeDrawer(){
+    root.classList.remove('open');
+    var t = document.getElementById('pcTrigger'); if (t) t.classList.remove('on');
+  }
+  var show = function(el){ if (el) el.classList.add('show'); };
+  var hide = function(el){ if (el) el.classList.remove('show'); };
+  function closeAll(){
+    hide($('pcSucc')); hide($('pcPay')); closeRecharge(); closeDrawer();
+  }
+
+  /* ---------------- 充值 / 支付 ---------------- */
+  function openRecharge(){ syncUI(); root.classList.add('recharging'); show($('pcRecharge')); }
+  function closeRecharge(){ hide($('pcRecharge')); root.classList.remove('recharging'); }
+
+  function gainText(p){
+    var arr = [];
+    if (p.gain.job) arr.push(p.gain.job + ' 次岗位联系次数');
+    if (p.gain.proj) arr.push(p.gain.proj + ' 次项目联系次数');
+    return arr.join(' + ');
+  }
+
+  function openPay(p){
+    curPay = p; curMethod = 0;
+    $('pcOrderName').textContent = p.name + ' · 联系次数包';
+    $('pcOrderDesc').textContent = gainText(p) + ' · 有效期 30 天';
+    $('pcOrderPrice').textContent = p.price;
+    $('pcPayAmt').textContent = p.price;
+    var btn = $('pcPayGo');
+    btn.disabled = false; btn.textContent = '确认支付';
+    renderMethods();
+    show($('pcPay'));
+  }
+
+  function orderNo(){
+    var d = new Date();
+    var p = function(n, w){ n = String(n); while (n.length < (w || 2)) n = '0' + n; return n; };
+    return 'DK' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+  }
+
+  function doPay(){
+    var btn = $('pcPayGo');
+    if (!curPay || btn.disabled) return;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="pc-spin"></span>支付处理中…';
+    setTimeout(function(){
+      btn.disabled = false;
+      btn.textContent = '确认支付';
+
+      var a = ACCOUNTS[cur];
+      a.job += curPay.gain.job;
+      a.proj += curPay.gain.proj;
+
+      $('pcSuccDesc').textContent = '已到账：' + gainText(curPay);
+      $('pcOrderNo').textContent = orderNo();
+      $('pcSuccAmt').textContent = '¥' + curPay.price + '.00';
+      show($('pcSucc'));
+
+      renderAccList(); syncUI();
+    }, 1300);
+  }
+
+  /* ---------------- 交互绑定 ---------------- */
+  root.addEventListener('click', function(e){
+    var c = e.target.closest ? e.target.closest('[data-pc-close]') : null;
+    if (!c) return;
+    var k = c.getAttribute('data-pc-close');
+    if (k === 'all') closeAll();
+    else if (k === 'recharge') closeRecharge();
+    else if (k === 'pay') hide($('pcPay'));
+  });
+
+  ['pcRecharge', 'pcPay'].forEach(function(id){
+    var m = $(id);
+    if (m) m.addEventListener('click', function(e){ if (e.target === m) hide(m); });
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key !== 'Escape') return;
+    if ($('pcSucc').classList.contains('show')) { hide($('pcSucc')); return; }
+    if ($('pcPay').classList.contains('show')) { hide($('pcPay')); return; }
+    if ($('pcRecharge').classList.contains('show')) { closeRecharge(); return; }
+    if (root.classList.contains('open')) closeAll();
+  });
+
+  $('pcRechargeBtn').onclick = openRecharge;
+  $('pcPayGo').onclick = doPay;
+  $('pcSuccDone').onclick = function(){
+    hide($('pcSucc')); hide($('pcPay')); closeRecharge();
+    syncUI();
+    toast('支付成功，联系次数已到账');
+  };
+
+  Array.prototype.forEach.call(root.querySelectorAll('[data-pc-act]'), function(b){
+    b.onclick = function(){
+      var act = b.getAttribute('data-pc-act');
+      if (act === 'logout') { toast('已退出登录（演示）'); return; }
+      if (act === 'service') { toast('客服微信：daka-service · 工作日 9:00-18:00'); return; }
+      if (act === 'invoice') { toast('发票管理功能开发中'); return; }
+      toast('账号设置功能开发中');
+    };
+  });
+
+  /* ---------------- 触发按钮 ---------------- */
+  function mount(){
+    var bar = document.querySelector('.topbar');
+    if (!bar) return;
+
+    /* 隐藏各页原有的头像 / 个人中心入口 */
+    Array.prototype.forEach.call(
+      document.querySelectorAll('.topbar .profile-wrap, .top-actions > .profile, #btnMe'),
+      function(el){ el.style.display = 'none'; }
+    );
+
+    var host = bar.querySelector('.top-actions') || bar;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pc-trigger';
+    btn.id = 'pcTrigger';
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.innerHTML = '<span class="pc-t-av" id="pcTAv">' + ACCOUNTS[cur].av + '</span>' +
+                    '<span class="pc-t-tx">个人中心</span>' +
+                    '<span class="pc-t-chev">▾</span>';
+    btn.addEventListener('click', openDrawer);
+    host.appendChild(btn);
+  }
+
+  renderAccList();
+  renderPlans();
+  renderMethods();
+  syncUI();
+  mount();
+})();
+</script>
+<!-- PC-CENTER:END -->
+</body>
+</html>
