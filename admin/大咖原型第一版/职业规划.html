@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>职业规划 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:200px;flex:0 0 200px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--line);flex:0 0 60px}
+  .logo-mark{width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;font-weight:800;font-size:12px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35)}
+  .logo-text{flex:1;min-width:0;font-size:13px;font-weight:700;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:2px;transition:.15s;user-select:none;
+  }
+  .nav-item{text-decoration:none}
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 卡片 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--white)}
+  .tab{
+    padding:14px 14px 12px;font-size:14px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;
+    display:flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--blue-600)}
+  .tab.active{color:var(--blue-600);font-weight:600;border-bottom-color:var(--blue-600)}
+  .tab .cnt{font-size:11px;background:var(--gray-bg);color:var(--text-2);padding:1px 6px;border-radius:8px;font-weight:600}
+  .tab.active .cnt{background:var(--blue-100);color:var(--blue-600)}
+
+  .filters{padding:18px 18px 4px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .ctrl{
+    height:36px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:13px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px}
+  .filter-actions{grid-column:-3/-1;display:flex;justify-content:flex-end;align-items:center;gap:10px;align-self:end;padding-bottom:0;border-bottom:0}
+
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-danger{border-color:#F3C7C8;background:var(--red-bg);color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);background:#FBDCDC;color:var(--red)}
+  .btn-sm{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .toolbar{padding:14px 18px;display:flex;align-items:center;gap:10px}
+  .toolbar .spacer{flex:1}
+  .toolbar .sel-tip{font-size:12px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);padding:5px 10px;border-radius:8px}
+  .toolbar .hint{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .toolbar .hint i{width:5px;height:5px;border-radius:50%;background:var(--blue-500);opacity:.6;font-style:normal}
+
+  /* ---------- 表格 ---------- */
+  .table-wrap{overflow-x:auto;border-top:1px solid var(--line)}
+  table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:11px 14px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:#F8FBFF}
+  tbody tr.checked{background:var(--blue-50)}
+  .lk{cursor:pointer}
+  .lk:hover .n,.lk:hover .col-id,.lk:hover .cc-name{color:var(--blue-600);text-decoration:underline}
+  .link-goto{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link-goto:hover{text-decoration:underline}
+  .col-id{color:var(--muted);font-variant-numeric:tabular-nums;font-size:10.5px;letter-spacing:0}
+  .cell-time{font-size:10.5px;color:var(--muted);margin-top:4px;font-variant-numeric:tabular-nums;letter-spacing:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+
+  /* 学员 */
+  .stu{display:flex;align-items:center;gap:8px}
+  .stu .ava{
+    width:30px;height:30px;border-radius:9px;flex:0 0 auto;
+    background:linear-gradient(135deg,#EAF2FF,#D6E5FF);color:var(--blue-700);
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
+  }
+  .stu .n{font-weight:600;line-height:1.3}
+  .stu .p{font-size:11px;color:var(--muted);font-family:"SF Mono",Menlo,monospace;margin-top:2px}
+
+  .edu-2{font-size:12.5px;line-height:1.35;word-break:break-word}
+  .edu-2 em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .chips{display:flex;gap:4px;flex-wrap:wrap}
+  .chip{
+    display:inline-block;padding:2px 8px;border-radius:7px;font-size:11px;line-height:1.6;
+    background:#F1F5FC;color:#4A5568;white-space:nowrap;border:1px solid #EAF0FA;
+  }
+  .chip.blue{background:var(--blue-50);color:var(--blue-600);border-color:var(--blue-100)}
+  .chip.more{background:#fff;border-style:dashed;border-color:var(--line-strong);color:var(--muted)}
+
+  .mbti{
+    display:inline-block;font-family:"SF Mono",Menlo,monospace;font-weight:700;font-size:11px;letter-spacing:.6px;
+    color:var(--blue-700);background:var(--blue-50);border:1px solid var(--blue-100);padding:2px 7px;border-radius:6px;
+  }
+
+  /* 课程 + 匹配度 */
+  .course-cell{max-width:230px}
+  .course-cell .cc-name{font-weight:600;font-size:13px;line-height:1.35}
+  .course-cell .cc-sub{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:5px}
+  .course-cell .cc-sub .ai{
+    font-size:10px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);
+    padding:0 5px;border-radius:4px;line-height:1.6;
+  }
+  .cc-empty{color:var(--muted);font-size:12px;line-height:1.5}
+  .cc-empty span{display:block;font-size:11px;color:#B7C1CE;margin-top:2px}
+
+  .match{display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .bar{width:36px;height:6px;border-radius:6px;background:#EDF1F8;overflow:hidden;flex:0 0 auto}
+  .bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#5B9BFF,var(--blue-600))}
+  .bar i.high{background:linear-gradient(90deg,#3FD08B,var(--green))}
+  .bar i.low{background:linear-gradient(90deg,#FFC15E,var(--orange))}
+  .pct{font-size:12px;font-weight:700;color:var(--blue-600);font-variant-numeric:tabular-nums}
+  .pct.high{color:var(--green)}
+  .pct.low{color:#C2760A}
+  .match .na{font-size:12px;color:var(--muted)}
+
+  .org{display:flex;align-items:flex-start;gap:6px;font-size:12px;color:var(--text-2);line-height:1.45;max-width:160px}
+  .org::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--blue-500);opacity:.65;margin-top:6px;flex:0 0 auto}
+  .org.pending{color:var(--muted)}
+  .org.pending::before{background:var(--line-strong)}
+
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2)}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-1{background:var(--orange-bg);color:#C2760A}
+  .st-2{background:var(--blue-100);color:var(--blue-600)}
+  .st-3{background:var(--green-bg);color:var(--green)}
+  .st-4{background:var(--red-bg);color:var(--red)}
+  .st-5{background:#ECEFF4;color:#8A97A8}
+  .ops{display:flex;gap:6px;white-space:nowrap;align-items:center}
+  .ops .sep{width:1px;height:11px;background:var(--line-strong)}
+  .link{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .link.gray{color:var(--muted)}
+  .link.red{color:var(--red)}
+  .empty{padding:60px 0;text-align:center;color:var(--muted);font-size:13px}
+  .empty .e-ico{font-size:38px;opacity:.35;display:block;margin-bottom:10px}
+
+  .pager{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:13px;color:var(--text-2)}
+  .pager .spacer{flex:1}
+  .pg{border:1px solid var(--line-strong);border-radius:8px;min-width:32px;height:32px;padding:0 8px;background:#fff;cursor:pointer;font-size:13px;color:var(--text-2);font-family:inherit}
+  .pg:hover{border-color:var(--blue-500);color:var(--blue-600)}
+  .pg.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+  .pg:disabled,.pg.disabled{opacity:.45;cursor:not-allowed;border-color:var(--line);color:var(--text-2)}
+  .pg:disabled:hover,.pg.disabled:hover{border-color:var(--line);color:var(--text-2)}
+  .pg-wrap{display:inline-flex;align-items:center;gap:6px}
+  .pg-ell{border:0;background:transparent;cursor:default;color:var(--text-2);padding:0 2px}
+
+  /* ---------- 抽屉 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:720px;max-width:92vw;background:var(--white);z-index:61;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:var(--shadow-lg);
+  }
+  .drawer.wide{width:900px}
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .d-title{font-size:17px;font-weight:700}
+  .d-sub{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-close{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;font-size:16px;color:var(--muted);flex:0 0 auto}
+  .d-close:hover{color:var(--text);border-color:var(--blue-500)}
+  .d-body{padding:4px 22px 22px;overflow-y:auto;flex:1}
+  .sec{margin-top:18px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sec-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .sec-title .side{font-size:11px;font-weight:400;color:var(--muted);margin-left:auto}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+  .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px;min-width:0}
+  .kv.full{grid-column:1/-1}
+  .kv .k{font-size:11px;color:var(--muted);letter-spacing:.1px}
+  .kv .v{font-size:13px;color:var(--text);margin-top:4px;word-break:break-word;line-height:1.65}
+  .kv .v.strong{font-weight:600}
+  .kv .v.mono{font-family:"SF Mono",Menlo,monospace;font-size:12px}
+  .kv.white{background:#fff;border-color:var(--line)}
+  .head-person{display:flex;align-items:center;gap:12px}
+  .head-person .ava{
+    width:44px;height:44px;border-radius:13px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;
+    box-shadow:0 4px 12px rgba(27,98,245,.28);
+  }
+  .head-person .hp-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+  /* 匹配度环形 */
+  .score-card{
+    display:flex;align-items:center;gap:18px;padding:16px 18px;border-radius:12px;
+    background:linear-gradient(120deg,#EFF5FF,#E6F0FF 55%,#F1F7FF);border:1px solid #DFEAFC;
+  }
+  .ring{position:relative;width:82px;height:82px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .ring .hole{position:absolute;inset:8px;background:#fff;border-radius:50%;box-shadow:inset 0 0 0 1px #EAF1FC}
+  .ring .num{position:relative;text-align:center;line-height:1}
+  .ring .num b{font-size:22px;font-weight:800;color:var(--blue-700);font-variant-numeric:tabular-nums}
+  .ring .num small{display:block;font-size:10px;color:var(--muted);font-weight:500;margin-top:4px}
+  .sc-main{flex:1;min-width:0}
+  .sc-main .t{font-size:16px;font-weight:700;line-height:1.35}
+  .sc-main .s{font-size:12px;color:var(--text-2);margin-top:5px;display:flex;gap:8px;flex-wrap:wrap}
+  .sc-main .s span{background:rgba(255,255,255,.78);border:1px solid #E1EBFB;border-radius:6px;padding:1px 7px;font-size:11px;color:var(--blue-700)}
+
+  .reason{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .reason li{position:relative;padding-left:15px;font-size:13px;color:var(--text-2);line-height:1.7}
+  .reason li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;background:var(--blue-500)}
+  .reason li b{color:var(--text);font-weight:600}
+
+  .note-box{background:var(--blue-50);border:1px dashed var(--blue-100);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text-2);line-height:1.7}
+  .note-box b{color:var(--blue-700)}
+  .note-box.warn{background:var(--red-bg);border-color:#F7D4D5;color:#B03337}
+  .note-box.warn b{color:var(--red)}
+
+  .timeline{border-left:2px solid var(--blue-100);margin-left:6px;padding-left:18px}
+  .tl-item{position:relative;padding-bottom:16px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue-600);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue-100)}
+  .tl-item.todo::before{background:#fff;box-shadow:0 0 0 2px var(--line-strong)}
+  .tl-item .t{font-size:13px;font-weight:600}
+  .tl-item.todo .t{color:var(--muted);font-weight:500}
+  .tl-item .m{font-size:12px;color:var(--muted);margin-top:3px}
+
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#FCFDFF}
+  .d-foot .spacer{flex:1}
+  .d-foot .tip{font-size:12px;color:var(--muted)}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:560px;max-width:92vw;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+    max-height:88vh;display:flex;flex-direction:column;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 6px;font-size:16px;font-weight:700}
+  .m-head .m-sub{font-size:12px;color:var(--muted);font-weight:400;margin-top:5px;line-height:1.6}
+  .m-body{padding:12px 22px 4px;overflow-y:auto}
+  .m-body p{font-size:13px;color:var(--text-2);line-height:1.7}
+  textarea.ctrl{min-height:110px;padding:10px 12px;line-height:1.6;resize:vertical;height:auto}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px}
+  .counter{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .quick span{font-size:12px;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);padding:4px 10px;border-radius:14px;cursor:pointer}
+  .quick span:hover{background:var(--blue-100)}
+
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+  .form-grid .full{grid-column:1/-1}
+  .ctrl-label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block;font-weight:500}
+  .ctrl-label b{color:var(--blue-600);font-weight:500}
+
+  /* 配置抽屉 */
+  .chip-pool{display:flex;flex-wrap:wrap;gap:8px}
+  .chip-pool .p{
+    font-size:12px;padding:5px 10px;border-radius:8px;background:var(--blue-50);color:var(--blue-700);
+    border:1px solid var(--blue-100);cursor:default;
+  }
+  .chip-pool .p.sel{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(27,98,245,.22)}
+  .chip-pool .p.on{cursor:pointer}
+  .cfg-table{width:100%;min-width:760px;border-collapse:collapse;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .cfg-table thead th{background:var(--blue-50);font-size:12px;color:var(--text-2);padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  .cfg-table tbody td{padding:11px 12px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  .cfg-table tbody tr:last-child td{border-bottom:none}
+  .cfg-table tbody tr:hover{background:#F8FBFF}
+  .cfg-name{font-weight:600;font-size:13px;line-height:1.35}
+  .cfg-name em{display:block;font-style:normal;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .placeholder{background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);padding:70px 20px;text-align:center;color:var(--muted)}
+  .placeholder b{display:block;color:var(--text);font-size:16px;margin-bottom:8px;font-weight:700}
+
+  @media (max-width:1280px){
+    .filters{grid-template-columns:repeat(2,1fr)}
+  }
+/* ============ ui-kit-css ============ */
+/* ============ 统一规范 V3 · 字号加大 / 列宽均分 / 125% 不溢出 ============ */
+html{zoom:1.1}
+/* 链接一律无下划线：菜单、面包屑、操作项、分页、抽屉内链接 */
+a,a:link,a:visited,a:hover,a:active,a:focus{text-decoration:none!important}
+/* 跨页跳转平滑过渡：消除切菜单时的白闪与高度跳变（Chrome 126+ 生效） */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.18s;animation-timing-function:ease-out}
+/* 表格末列留白，操作项不贴边 */
+tbody td:last-child,thead th:last-child{padding-right:18px}
+/* 消除切页白闪与滚动条造成的横向跳动 */
+html{background:var(--bg,#F1F3F7);scrollbar-gutter:stable}
+body{background:var(--bg,#F1F3F7)}
+/* 列表未渲染时先占位，避免整页高度跳变 */
+.table-wrap{min-height:300px}
+@media (max-width:1280px){.filter-actions{grid-column:1/-1}}
+
+/* 窄窗口：表格给足可读宽度，滚动限制在表格容器内，页面本身不横向溢出 */
+@media (max-width:1400px){.table-wrap table{min-width:1000px!important}}
+body{min-height:91vh;font-size:16px;line-height:1.55}
+.layout{min-height:91vh}
+.sidebar{min-height:91vh;height:91vh}
+.content{padding:20px 20px 40px}
+.card{border-radius:14px}
+/* ---- 筛选区 ---- */
+.filters{padding:22px 24px 16px;gap:18px 20px;align-items:end;border-bottom:1px dashed var(--line)}
+.field{gap:8px}
+.field label{font-size:14px;font-weight:500}
+.ctrl{height:42px;font-size:15px;border-radius:10px}
+/* ---- 按钮 ---- */
+.btn{height:42px;padding:0 20px;font-size:15px;border-radius:10px}
+.btn-sm{height:34px;padding:0 14px;font-size:14px;border-radius:8px}
+.toolbar{padding:18px 24px;gap:12px}
+/* ---- 表格：定宽均分，消除大片留白，宽度恒为 100% ---- */
+table{width:100%!important;table-layout:fixed;min-width:0!important}
+thead th{padding:12px 10px;font-size:13px;font-weight:600;white-space:normal}
+th,td{box-sizing:border-box}
+tbody td{padding:12px 10px;font-size:14px}
+.mono,.tag,.status,.chip{white-space:nowrap}
+tbody td:last-child,thead th:last-child{white-space:nowrap}
+.ops{display:flex;align-items:center;flex-wrap:nowrap;gap:10px}
+.ops .link{font-size:13px}
+.link{font-size:13px}
+.c-name{font-size:14px;white-space:normal;word-break:break-word;line-height:1.35}
+.c-sub{font-size:12.5px}
+.tag,.status,.chip{font-size:12.5px}
+.pager{padding:16px 24px;font-size:14px}
+/* ---- 抽屉：统一 760px ---- */
+.drawer,.drawer.wide{width:760px!important;max-width:94vw!important;font-size:15px}
+.d-head{padding:22px 26px}
+.d-title{font-size:19px}
+.d-body{padding:4px 26px 26px}
+.d-foot{padding:18px 26px;gap:12px}
+.d-body .k{font-size:13px}
+.d-body .v{font-size:15px}
+/* ---- 弹窗：统一 760px ---- */
+.modal,.modal.wide,.modal.modal-form,.modal.modal-import,.modal.modal-quick,.fmodal{width:760px!important;max-width:94vw!important;font-size:15px}
+.m-head{display:flex;align-items:center;gap:12px;padding:22px 26px 14px;font-size:19px;font-weight:700}
+.m-body{padding:0 26px}
+.m-foot,.fm-foot,.f-foot{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:18px 26px 22px}
+.fm-head,.f-head{display:flex;align-items:center;gap:12px;padding:22px 26px 16px}
+.fm-title,.f-title{font-size:19px;font-weight:700}
+.modal label,.fmodal label,.m-body label{font-size:14px}
+.form-hint,.m-desc,.m-sub,.hint{font-size:13px}
+/* ---- 统一关闭按钮（×） ---- */
+.m-close,.d-close,.fm-close,#fClose{
+  margin-left:auto;width:42px!important;height:42px!important;min-width:42px;padding:0!important;
+  border:1px solid var(--line-strong);background:#fff;border-radius:11px!important;box-shadow:none;
+  display:inline-flex!important;align-items:center;justify-content:center;
+  font-size:21px!important;line-height:1;font-weight:400;color:var(--muted);cursor:pointer;transition:.15s;
+}
+.m-close:hover,.d-close:hover,.fm-close:hover,#fClose:hover{color:var(--text);border-color:var(--blue-500);background:var(--blue-50)}
+.m-close.abs{position:absolute;top:20px;right:20px;z-index:3}
+/* ---- V3 批量操作确认 / 导入弹层 ---- */
+.uk-mask{position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:900;display:none}
+.uk-mask.show{display:block}
+.uk-dlg{position:fixed;left:50%;top:22vh;transform:translateX(-50%);width:520px;max-width:92vw;background:#fff;
+  border-radius:16px;box-shadow:0 24px 60px rgba(16,24,40,.22);z-index:901;display:none;overflow:hidden}
+.uk-dlg.show{display:block}
+.uk-h{padding:22px 26px 10px;font-size:18px;font-weight:700;color:var(--text)}
+.uk-b{padding:6px 26px 22px;font-size:15px;color:var(--muted);line-height:1.7}
+.uk-b b{color:var(--text)}
+.uk-f{display:flex;justify-content:flex-end;gap:12px;padding:0 26px 22px}
+.uk-drop{border:1px dashed var(--line-strong);border-radius:12px;background:#F8FAFD;padding:26px 20px;text-align:center;font-size:14px;color:var(--muted)}
+.uk-drop a{color:var(--blue-600)}
+.uk-file{margin-top:10px;font-size:13px;color:var(--text);font-weight:600}
+.uk-tip{margin-top:12px;font-size:13px;color:var(--muted)}
+.uk-tip a{color:var(--blue-600)}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+            <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <a class="nav-item" href="企业.html">企业</a>
+        <a class="nav-item" href="企业联系人.html">企业联系人</a>
+        <a class="nav-item" href="大咖.html">大咖</a>
+        <a class="nav-item active" href="职业规划.html">职业规划</a>
+        <a class="nav-item" href="岗位管理.html">岗位管理</a>
+        <a class="nav-item" href="项目大厅.html">项目大厅</a>
+        <a class="nav-item" href="就业课程.html">就业课程</a>
+        <a class="nav-item" href="机构管理.html">机构管理</a>
+        <a class="nav-item" href="申请管理.html">申请管理</a>
+        <a class="nav-item" href="投诉处理.html">投诉处理</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <a class="nav-item" href="系统配置.html">系统配置</a>
+        <a class="nav-item" href="字典管理.html">字典管理</a>
+        <a class="nav-item" href="收费规则.html">收费规则</a>
+        <a class="nav-item" href="导入Agent.html">导入Agent</a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">基本信息 / <b id="crumbNow">职业规划</b></div>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="content">
+      <section id="page-career">
+        <div class="card">
+          <div class="filters">
+            <div class="field">
+              <label>联系人 / 手机号</label>
+              <input class="ctrl" id="f-kw" placeholder="支持联系人或手机号后四位">
+            </div>
+            <div class="field">
+              <label>推荐课程</label>
+              <select class="ctrl" id="f-course"><option value="">全部课程</option></select>
+            </div>
+            <div class="field">
+              <label>合作机构</label>
+              <select class="ctrl" id="f-org"><option value="">全部机构</option></select>
+            </div>
+            <div class="field">
+              <label>最高学历</label>
+              <select class="ctrl" id="f-edu">
+                <option value="">全部</option>
+                <option>大专</option><option>本科</option><option>硕士</option><option>博士</option><option>中专及以下</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>现居城市</label>
+              <select class="ctrl" id="f-city">
+                <option value="">全部</option>
+                <option>深圳市</option><option>广州市</option><option>杭州市</option><option>南京市</option>
+                <option>成都市</option><option>武汉市</option><option>上海市</option><option>北京市</option>
+                <option>西安市</option><option>苏州市</option><option>佛山市</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>MBTI</label>
+              <select class="ctrl" id="f-mbti">
+                <option value="">全部</option>
+                <option>INTJ</option><option>INTP</option><option>ENTJ</option><option>ENTP</option>
+                <option>INFJ</option><option>INFP</option><option>ENFJ</option><option>ENFP</option>
+                <option>ISTJ</option><option>ISFJ</option><option>ESTJ</option><option>ESFJ</option>
+                <option>ISTP</option><option>ISFP</option><option>ESTP</option><option>ESFP</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>匹配度</label>
+              <select class="ctrl" id="f-match">
+                <option value="">全部</option>
+                <option value="90">90% 及以上</option>
+                <option value="80">80% - 89%</option>
+                <option value="70">70% - 79%</option>
+                <option value="low">70% 以下</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="ctrl" id="f-status">
+                <option value="">全部</option>
+                <option value="0">待推荐</option>
+                <option value="1">已推荐</option>
+                <option value="2">已报名</option>
+                <option value="3">推荐失败</option>
+                <option value="4">已关闭</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button class="btn" id="btn-reset">重置</button>
+              <button class="btn btn-primary" id="btn-search">查询</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button class="btn btn-primary" id="btn-add">＋ 新增规划</button>
+            <button class="btn" data-batch="import" id="btn-import">批量导入</button>
+            <button class="btn" data-batch="export" id="btn-export">批量导出</button>
+            <button class="btn btn-danger" data-batch="delete" id="btn-batch">批量删除</button>
+            <span class="sel-tip" id="selTip" style="display:none"></span>
+            <div class="spacer"></div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:3.70%"><input type="checkbox" id="ckAll"></th>
+                  <th style="width:11.50%">学员</th>
+                  <th style="width:13.50%">学历 / 专业</th>
+                  <th style="width:15.50%">技能关键词</th>
+                  <th style="width:15.50%">推荐课程</th>
+                  <th style="width:8.50%">匹配度</th>
+                  <th style="width:10.00%">合作机构</th>
+                  <th style="width:7.80%">状态</th>
+                  <th style="width:14.00%">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager">
+            <span>共 <b id="total">0</b> 条 · 每页 <b id="pageSize">10</b> 条</span>
+            <div class="spacer"></div>
+            <span class="pg-wrap" id="pagerBtns"></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-ph" style="display:none">
+        <div class="placeholder"><b id="ph-title">—</b><span id="ph-desc">—</span></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mask"></div>
+
+<!-- ============ 抽屉：推荐规则配置 ============ -->
+<aside class="drawer wide" id="cfgDrawer">
+  <div class="d-head">
+    <div>
+      <div class="d-title">推荐规则配置</div>
+      <div class="d-sub">
+        <span>课程方向 10 个 · 合作机构 10 家</span>
+        <span>·</span>
+        <span>爱好选项与字典 <span class="mono">hobby</span> 同步</span>
+      </div>
+    </div>
+    <button class="d-close" id="cfgClose">✕</button>
+  </div>
+  <div class="d-body" id="cfgBody"></div>
+  <div class="d-foot">
+    <span class="tip">课程由合作机构入驻后维护，下架课程不再参与新推荐</span>
+    <div class="spacer"></div>
+    <button class="btn" id="cfgAdd">＋ 新增课程方向</button>
+    <button class="btn btn-primary" id="cfgDone">完成</button>
+  </div>
+</aside>
+
+<!-- ============ 抽屉：规划详情 ============ -->
+<aside class="drawer" id="dDrawer">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 通用弹窗 ============ -->
+<div class="modal" id="modal">
+  <div class="m-head"><div id="mTitle" style="flex:1;min-width:0"></div></div>
+  <div class="m-body" id="mBody"></div>
+  <div class="m-foot" id="mFoot"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- 字典 ---------------- */
+const STATUS = [
+  {k:0,t:'待推荐',c:'st-1'},
+  {k:1,t:'已推荐',c:'st-2'},
+  {k:2,t:'已报名',c:'st-3'},
+  {k:3,t:'推荐失败',c:'st-4'},
+  {k:4,t:'已关闭',c:'st-5'}
+];
+const stOf = k => STATUS.find(s=>s.k===k);
+
+/* ---------------- 课程与机构（后台维护） ---------------- */
+const COURSES = [
+  {name:'AI 训练师（数据标注/质检）', org:'云智数据学院', tags:['数据分析','逻辑推理','细致耐心'], on:1},
+  {name:'AI 视频剪辑/成片师',        org:'星火数字内容学院', tags:['剪辑后期','短视频创作','审美'], on:1},
+  {name:'AI 视觉设计（电商/商业）',  org:'像素方舟设计学院', tags:['平面设计','绘画插画','电商运营'], on:1},
+  {name:'AI 数字人运营',            org:'幻影数字人科技', tags:['直播出镜','配音播客','社群运营'], on:1},
+  {name:'AI 漫剧制作师/抽卡师',      org:'次元造物学院', tags:['游戏二次元','绘画插画','写作表达'], on:1},
+  {name:'AI 内容运营/账号操盘',      org:'流量工场商学院', tags:['写作表达','短视频创作','社群运营'], on:1},
+  {name:'AIGC 应用工程师',          org:'智谱应用技术学院', tags:['编程开发','数据分析','逻辑推理'], on:1},
+  {name:'AI 产品经理',              org:'蓝海 AI 产品学院', tags:['逻辑推理','写作表达','数据分析'], on:1},
+  {name:'Agent / RAG 开发工程师',    org:'深智 Agent 实验室', tags:['编程开发','逻辑推理','数据分析'], on:1},
+  {name:'大模型应用开发工程师',      org:'星链大模型学院', tags:['编程开发','数据分析','逻辑推理'], on:1}
+];
+const ORGS = [...new Set(COURSES.map(c=>c.org))];
+
+const HOBBY = ['短视频创作','摄影摄像','剪辑后期','平面设计','绘画插画','写作表达','数据分析','编程开发','游戏二次元','电商运营','直播出镜','配音播客','社群运营','逻辑推理'];
+
+/* ---------------- 模拟数据 ---------------- */
+const DATA = [
+  {
+    id:'CP202610180012', name:'林知夏', phone:'13800136621', edu:'本科', major:'视觉传达设计', grad:'2024', city:'杭州市',
+    skills:['PS','AI 绘画','剪辑','版式设计'],
+    intern:'杭州某电商代运营公司 · 视觉设计实习生（3 个月），负责详情页、主图与活动页设计。',
+    project:'毕业设计《城市记忆》视觉系统；个人小红书账号 1.2 万粉，独立完成拍摄与剪辑。',
+    mbti:'ENFP', hobbies:['摄影摄像','绘画插画','短视频创作'],
+    course:'AI 视觉设计（电商/商业）', org:'像素方舟设计学院', match:92, status:2, time:'2026-10-18 14:26', planner:'陈思远',
+    reason:[
+      '<b>专业对口：</b>视觉传达设计科班出身，PS 与 AI 绘画为常用工具，与「电商视觉 / 商业设计」课程标签 2 项直接命中。',
+      '<b>作品可验证：</b>独立运营小红书账号 1.2 万粉，拍摄与剪辑全流程自持，入学即可进入项目实训。',
+      '<b>城市匹配：</b>现居杭州，合作机构在杭州设有线下实训基地，可安排周末班。'
+    ]
+  },
+  {
+    id:'CP202610180011', name:'周予安', phone:'18600133307', edu:'硕士', major:'汉语言文学', grad:'2025', city:'南京市',
+    skills:['写作','选题策划','数据分析','公众号运营'],
+    intern:'南京某教育科技公司 · 内容运营实习生（4 个月），负责公众号与视频号选题。',
+    project:'校园公众号主理人，任期内粉丝从 0.8 万增长至 3.1 万。',
+    mbti:'INFJ', hobbies:['写作表达','社群运营','摄影摄像'],
+    course:'AI 内容运营/账号操盘', org:'流量工场商学院', match:88, status:1, time:'2026-10-18 11:02', planner:'陈思远',
+    reason:[
+      '<b>文字功底突出：</b>汉语言文学硕士，长文写作与选题策划能力覆盖内容运营的核心基本功。',
+      '<b>数据意识已具备：</b>实习期用数据看板复盘选题，技能关键词含「数据分析」，可直上课程的数据复盘模块。',
+      '<b>兴趣标签命中：</b>「写作表达」「社群运营」与课程标签「内容策划 / 社群增长」重合。'
+    ]
+  },
+  {
+    id:'CP202610170009', name:'陈嘉树', phone:'15900138812', edu:'本科', major:'计算机科学与技术', grad:'2023', city:'深圳市',
+    skills:['Python','SQL','LangChain','Docker'],
+    intern:'深圳某 SaaS 公司 · 后端开发实习生（6 个月），参与智能客服工单系统开发。',
+    project:'基于 RAG 的校招知识库问答 demo；开源项目 120 star。',
+    mbti:'INTJ', hobbies:['编程开发','逻辑推理','数据分析'],
+    course:'Agent / RAG 开发工程师', org:'深智 Agent 实验室', match:95, status:1, time:'2026-10-17 19:40', planner:'王审核',
+    reason:[
+      '<b>技术栈完整：</b>Python + SQL + LangChain，已具备 Agent 与 RAG 开发的前置能力，无需补基础课。',
+      '<b>项目可迁移：</b>RAG 校招知识库问答 demo 与课程实训项目同构，可直接升级为结业作品。',
+      '<b>岗位缺口大：</b>深圳地区 Agent / RAG 岗位需求连续 3 个季度增长，建议优先入班。'
+    ]
+  },
+  {
+    id:'CP202610170006', name:'苏念', phone:'13700132058', edu:'大专', major:'数字媒体技术', grad:'2022', city:'成都市',
+    skills:['PR','调色','剪映','短视频'],
+    intern:'成都某 MCN 机构 · 剪辑实习生（5 个月），负责达人日常口播视频剪辑。',
+    project:'独立完成 60+ 条口播短视频，单条最高播放 210 万。',
+    mbti:'ESFP', hobbies:['剪辑后期','短视频创作','直播出镜'],
+    course:'AI 视频剪辑/成片师', org:'星火数字内容学院', match:90, status:1, time:'2026-10-17 16:18', planner:'陈思远',
+    reason:[
+      '<b>工具与产出匹配：</b>PR、调色熟练，独立完成 60+ 条口播短视频，符合「成片师」的交付标准。',
+      '<b>兴趣驱动明显：</b>剪辑后期、短视频创作、直播出镜 3 项爱好与课程标签高度重合。',
+      '<b>学历不构成门槛：</b>课程以作品集与实操考核入学，大专学历可凭作品直接申请。'
+    ]
+  },
+  {
+    id:'CP202610160004', name:'何知远', phone:'13500137743', edu:'本科', major:'市场营销', grad:'2021', city:'广州市',
+    skills:['Excel','数据分析','社群运营'],
+    intern:'广州某快消品牌 · 市场部实习生（6 个月），负责私域活动执行。',
+    project:'校园创业项目「校园跑腿」运营负责人，覆盖 3 个校区 8000 用户。',
+    mbti:'ENFJ', hobbies:['电商运营','社群运营','数据分析'],
+    course:'AI 产品经理', org:'蓝海 AI 产品学院', match:84, status:4, time:'2026-10-16 10:35', planner:'王审核',
+    closeReason:'学员已确定其他方向，暂停推荐，后续可在 3 个月后重新触达。',
+    reason:[
+      '<b>业务理解较好：</b>市场营销背景 + 校园创业运营负责人经历，具备需求洞察基础。',
+      '<b>数据能力偏弱：</b>以 Excel 为主，缺少 SQL 与原型工具经验，需补足前置课。',
+      '<b>性格适配：</b>ENFJ 善于协调沟通，适合产品经理的跨团队协作场景。'
+    ]
+  },
+  {
+    id:'CP202610160003', name:'许一诺', phone:'18800130192', edu:'本科', major:'动画', grad:'2025', city:'武汉市',
+    skills:['绘画','分镜','AE','角色设定'],
+    intern:'武汉某动画工作室 · 分镜助理（3 个月），参与 2 部短片前期。',
+    project:'原创条漫 30 话，累计阅读 46 万。',
+    mbti:'INFP', hobbies:['游戏二次元','绘画插画','写作表达'],
+    course:'AI 漫剧制作师/抽卡师', org:'次元造物学院', match:91, status:1, time:'2026-10-16 09:12', planner:'陈思远',
+    reason:[
+      '<b>美术基础扎实：</b>动画专业，分镜与 AE 能力可直接迁移到 AI 漫剧的镜头设计。',
+      '<b>内容积累充分：</b>原创条漫 30 话，具备持续产出与世界观搭建能力。',
+      '<b>兴趣强相关：</b>游戏二次元、绘画插画与课程标签「二次元 / 分镜 / 抽卡」完全命中。'
+    ]
+  },
+  {
+    id:'CP202610150002', name:'罗清越', phone:'15000134431', edu:'本科', major:'播音与主持艺术', grad:'2024', city:'上海市',
+    skills:['出镜','配音','剪辑','口播脚本'],
+    intern:'上海某直播机构 · 主播助理（4 个月），参与 120 场直播。',
+    project:'个人播客《晚风电台》更新 48 期，全网播放 18 万。',
+    mbti:'ESFJ', hobbies:['直播出镜','配音播客','短视频创作'],
+    course:'AI 数字人运营', org:'幻影数字人科技', match:86, status:2, time:'2026-10-15 15:47', planner:'王审核',
+    reason:[
+      '<b>出镜与表达突出：</b>播音主持专业，配音、出镜、剪辑均有实操经验，可直接进入数字人直播间。',
+      '<b>岗位路径清晰：</b>数字人运营需要「脚本 + 出镜 + 剪辑」复合能力，与现有技能重合度高。',
+      '<b>城市匹配：</b>上海地区合作机构提供直播间实训与结业推荐。'
+    ]
+  },
+  {
+    id:'CP202610130015', name:'高砚', phone:'13300139087', edu:'本科', major:'软件工程', grad:'2019', city:'西安市',
+    skills:['Java','Python','大模型微调','K8s'],
+    intern:'西安某软件公司 · 后端开发（3 年），负责企业知识库与智能客服。',
+    project:'企业知识库检索增强项目，日均调用 4 万次；模型微调准确率提升 11%。',
+    mbti:'ISTJ', hobbies:['编程开发','数据分析','逻辑推理'],
+    course:'大模型应用开发工程师', org:'星链大模型学院', match:93, status:1, time:'2026-10-13 20:05', planner:'陈思远',
+    reason:[
+      '<b>工程经验充足：</b>3 年后端开发，Java / Python 双栈，具备大模型微调与容器化部署经验。',
+      '<b>项目复杂度高：</b>企业知识库与智能客服项目可直接作为进阶作品，结业即具备面试素材。',
+      '<b>目标岗位明确：</b>希望从传统后端转向大模型应用开发，本课程路径最短。'
+    ]
+  },
+  {
+    id:'CP202610190016', name:'吴亦然', phone:'17600132210', edu:'中专及以下', major:'汽车维修', grad:'2016', city:'佛山市',
+    skills:['汽车维修','无数字化技能'],
+    intern:'佛山某 4S 店 · 机修工（7 年），无互联网相关经历。',
+    project:'暂无与 AI 相关项目经验。',
+    mbti:'ISTP', hobbies:['逻辑推理'],
+    course:null, org:null, match:null, status:3, time:'2026-10-19 09:14', planner:'系统自动',
+    failReason:'现有 10 个课程方向的匹配度均低于 60%，暂无合适课程；建议补充可迁移技能或先修读数字基础课。',
+    reason:[]
+  },
+  {
+    id:'CP202610190017', name:'郑云舒', phone:'18100136602', edu:'本科', major:'环境设计', grad:'2025', city:'苏州市',
+    skills:['CAD','SketchUp','手绘'],
+    intern:'苏州某设计院 · 方案助理（2 个月）。',
+    project:'居住空间改造方案 3 套，含完整施工图。',
+    mbti:'ISFP', hobbies:['绘画插画','摄影摄像'],
+    course:null, org:null, match:null, status:0, time:'—', planner:'—',
+    reason:[]
+  }
+];
+
+/* ---------- 补充演示数据（用于翻页演示） ---------- */
+const EXTRA_PLANS = [
+  ['周子琪','ISFP','13900132210','本科','数字媒体艺术','2024','上海市',['PS','AE','C4D'],'AI 视觉设计（电商/商业）','像素方舟设计学院',90,2],
+  ['许文轩','ISTJ','13700133382','硕士','计算机技术','2025','南京市',['Python','SQL','LangChain'],'Agent / RAG 开发工程师','深智 Agent 实验室',94,1],
+  ['王雨桐','ENFJ','13500137741','本科','市场营销','2023','广州市',['Excel','数据分析','文案'],'AI 内容运营/账号操盘','流量工坊商学院',86,2],
+  ['李承泽','INTJ','18800135590','本科','软件工程','2024','深圳市',['Java','Docker'],'大模型应用开发工程师','星链大模型学院',88,1],
+  ['赵梓涵','ESFP','13600136628','大专','影视编导','2023','成都市',['PR','剪辑','调色'],'AI 短视频剪辑/成片师','星火数字内容学院',84,0],
+  ['孙嘉怡','ISFJ','15800131123','本科','汉语言文学','2025','西安市',['写作','内容策划'],'AI 内容运营/账号操盘','流量工坊商学院',81,3],
+  ['陈宇航','INTP','13300134477','硕士','电子与通信工程','2024','杭州市',['Python','PyTorch'],'大模型应用开发工程师','星链大模型学院',92,1],
+  ['林晓彤','ENFP','18600139902','本科','视觉传达设计','2023','厦门市',['PS','AI 绘画'],'AI 视觉设计（电商/商业）','像素方舟设计学院',89,2],
+  ['黄志远','ESTJ','15900133364','大专','机械制造及自动化','2022','苏州市',['CAD','数控'],'大模型应用开发工程师','星链大模型学院',58,3],
+  ['吴佳宁','ISFP','13100138871','本科','戏剧影视文学','2025','北京市',['剧本','分镜'],'AI 漫剧制作师/编导','次元造物学院',87,1],
+  ['徐一诺','ENTP','18700132215','本科','广告学','2024','武汉市',['策划','数据分析'],'AI 产品经理','蓝海 AI 产品学院',83,0],
+  ['何思远','ISTP','13800136633','本科','数字媒体技术','2023','重庆市',['Unity','Python'],'AI 数字人运营','幻境数字人科技',80,4],
+  ['张若彤','INFJ','15500139981','硕士','社会学','2024','天津市',['调研','文案'],'AI 产品经理','蓝海 AI 产品学院',62,3],
+  ['罗嘉豪','ENFP','13200135540','大专','电子商务','2023','佛山市',['剪辑','直播'],'AI 短视频剪辑/成片师','星火数字内容学院',85,2],
+  ['高子涵','ISTJ','13900131128','本科','统计学','2025','合肥市',['SQL','Python','Tableau'],'AI 数据分析师','数源数据学院',91,1],
+  ['邓语桐','ESFJ','15700133349','本科','教育学','2024','长沙市',['沟通','课程设计'],'AI 内容运营/账号操盘','流量工坊商学院',79,0]
+];
+EXTRA_PLANS.forEach((x,i)=>{
+  const [name,mbti,phone,edu,major,grad,city,skills,course,org,match,status] = x;
+  const id = 'CP2026101900' + String(18 + i).padStart(2,'0');
+  const day = String(19 - (i % 9)).padStart(2,'0');
+  const t = `2026-10-${day} ${String(9 + (i % 9)).padStart(2,'0')}:${String(10 + i).padStart(2,'0')}`;
+  const failed = (status===0 || status===3);
+  DATA.push({
+    id, name, phone, edu, major, grad, city, skills, mbti,
+    intern: `${city}某${major.slice(0,2)}相关企业 · 实习（3 个月），参与项目交付与内容制作，能独立完成从需求到成品的闭环。`,
+    project: `课程实训项目《${major.slice(0,2)}实战》完整交付；个人作品集 12 组，含完整过程稿。`,
+    hobbies: ['摄影摄像','绘画插画'],
+    course: failed ? null : course,
+    org: failed ? null : org,
+    match: failed ? null : match,
+    status,
+    time: status===0 ? '—' : t,
+    planner: status===0 ? '—' : '陈思远',
+    failReason: status===3 ? '现有课程方向的匹配度均低于 60%，暂无合适课程；建议先补足数字基础课后再生成推荐。' : undefined,
+    closeReason: status===4 ? '学员已确认其他机构课程，本记录关闭。' : undefined,
+    reason: failed ? [] : [
+      `<b>专业对口：</b>${edu}${major}背景，${skills.join('、')} 与「${course}」标签 2 项直接命中。`,
+      `<b>城市匹配：</b>现居${city}，合作机构在当地设有实训基地，可安排周末班。`
+    ]
+  });
+});
+
+/* ---------------- 工具 ---------------- */
+function money(){}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+function matchCls(n){ return n>=88 ? 'high' : (n<75 ? 'low' : ''); }
+
+/* ---------------- 渲染：页签 ---------------- */
+const PAGE = 10;
+let curTab = 'all', rows = DATA.slice(), checked = new Set(), curId = null, page = 1;
+
+function renderTabs(){
+  const tabsBox = document.getElementById('tabs');
+  if(!tabsBox) return;
+  const counts = {all:DATA.length};
+  STATUS.forEach(s=>counts[s.k] = DATA.filter(d=>d.status===s.k).length);
+  const items = [['all','全部',counts.all]].concat(STATUS.map(s=>[s.k,s.t,counts[s.k]]));
+  tabsBox.innerHTML = items.map(([k,t,c])=>
+    `<div class="tab ${k===curTab?'active':''}" data-k="${k}">${t}<span class="cnt">${c}</span></div>`).join('');
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.onclick = ()=>{ curTab = el.dataset.k==='all'?'all':Number(el.dataset.k); page=1; syncTabs(); applyFilter(); };
+  });
+}
+function syncTabs(){
+  document.querySelectorAll('.tab').forEach(el=>{
+    el.classList.toggle('active', (el.dataset.k==='all'?'all':Number(el.dataset.k))===curTab);
+  });
+  const f = document.getElementById('f-status');
+  if(f) f.value = curTab==='all'?'':String(curTab);
+}
+
+/* ---------------- 渲染：下拉选项 ---------------- */
+function initSelects(){
+  const fc = document.getElementById('f-course');
+  COURSES.forEach(c=>{ const o=document.createElement('option'); o.textContent=c.name; fc.appendChild(o); });
+  const fo = document.getElementById('f-org');
+  ORGS.forEach(o=>{ const op=document.createElement('option'); op.textContent=o; fo.appendChild(op); });
+}
+
+/* ---------------- 渲染：表格 ---------------- */
+function renderTable(){
+  const tb = document.getElementById('tbody');
+  document.getElementById('total').textContent = rows.length;
+  const maxPage = Math.max(1, Math.ceil(rows.length / PAGE));
+  if(page > maxPage) page = maxPage;
+  if(page < 1) page = 1;
+  if(!rows.length){
+    tb.innerHTML = `<tr><td colspan="9"><div class="empty"><span class="e-ico">🧭</span>没有符合条件的规划记录，试试调整筛选条件</div></td></tr>`;
+    renderPager();
+    return;
+  }
+  const list = rows.slice((page-1)*PAGE, page*PAGE);
+  tb.innerHTML = list.map(d=>{
+    const s = stOf(d.status);
+    const skillHtml = d.skills.slice(0,2).map(k=>`<span class="chip">${k}</span>`).join('') +
+      (d.skills.length>2 ? `<span class="chip more">+${d.skills.length-2}</span>` : '');
+
+    let courseHtml = '';
+    if(d.course){
+      courseHtml = `<div class="course-cell">
+          <div class="cc-name">${d.course}</div>
+          <div class="cc-sub"><span class="ai">AI 推荐</span>${d.match>=88?'高匹配方向':'可培养方向'}</div>
+        </div>`;
+    }else if(d.status===0){
+      courseHtml = `<div class="cc-empty">待生成推荐<span>信息已提交，等待匹配</span></div>`;
+    }else{
+      courseHtml = `<div class="cc-empty">未匹配到课程<span>见推荐失败原因</span></div>`;
+    }
+
+    let matchHtml = '<span class="match"><span class="na">—</span></span>';
+    if(d.match!=null){
+      const c = matchCls(d.match);
+      matchHtml = `<div class="match"><span class="bar"><i class="${c}" style="width:${d.match}%"></i></span><span class="pct ${c}">${d.match}%</span></div>`;
+    }
+
+    let opHtml = `<button class="link" data-act="view">详情</button>
+                <button class="link" data-act="edit">编辑</button>
+                <button class="link" data-act="audit">审核</button>
+                <button class="link ${d.status===4?'':'red'}" data-act="toggle">${d.status===4?'启用':'停用'}</button>`;
+
+    return `<tr class="${checked.has(d.id)?'checked':''}" data-id="${d.id}">
+      <td><input type="checkbox" class="ck" data-id="${d.id}" ${checked.has(d.id)?'checked':''}></td>
+      <td class="lk" data-go="${d.id}">
+        <div class="stu">
+          <div style="min-width:0">
+            <div class="n" style="display:flex;align-items:center;gap:4px;white-space:nowrap">${d.name}<span class="mbti" style="font-size:9.5px;padding:1px 4px">${d.mbti}</span></div>
+            <div class="p">${d.phone}</div>
+          </div>
+        </div>
+      </td>
+      <td><div class="edu-2">${d.edu} · ${d.major}<em>${d.grad} 届 · ${d.city}</em></div></td>
+      <td><div class="chips">${skillHtml}</div></td>
+      <td class="lk" data-go="${d.id}">${courseHtml}</td>
+      <td>${matchHtml}</td>
+      <td>${d.org ? `<div class="org">${d.org}</div>` : `<div class="org pending">${d.status===0?'待选定':'—'}</div>`}</td>
+      <td><span class="status ${s.c}">${s.t}</span></td>
+      <td><div class="ops">${opHtml}</div></td>
+    </tr>`;
+  }).join('');
+  bindRows();
+  renderPager();
+}
+
+/* ---------------- 分页 ---------------- */
+function renderPager(){
+  const box = document.getElementById('pagerBtns');
+  if(!box) return;
+  const maxPage = Math.max(1, Math.ceil(rows.length / PAGE));
+  const btn = (t,p,active,dis)=>`<button class="pg ${active?'active':''} ${dis?'disabled':''}" ${dis?'disabled':''} data-p="${p}">${t}</button>`;
+  let html = btn('‹', page-1, false, page<=1);
+  const num = i => html += btn(i, i, i===page, false);
+  if(maxPage <= 7){
+    for(let i=1;i<=maxPage;i++) num(i);
+  }else{
+    num(1);
+    if(page > 3) html += `<span class="pg-ell">…</span>`;
+    for(let i=Math.max(2,page-1); i<=Math.min(maxPage-1,page+1); i++) num(i);
+    if(page < maxPage-2) html += `<span class="pg-ell">…</span>`;
+    num(maxPage);
+  }
+  html += btn('›', page+1, false, page>=maxPage);
+  box.innerHTML = html;
+  box.querySelectorAll('button.pg[data-p]').forEach(b=>{
+    b.onclick = ()=>{
+      const p = Number(b.dataset.p);
+      if(b.disabled || p<1 || p>maxPage || p===page) return;
+      page = p;
+      renderTable();
+      const pg = document.querySelector('.pager');
+      if(pg && pg.scrollIntoView) pg.scrollIntoView({block:'nearest'});
+    };
+  });
+}
+
+function bindRows(){
+  document.querySelectorAll('#tbody tr').forEach(tr=>{
+    const id = tr.dataset.id;
+    if(!id) return;
+    const d = DATA.find(x=>x.id===id);
+    const q = a => tr.querySelector('[data-act="'+a+'"]');
+    if(q('view')) q('view').onclick = ()=>goDetail(id);
+    tr.querySelectorAll('[data-go]').forEach(el=>el.onclick = ()=>goDetail(id));
+    tr.onclick = e=>{ if(e.target.closest('button, input, a')) return; goDetail(id); };
+    if(q('edit')) q('edit').onclick = ()=>openEdit(id);
+    if(q('gen'))  q('gen').onclick  = ()=>openEdit(id, true);
+    if(q('audit')) q('audit').onclick = ()=>ukAuditFromRow(tr, '审核 · ' + d.name);
+    if(q('toggle')) q('toggle').onclick = ()=>{
+      const back = d.status === 4;
+      d.status = back ? 1 : 4; d.time = '2026-10-19 20:12';
+      toast((back?'已启用：':'已停用：') + d.name); refresh();
+    };
+    tr.querySelector('.ck').onchange = e=>{
+      e.target.checked ? checked.add(id) : checked.delete(id);
+      tr.classList.toggle('checked', e.target.checked);
+      updateSelTip();
+    };
+  });
+  updateSelTip();
+}
+
+function updateSelTip(){
+  const tip = document.getElementById('selTip');
+  tip.style.display = checked.size ? 'inline-block' : 'none';
+  tip.textContent = `已选择 ${checked.size} 条规划记录`;
+}
+
+/* ---------------- 抽屉：规划详情 ---------------- */
+let dCurId = null;
+const editDone = new Set();   /* 本次会话内已编辑过的记录：底部按钮「编辑」→「关闭」 */
+
+function goDetail(id){
+  dCurId = id;
+  renderDetail();
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('dDrawer').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('dDrawer').classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+function renderDetail(){
+  const d = DATA.find(x=>x.id===dCurId);
+  if(!d) return;
+  const s = stOf(d.status), mb = mbtiDesc(d.mbti);
+  const score = d.match==null ? 0 : d.match;
+  const color = d.match>=88 ? '#12A150' : (d.match<75 ? '#F59E0B' : '#1B62F5');
+  const timeText = d.time==='—' ? '2026-10-19 17:52' : d.time;
+  const chips = a => `<div class="chips">${a.map(k=>`<span class="chip blue">${k}</span>`).join('')}</div>`;
+
+  document.getElementById('dHead').innerHTML = `
+    <div style="min-width:0">
+      <div class="d-title">${d.name} · ${d.course || '未匹配课程'}</div>
+      <div class="d-sub">
+        <span class="status ${s.c}">${s.t}</span>
+        <span>规划单号 <span class="mono">${d.id}</span></span>
+        <span>手机号 <span class="mono">${d.phone}</span></span>
+        <span>更新于 ${timeText}</span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>`;
+
+  const result = d.course ? `
+    <div class="score-card">
+      <div class="ring" style="background:conic-gradient(${color} ${score*3.6}deg,#DCE8FB 0)">
+        <div class="hole"></div>
+        <div class="num"><b>${score}</b><small>匹配度 %</small></div>
+      </div>
+      <div class="sc-main">
+        <div class="t">${d.course}</div>
+        <div class="s"><span>${d.org}</span><span>${d.match>=88?'高匹配方向':'可培养方向'}</span><span>系统生成 · ${d.planner}</span></div>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">课程名称 · course_name</div><div class="v strong">${d.course}</div></div>
+      <div class="kv"><div class="k">合作机构 · org_id</div><div class="v">${d.org}</div></div>
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v"><b>${d.match}%</b> <span style="font-size:11px;color:var(--muted)">技能40 · 专业20 · 项目20 · 性格10 · 爱好10</span></div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+      <div class="kv full"><div class="k">推荐理由 · reason</div><div class="v"><ul class="reason" style="margin-top:4px">${d.reason.map(r=>`<li>${r}</li>`).join('')}</ul></div></div>
+    </div>` : `
+    <div class="note-box ${d.status===3?'warn':''}">
+      ${d.status===0
+        ? '<b>尚未生成推荐。</b>学员已提交基础信息，可点击「生成推荐」由系统匹配课程，或手动指定课程与机构。'
+        : `<b>推荐失败。</b>${d.failReason || '现有课程方向的匹配度均低于 60%，暂无合适课程。'}`}
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="kv"><div class="k">匹配度 · match_score</div><div class="v">—</div></div>
+      <div class="kv"><div class="k">推荐状态 · status</div><div class="v"><span class="status ${s.c}">${s.t}</span></div></div>
+    </div>`;
+
+  document.getElementById('dBody').innerHTML = `
+    <div class="sec" style="margin-top:16px">
+      <div class="sec-title">推荐结果<span class="side">系统按 5 个维度加权生成</span></div>
+      ${result}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">学员基础信息<span class="side">手机号为学员唯一身份（UNIQUE）</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">联系人 · name</div><div class="v strong">${d.name}</div></div>
+        <div class="kv"><div class="k">手机号 · mobile（唯一）</div><div class="v mono">${d.phone}</div></div>
+        <div class="kv"><div class="k">最高学历 · education</div><div class="v">${d.edu}</div></div>
+        <div class="kv"><div class="k">专业 · major</div><div class="v">${d.major}</div></div>
+        <div class="kv"><div class="k">毕业年份 · grad_year</div><div class="v">${d.grad} 届</div></div>
+        <div class="kv"><div class="k">现居城市 · city</div><div class="v">${d.city}</div></div>
+        <div class="kv"><div class="k">规划单号 · plan_no</div><div class="v mono">${d.id}</div></div>
+        <div class="kv"><div class="k">提交时间 · create_time</div><div class="v mono">${timeText}</div></div>
+        <div class="kv"><div class="k">规划师 · planner</div><div class="v">${d.planner}</div></div>
+        <div class="kv"><div class="k">备注 · remark</div><div class="v">${d.closeReason ? `<span style="color:#B03337">${d.closeReason}</span>` : '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">能力与输入画像<span class="side">匹配打分的主要依据</span></div>
+      <div class="grid2">
+        <div class="kv full"><div class="k">技能关键词 · skills</div><div class="v">${chips(d.skills)}</div></div>
+        <div class="kv full"><div class="k">实习经历 · internship</div><div class="v">${d.intern}</div></div>
+        <div class="kv full"><div class="k">项目经验 · project</div><div class="v">${d.project}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">性格与爱好<span class="side">辅助匹配条件，不构成硬性门槛</span></div>
+      <div class="grid2">
+        <div class="kv"><div class="k">MBTI 类型</div><div class="v"><span class="mbti" style="font-size:12px;padding:2px 7px">${d.mbti}</span></div></div>
+        <div class="kv"><div class="k">四维 · 性格维度</div><div class="v">${mb.text}</div></div>
+        <div class="kv full"><div class="k">性格解读</div><div class="v">${mb.tip}</div></div>
+        <div class="kv full"><div class="k">爱好 · hobbies</div><div class="v">${chips(d.hobbies)}</div></div>
+      </div>
+    </div>`;
+
+  /* 底部动作合并为单一入口：未编辑 →「编辑」；编辑过 →「关闭」 */
+  const edited = editDone.has(d.id);
+  const btns = edited
+    ? '<button class="btn" id="aCloseBtn">关闭</button>'
+    : '<button class="btn btn-primary" id="aEditBtn">编辑</button>';
+
+  document.getElementById('dFoot').innerHTML = `<span class="tip">当前状态：${s.t}</span><div class="spacer"></div>${btns}`;
+
+  const on = (i,fn)=>{ const el = document.getElementById(i); if(el) el.onclick = fn; };
+  document.getElementById('dClose').onclick = closeDetail;
+  on('aEditBtn', ()=>openEdit(d.id));
+  on('aCloseBtn', closeDetail);
+}
+
+
+/* ---------------- 筛选 ---------------- */
+function applyFilter(){
+  const kw = document.getElementById('f-kw').value.trim();
+  const course = document.getElementById('f-course').value;
+  const org = document.getElementById('f-org').value;
+  const edu = document.getElementById('f-edu').value;
+  const city = document.getElementById('f-city').value;
+  const mbti = document.getElementById('f-mbti').value;
+  const mv = document.getElementById('f-match').value;
+  const st = document.getElementById('f-status').value;
+
+  rows = DATA.filter(d=>{
+    if(kw && !(d.name.includes(kw) || d.phone.includes(kw))) return false;
+    if(course && d.course!==course) return false;
+    if(org && d.org!==org) return false;
+    if(edu && d.edu!==edu) return false;
+    if(city && d.city!==city) return false;
+    if(mbti && d.mbti!==mbti) return false;
+    if(mv){
+      if(d.match==null) return false;
+      if(mv==='90' && d.match<90) return false;
+      if(mv==='80' && (d.match<80 || d.match>89)) return false;
+      if(mv==='70' && (d.match<70 || d.match>79)) return false;
+      if(mv==='low' && d.match>=70) return false;
+    }
+    if(st!=='' && d.status!==Number(st)) return false;
+    if(curTab!=='all' && d.status!==curTab) return false;
+    return true;
+  });
+  renderTable();
+}
+function refresh(){ renderTabs(); applyFilter(); }
+
+/* ---------------- 抽屉：详情 ---------------- */
+function mbtiDesc(m){
+  const a={E:'外向',I:'内向',N:'直觉',S:'实感',F:'情感',T:'思考',P:'感知',J:'判断'};
+  const tips={
+    ENFP:'善于共情与表达，适合创意、内容与策划型岗位',
+    INFJ:'洞察力强、目标感清晰，适合内容与用户研究方向',
+    INTJ:'结构化思考、擅长拆解复杂问题，适合工程与产品方向',
+    ESFP:'表现力强、乐于出镜，适合短视频与直播型岗位',
+    ENFJ:'擅长协调沟通，适合需要跨团队协作的产品岗位',
+    INFP:'审美与共情突出，适合创作与设计方向',
+    ESFJ:'亲和力强、重视服务体验，适合运营与用户沟通岗位',
+    ISTJ:'严谨细致、执行力强，适合质检与工程实施方向',
+    ISTP:'动手能力强，适合工具型与技术落地岗位',
+    ISFP:'审美敏感、动手能力好，适合设计类方向'
+  };
+  return {
+    text:[a[m[0]],a[m[1]],a[m[2]],a[m[3]]].join(' · '),
+    tip:tips[m] || '性格类型仅作为推荐辅助条件，不构成硬性门槛'
+  };
+}
+
+function closeOverlays(){
+  document.getElementById('mask').classList.remove('show');
+  document.getElementById('cfgDrawer').classList.remove('show');
+  document.getElementById('dDrawer').classList.remove('show');
+}
+
+/* ---------------- 弹窗：调整推荐 ---------------- */
+function openModal(title, sub, body, foot){
+  document.getElementById('mTitle').innerHTML = title + (sub?`<div class="m-sub">${sub}</div>`:'');
+  document.getElementById('mBody').innerHTML = body;
+  document.getElementById('mFoot').innerHTML = foot;
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('mask').classList.remove('show');
+}
+
+function suggestCourse(d){
+  const map = {'视觉传达设计':'AI 视觉设计（电商/商业）','汉语言文学':'AI 内容运营/账号操盘','计算机科学与技术':'Agent / RAG 开发工程师','软件工程':'大模型应用开发工程师','数字媒体技术':'AI 视频剪辑/成片师','动画':'AI 漫剧制作师/抽卡师','播音与主持艺术':'AI 数字人运营','市场营销':'AI 产品经理','环境设计':'AI 视觉设计（电商/商业）'};
+  return map[d.major] || 'AI 内容运营/账号操盘';
+}
+
+function openEdit(id, isGen){
+  curId = id;
+  const d = DATA.find(x=>x.id===id);
+  const preCourse = d.course || suggestCourse(d);
+  const pre = COURSES.find(c=>c.name===preCourse) || COURSES[0];
+  const preOrg = d.org || pre.org;
+  const preMatch = d.match==null ? 82 : d.match;
+  const preReason = d.reason.length ? d.reason.map(r=>r.replace(/<[^>]+>/g,'')).join('\n') : '';
+
+  const courseOpts = COURSES.filter(c=>c.on).map(c=>`<option ${c.name===preCourse?'selected':''}>${c.name}</option>`).join('');
+  const orgOpts = ORGS.map(o=>`<option ${o===preOrg?'selected':''}>${o}</option>`).join('');
+  const stOpts = STATUS.map(s=>`<option value="${s.k}" ${s.k===(d.status===0||d.status===3?1:d.status)?'selected':''}>${s.t}</option>`).join('');
+
+  openModal(
+    isGen?'生成课程推荐':'调整推荐结果',
+    `${d.name} · ${d.phone} · 匹配依据：学历 / 专业 / 技能关键词 / 实习与项目 / MBTI / 爱好`,
+    `<div class="form-grid">
+      <div><label class="ctrl-label">推荐课程 <b>course_name</b></label><select class="ctrl" id="eCourse">${courseOpts}</select></div>
+      <div><label class="ctrl-label">合作机构 <b>push_org_name · 后台选</b></label><select class="ctrl" id="eOrg">${orgOpts}</select></div>
+      <div><label class="ctrl-label">匹配度 <b>match_score（0-100）</b></label><input class="ctrl" id="eMatch" type="number" min="0" max="100" value="${preMatch}"></div>
+      <div><label class="ctrl-label">推荐状态 <b>status</b></label><select class="ctrl" id="eStatus">${stOpts}</select></div>
+      <div class="full"><label class="ctrl-label">推荐理由 <b>recommend_reason · 每行一条</b></label>
+        <textarea class="ctrl" id="eReason" style="min-height:132px" placeholder="例：专业对口，视觉传达设计背景覆盖课程 2 项核心标签。">${preReason}</textarea>
+      </div>
+      <div class="full"><div class="note-box">匹配度由系统按 <b>技能 40% · 专业 20% · 项目 20% · 性格 10% · 爱好 10%</b> 加权计算，运营可在此微调；机构由后台选定后推送。</div></div>
+    </div>`,
+    `<button class="btn" id="mCancel">取消</button>
+     <button class="btn" id="mSave">保存</button>
+     <button class="btn btn-primary" id="mPublish">发布</button>`
+  );
+  document.getElementById('mCancel').onclick = closeModal;
+  const doSave = (mode)=>{
+    const cname = document.getElementById('eCourse').value;
+    const org = document.getElementById('eOrg').value;
+    const m = Math.max(0, Math.min(100, Number(document.getElementById('eMatch').value)||0));
+    const st = Number(document.getElementById('eStatus').value);
+    const rs = document.getElementById('eReason').value.split('\n').map(x=>x.trim()).filter(Boolean);
+    d.course = cname; d.org = org; d.match = m; d.status = mode === 'publish' ? 1 : st;
+    d.reason = rs.map(r=>r);
+    d.time = '2026-10-19 20:12';
+    d.planner = '陈思远';
+    if(st!==3) delete d.failReason;
+    closeModal(); editDone.add(d.id);
+    toast(mode === 'publish' ? ('已发布推荐：'+d.name+' → '+cname) : ('已保存为草稿：'+d.name));
+    refresh();
+    if(document.getElementById('dDrawer').classList.contains('show')) renderDetail();
+  };
+  document.getElementById('mSave').onclick = ()=>doSave('draft');
+  document.getElementById('mPublish').onclick = ()=>doSave('publish');
+}
+
+/* ---------------- 弹窗：关闭记录 ---------------- */
+function openClose(id){
+  curId = id;
+  const d = DATA.find(x=>x.id===id);
+  openModal('关闭规划记录', `${d.name} · ${d.phone} · 关闭后不再出现在待办列表，可随时恢复`,
+    `<p style="margin-bottom:10px">请填写关闭原因（写入备注，最多 200 字）。</p>
+     <textarea class="ctrl" id="closeText" maxlength="200" placeholder="例如：学员已确定其他方向，暂停推荐。"></textarea>
+     <div class="counter"><span id="cnt">0</span> / 200</div>
+     <div class="quick">
+       <span>学员已确定其他方向</span><span>联系不上学员</span><span>学员暂缓提升计划</span><span>重复提交的记录</span>
+     </div>`,
+    `<button class="btn" id="mCancel">取消</button><button class="btn btn-danger" id="mConfirm">确认关闭</button>`);
+  const t = document.getElementById('closeText');
+  t.addEventListener('input',()=>document.getElementById('cnt').textContent=t.value.length);
+  document.querySelectorAll('.quick span').forEach(el=>{
+    el.onclick = ()=>{ t.value = el.textContent + '。'; t.dispatchEvent(new Event('input')); };
+  });
+  document.getElementById('mCancel').onclick = closeModal;
+  document.getElementById('mConfirm').onclick = ()=>{
+    const r = t.value.trim();
+    if(!r){ toast('请填写关闭原因'); return; }
+    d.status = 4; d.closeReason = r;
+    closeModal(); closeOverlays(); toast('已关闭记录：'+d.name); refresh();
+  };
+}
+
+/* ---------------- 抽屉：推荐规则配置 ---------------- */
+function openConfig(){
+  const rowsHtml = COURSES.map((c,i)=>`
+    <tr>
+      <td><div class="cfg-name">${c.name}<em>course_id：${1001+i}</em></div></td>
+      <td><div class="chips" style="max-width:none">${c.tags.map(t=>`<span class="chip blue">${t}</span>`).join('')}</div></td>
+      <td>${c.org}</td>
+      <td><span class="status ${c.on?'st-3':'st-5'}">${c.on?'在架':'已下架'}</span></td>
+      <td><button class="link" data-c="${i}">编辑</button></td>
+    </tr>`).join('');
+
+  document.getElementById('cfgBody').innerHTML = `
+    <div class="sec">
+      <div class="sec-title">爱好固定选项<span class="side">字典 hobby · 共 ${HOBBY.length} 项</span></div>
+      <div class="note-box" style="margin-bottom:10px">爱好选项随课程标签自动扩展：新增课程方向时勾选标签，未收录的标签会同步写入字典 <b>hobby</b>，学员端即可选择。</div>
+      <div class="chip-pool">${HOBBY.map(h=>`<span class="p">${h}</span>`).join('')}</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">课程 × 标签 × 合作机构<span class="side">课程方向 ${COURSES.length} 个 · 由合作机构入驻后维护</span></div>
+      <table class="cfg-table">
+        <thead><tr><th style="width:240px">课程名称</th><th>匹配标签</th><th style="width:150px">合作机构</th><th style="width:96px">状态</th><th style="width:70px">操作</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">匹配权重</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">技能关键词（skills）</div><div class="v strong">40%</div></div>
+        <div class="kv"><div class="k">专业 / 学历（major · education）</div><div class="v strong">20%</div></div>
+        <div class="kv"><div class="k">实习与项目（exp）</div><div class="v strong">20%</div></div>
+        <div class="kv"><div class="k">性格（MBTI）</div><div class="v strong">10%</div></div>
+        <div class="kv"><div class="k">爱好（hobby）</div><div class="v strong">10%</div></div>
+        <div class="kv"><div class="k">匹配度低于阈值</div><div class="v">60% 标记为推荐失败，不推送机构</div></div>
+      </div>
+    </div>`;
+
+  document.getElementById('cfgBody').querySelectorAll('[data-c]').forEach(el=>{
+    el.onclick = ()=>openCourseEdit(Number(el.dataset.c));
+  });
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('cfgDrawer').classList.add('show');
+}
+
+function openCourseEdit(i){
+  const c = COURSES[i];
+  openModal('编辑课程方向', '课程由合作机构维护，修改后立即影响新推荐结果',
+    `<div class="form-grid">
+      <div class="full"><label class="ctrl-label">课程名称 <b>course_name</b></label><input class="ctrl" id="cName" value="${c.name}"></div>
+      <div class="full"><label class="ctrl-label">匹配标签 <b>career_tags · 多选，可点击切换</b></label>
+        <div class="chip-pool" id="cTags">
+          ${HOBBY.map(h=>`<span class="p on ${c.tags.includes(h)?'sel':''}" data-t="${h}">${h}</span>`).join('')}
+        </div>
+      </div>
+      <div><label class="ctrl-label">合作机构 <b>org_id</b></label>
+        <select class="ctrl" id="cOrg">${ORGS.map(o=>`<option ${o===c.org?'selected':''}>${o}</option>`).join('')}</select>
+      </div>
+      <div><label class="ctrl-label">上架状态 <b>status</b></label>
+        <select class="ctrl" id="cOn"><option value="1" ${c.on?'selected':''}>在架</option><option value="0" ${!c.on?'selected':''}>已下架</option></select>
+      </div>
+    </div>`,
+    `<button class="btn" id="mCancel">取消</button><button class="btn btn-primary" id="mSave">保存</button>`);
+  const pool = document.getElementById('cTags');
+  pool.querySelectorAll('.p').forEach(el=>{
+    el.onclick = ()=>el.classList.toggle('sel');
+  });
+  document.getElementById('mCancel').onclick = closeModal;
+  document.getElementById('mSave').onclick = ()=>{
+    c.name = document.getElementById('cName').value.trim() || c.name;
+    c.org = document.getElementById('cOrg').value;
+    c.on = Number(document.getElementById('cOn').value);
+    c.tags = [...pool.querySelectorAll('.p.sel')].map(x=>x.dataset.t);
+    closeModal(); openConfig(); toast('已保存课程：'+c.name);
+  };
+}
+
+/* ---------------- 交互 ---------------- */
+document.getElementById('mask').onclick = ()=>{ closeModal(); closeOverlays(); };
+document.getElementById('cfgClose').onclick = closeOverlays;
+document.getElementById('cfgDone').onclick = closeOverlays;
+document.getElementById('cfgAdd').onclick = ()=>toast('新增课程方向：需先由机构管理完成入驻审核');
+
+document.getElementById('btn-search').onclick = ()=>{ curTab='all'; page=1; syncTabs(); applyFilter(); toast('查询完成，共 '+rows.length+' 条'); };
+document.getElementById('btn-reset').onclick = ()=>{
+  ['f-kw','f-course','f-org','f-edu','f-city','f-mbti','f-match','f-status'].forEach(i=>document.getElementById(i).value='');
+  curTab='all'; page=1; syncTabs(); applyFilter(); toast('筛选条件已重置');
+};
+document.getElementById('btn-add').onclick = ()=>toast('打开新增规划：手机号唯一校验 → 填写基础信息 → 生成推荐');
+document.getElementById('btn-export').onclick = ()=>toast('已导出当前 '+rows.length+' 条规划记录');
+document.getElementById('btn-batch').onclick = ()=>{
+  if(!checked.size){ toast('请先勾选需要推送的记录'); return; }
+  const ok = [...checked].map(id=>DATA.find(d=>d.id===id)).filter(d=>d.org && d.status===1);
+  ok.forEach(d=>{ d.status=2; });
+  toast(ok.length ? '已推送 '+ok.length+' 条记录至合作机构' : '所选记录均无合作机构，无法推送');
+  checked.clear(); refresh();
+};
+document.getElementById('ckAll').onchange = e=>{
+  checked.clear();
+  if(e.target.checked) rows.forEach(d=>checked.add(d.id));
+  renderTable();
+};
+
+/* 菜单切换 */
+const PAGES = {
+  company:   {name:'企业',       desc:'企业档案与认证审核。'},
+  contact:   {name:'企业联系人', desc:'企业下联系人、账号与权限管理。'},
+  daka:      {name:'大咖',       desc:'专家 / 牛人档案、认证与服务记录管理。'},
+  career:    {name:'职业规划',   desc:'学员基础信息、AI 课程推荐与合作机构推送。'},
+  job:       {name:'岗位管理',   desc:'岗位发布、上下架与违规审核。'},
+  project:   {name:'项目大厅',   desc:'项目需求发布、撮合进度与结算状态。'},
+  course:    {name:'就业课程',   desc:'课程、班级、学员与学习进度管理。'},
+  org:       {name:'机构管理',   desc:'合作机构入驻资料与资质审核。'},
+  apply:     {name:'申请管理',   desc:'入驻、认证、开票等各类申请的统一审批。'},
+  complaint: {name:'投诉处理',   desc:'用户投诉工单受理、流转与结案。'},
+  sysconf:   {name:'系统配置',   desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
+  dict:      {name:'字典管理',   desc:'education / mbti / hobby 等字典枚举值维护。'}
+};
+document.querySelectorAll('.nav-item[data-page]').forEach(el=>{
+  el.onclick = ()=>{
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const p = el.dataset.page, meta = PAGES[p] || {name:'—',desc:''};
+    document.getElementById('crumbNow').textContent = meta.name;
+    const isCareer = p === 'career';
+    document.getElementById('page-career').style.display = isCareer ? 'block' : 'none';
+    const ph = document.getElementById('page-ph');
+    ph.style.display = isCareer ? 'none' : 'block';
+    if(!isCareer){
+      document.getElementById('ph-title').textContent = meta.name;
+      document.getElementById('ph-desc').textContent = meta.desc;
+    }
+  };
+});
+
+/* 配置入口 */
+(document.getElementById('btn-config')||document.createElement('button')).onclick = openConfig;
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'),2200);
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModal(); closeOverlays(); } });
+
+initSelects(); renderTabs(); applyFilter();
+</script>
+
+<style>a.nav-item{text-decoration:none}</style>
+<script>
+/* 原型串联：左侧菜单跳转（按目录顺序自动注入；站内项与原生链接不拦截） */
+(function(){
+  var MAP={company:'01-企业管理.html',contact:'02-企业联系人.html',daka:'03-大咖.html',career:'04-职业规划.html',job:'05-岗位管理.html',project:'06-项目大厅.html',course:'07-就业课程与机构管理.html',org:'07-就业课程与机构管理.html',apply:'08-申请管理.html',complaint:'09-投诉处理.html',sysconf:'10-系统配置.html',dict:'11-字典管理.html'};
+  var SELF='04-职业规划.html';
+  document.addEventListener('click',function(e){
+    var el=(e.target&&e.target.closest)?e.target.closest('.nav-item'):null;
+    if(!el) return;
+    if(el.tagName==='A') return;                        /* 已经是原生链接 */
+    var href=MAP[el.getAttribute('data-page')];
+    if(!href||href.charAt(0)==='#'||href===SELF) return; /* 无原型 / 本站内切换，交给页面自身 */
+    e.preventDefault(); e.stopPropagation();
+    location.href=href;
+  },true);
+})();
+</script>
+<script id="ui-kit-js">
+/* ============ 统一交互层：弹窗右上角 × / 通用审核抽屉 ============ */
+(function(){
+  function closeLayer(el){
+    if(el) el.classList.remove('show');
+    document.querySelectorAll('.mask').forEach(function(m){ m.classList.remove('show'); });
+    document.body.classList.remove('drawer-open');
+  }
+  window.ukClose = closeLayer;
+
+  function bindClose(btn, scope){
+    btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); closeLayer(scope); });
+  }
+
+  document.querySelectorAll('.modal, .fmodal').forEach(function(m){
+    var head = m.querySelector('.m-head') || m.querySelector('.fm-head') || m.querySelector('.f-head');
+    if(head && !head.querySelector('.m-close, .fm-close, .d-close')){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'm-close'; b.setAttribute('aria-label','关闭');
+      b.innerHTML = '&times;';
+      bindClose(b, m);
+      head.appendChild(b);
+      return;
+    }
+    if(!head && !m.querySelector('.m-close, .fm-close')){
+      var b2 = document.createElement('button');
+      b2.type = 'button'; b2.className = 'm-close abs'; b2.setAttribute('aria-label','关闭');
+      b2.innerHTML = '&times;';
+      bindClose(b2, m);
+      m.appendChild(b2);
+    }
+  });
+
+  /* ---------- 通用审核抽屉（各页面「审核」操作统一使用） ---------- */
+  var built = false, panel, mask;
+  function build(){
+    if(built) return; built = true;
+    mask = document.createElement('div'); mask.className = 'mask'; mask.id = 'ukAuditMask';
+    panel = document.createElement('aside'); panel.className = 'drawer'; panel.id = 'ukAuditDrawer';
+    panel.innerHTML = '<div class="d-head"><div><div class="d-title" id="ukTitle">审核</div>'
+      + '<div class="d-sub" id="ukSub">—</div></div>'
+      + '<button class="d-close" id="ukClose" aria-label="关闭">&times;</button></div>'
+      + '<div class="d-body"><div class="sec"><div class="sec-title">基本信息</div><div class="grid2" id="ukGrid"></div></div>'
+      + '<div class="sec"><div class="sec-title">审核意见</div>'
+      + '<textarea class="ctrl" id="ukNote" maxlength="200" style="height:100px;padding:10px 12px;resize:vertical" placeholder="请填写审核意见（驳回时必填）"></textarea></div></div>'
+      + '<div class="d-foot"><span style="font-size:12px;color:var(--muted)">审核结果将同步至列表状态</span><div class="spacer" style="flex:1"></div>'
+      + '<button class="btn" id="ukReject">驳回</button><button class="btn btn-primary" id="ukPass">审核通过</button></div>';
+    document.body.appendChild(mask); document.body.appendChild(panel);
+    document.getElementById('ukClose').onclick = function(){ closeLayer(panel); };
+    mask.onclick = function(){ closeLayer(panel); };
+    document.getElementById('ukPass').onclick = function(){ closeLayer(panel); if(window.toast) toast('审核通过，状态已更新'); };
+    document.getElementById('ukReject').onclick = function(){
+      var n = document.getElementById('ukNote').value.trim();
+      if(!n){ if(window.toast) toast('请填写驳回原因'); return; }
+      closeLayer(panel); if(window.toast) toast('已驳回，状态已更新');
+    };
+  }
+  window.ukAudit = function(opt){
+    build();
+    opt = opt || {};
+    document.getElementById('ukTitle').textContent = opt.title || '审核';
+    document.getElementById('ukSub').innerHTML = opt.sub || '—';
+    document.getElementById('ukNote').value = '';
+    document.getElementById('ukNote').parentNode.style.display = '';
+    document.getElementById('ukReject').style.display = '';
+    var passBtn = document.getElementById('ukPass');
+    passBtn.textContent = '审核通过';
+    passBtn.onclick = function(){ closeLayer(panel); if(window.toast) toast('审核通过，状态已更新'); };
+    document.getElementById('ukGrid').innerHTML = (opt.fields || []).map(function(f){
+      return '<div class="kv' + (f.full ? ' full' : '') + '"><div class="k">' + f[0] + '</div><div class="v">' + f[1] + '</div></div>';
+    }).join('');
+    mask.classList.add('show'); panel.classList.add('show');
+  };
+
+  function rowFields(tr){
+    var ths = tr.closest('table').querySelectorAll('thead th');
+    var tds = tr.children, fields = [];
+    for(var i = 0; i < tds.length; i++){
+      var label = ths[i] ? ths[i].textContent.trim() : '';
+      if(!label || label === '操作' || tds[i].querySelector('input[type=checkbox]')) continue;
+      var val = tds[i].innerText.replace(/\s+/g, ' ').trim();
+      if(val) fields.push([label, val]);
+    }
+    return fields;
+  }
+
+  /* 详情抽屉：通用字段展示 */
+  window.ukDetail = function(opt){
+    build();
+    opt = opt || {};
+    document.getElementById('ukTitle').textContent = opt.title || '详情';
+    document.getElementById('ukSub').innerHTML = opt.sub || '—';
+    document.getElementById('ukNote').parentNode.style.display = 'none';
+    document.getElementById('ukGrid').innerHTML = (opt.fields || []).map(function(f){
+      return '<div class="kv' + (f.full ? ' full' : '') + '"><div class="k">' + f[0] + '</div><div class="v">' + f[1] + '</div></div>';
+    }).join('');
+    document.getElementById('ukReject').style.display = 'none';
+    document.getElementById('ukPass').textContent = '关闭';
+    document.getElementById('ukPass').onclick = function(){ closeLayer(panel); };
+    mask.classList.add('show'); panel.classList.add('show');
+  };
+  window.ukDetailFromRow = function(tr, title){
+    if(!tr) return;
+    var fields = rowFields(tr);
+    window.ukDetail({ title: title || '详情', sub: '字段信息汇总', fields: fields });
+  };
+
+  /* 从当前行读取展示字段，供「审核」操作直接使用 */
+  window.ukAuditFromRow = function(tr, title){
+    if(!tr) return;
+    var fields = rowFields(tr);
+    var first = fields.length ? fields[0][1] : '';
+    window.ukAudit({ title: title || ('审核 · ' + first), sub: '请核对以下信息后提交审核结果', fields: fields });
+  };
+})();
+</script>
+
+<script id="ui-kit-js3">
+(function(){
+  if(document.getElementById('ukMask')) return;
+  var mask=document.createElement('div');mask.className='uk-mask';mask.id='ukMask';
+  var conf=document.createElement('div');conf.className='uk-dlg';conf.id='ukConf';
+  conf.innerHTML='<div class="uk-h">批量删除</div><div class="uk-b">确定删除选中的 <b id="ukN">0</b> 条记录吗？删除后不可恢复。</div>'+
+    '<div class="uk-f"><button class="btn" id="ukNo">取消</button><button class="btn btn-danger" id="ukYes">确认删除</button></div>';
+  var imp=document.createElement('div');imp.className='uk-dlg';imp.id='ukImp';
+  imp.innerHTML='<div class="uk-h">批量导入</div><div class="uk-b"><div class="uk-drop" id="ukDrop">将 Excel / CSV 文件拖拽到这里，或 <a href="javascript:;">点击选择文件</a>'+
+    '<div class="uk-file" id="ukFile">未选择文件</div></div><div class="uk-tip">支持 .xlsx / .xls / .csv，单次上限 5000 行 · <a href="javascript:;">下载导入模板</a></div></div>'+
+    '<div class="uk-f"><button class="btn" id="ukImpNo">取消</button><button class="btn btn-primary" id="ukImpYes">开始导入</button></div>';
+  document.body.appendChild(mask);document.body.appendChild(conf);document.body.appendChild(imp);
+
+  function say(m){
+    if(typeof window.toast==='function'){try{window.toast(m);return;}catch(e){}}
+    var t=document.createElement('div');
+    t.style.cssText='position:fixed;left:50%;top:32px;transform:translateX(-50%);background:#101828;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:999';
+    t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove();},1800);
+  }
+  function sel(){
+    return [].slice.call(document.querySelectorAll('table tbody input[type=checkbox]:checked'))
+      .map(function(c){return c.closest('tr');}).filter(Boolean);
+  }
+  function closeAll(){mask.classList.remove('show');conf.classList.remove('show');imp.classList.remove('show');}
+  mask.onclick=closeAll;
+
+  var pend=[];
+  document.getElementById('ukNo').onclick=closeAll;
+  document.getElementById('ukYes').onclick=function(){
+    var n=pend.length;
+    pend.forEach(function(tr){
+      var id=tr.getAttribute('data-id');
+      if(id){var k=document.querySelectorAll('table tbody tr[data-id="'+id+'"]');for(var i=0;i<k.length;i++)k[i].remove();}
+      else tr.remove();
+    });
+    closeAll();
+    [].forEach.call(document.querySelectorAll('tbody input[type=checkbox]'),function(c){c.checked=false;});
+    var all=document.getElementById('ckAll');if(all)all.checked=false;
+    say('已删除 '+n+' 条记录');
+  };
+  document.getElementById('ukImpNo').onclick=closeAll;
+  document.getElementById('ukImpYes').onclick=function(){
+    closeAll();say('批量导入已提交，导入完成后可在列表中查看结果');
+  };
+  document.getElementById('ukDrop').onclick=function(){
+    document.getElementById('ukFile').textContent='企业批量导入模板.xlsx';
+  };
+
+  document.querySelectorAll('[data-batch]').forEach(function(b){
+    var act=b.getAttribute('data-batch');
+    if(act==='delete'){
+      b.onclick=function(){
+        pend=sel();
+        if(!pend.length){say('请先勾选要删除的记录');return;}
+        document.getElementById('ukN').textContent=pend.length;
+        mask.classList.add('show');conf.classList.add('show');
+      };
+    }else if(act==='export'){
+      if(!b.onclick) b.onclick=function(){
+        var n=sel().length;
+        say('已导出 '+(n||'全部')+' 条记录（Excel）');
+      };
+    }else if(act==='import'){
+      if(!b.onclick) b.onclick=function(){mask.classList.add('show');imp.classList.add('show');};
+    }
+  });
+})();
+</script>
+<!-- ===== 无跳转菜单切换：双 iframe 预载 + 淡入，切换只换内容不重载窗口 ===== -->
+<script id="nav-smooth">
+(function(){
+  var EMBED = /[?&]embed=1/.test(location.search);
+  var stage = null, frames = [], active = -1, busy = false, timer = null, pending = null;
+
+  if (EMBED) {
+    /* 被外层 iframe 承载：外层负责 110% 缩放，内层回到 1 倍并修正 vh 补偿 */
+    document.documentElement.setAttribute('data-embed', '1');
+    document.documentElement.style.zoom = '1';
+    var st = document.createElement('style');
+    st.textContent = 'html[data-embed] body,html[data-embed] .layout,html[data-embed] .sidebar{min-height:100vh!important}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+
+  function sizeStage(){
+    var z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    var de = document.documentElement;
+    var vw = de.clientWidth  || window.innerWidth;
+    var vh = de.clientHeight || window.innerHeight;
+    stage.style.width  = (vw / z) + 'px';
+    stage.style.height = (vh / z) + 'px';
+  }
+
+  function build(){
+    stage = document.createElement('div');
+    stage.id = '__navStage';
+    stage.style.cssText = 'position:fixed;top:0;left:0;z-index:2147483000;background:#F1F3F7;' +
+                         'visibility:hidden;';
+    for (var i = 0; i < 2; i++) {
+      var f = document.createElement('iframe');
+      f.setAttribute('title', '内容页');
+      f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#F1F3F7;' +
+                        'opacity:0;visibility:hidden;pointer-events:none;';
+      stage.appendChild(f);
+      frames.push(f);
+    }
+    document.body.appendChild(stage);
+    document.documentElement.style.overflow = 'hidden';
+    sizeStage();
+    window.addEventListener('resize', sizeStage);
+    window.addEventListener('message', function(ev){
+      var d = ev.data || {};
+      if (d.__dakaNav) load(d.__dakaNav, d.__dakaTitle);
+    });
+  }
+
+  function load(href, title){
+    if (!stage) build();
+    if (busy) { pending = { href: href, title: title }; return; }
+    busy = true;
+    var idx = active === 0 ? 1 : 0;
+    var f = frames[idx];
+    var done = false;
+    function show(){
+      if (done) return;
+      done = true; busy = false;
+      sizeStage();
+      stage.style.visibility = 'visible';
+      clearTimeout(timer);
+      var nf = frames[idx];
+      /* 先让旧帧瞬间离场，再整块换上 New 帧：两帧永不同时可见，杜绝叠影 */
+      frames.forEach(function(x, i){
+        if (i === idx) return;
+        x.style.opacity = '0';
+        x.style.visibility = 'hidden';
+        x.style.pointerEvents = 'none';
+      });
+      nf.style.visibility = 'visible';
+      nf.style.opacity = '1';
+      nf.style.pointerEvents = 'auto';
+      active = idx;
+      if (title) document.title = title + ' · DAKA · 云管理平台';
+      if (pending) { var p = pending; pending = null; setTimeout(function(){ load(p.href, p.title); }, 0); }
+    }
+    f.onload = function(){ requestAnimationFrame(show); };
+    timer = setTimeout(show, 6000);
+    f.src = href + (href.indexOf('?') > -1 ? '&' : '?') + 'embed=1';
+  }
+
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a.nav-item') : null;
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href.charAt(0) === '#') return;
+    e.preventDefault();
+    var title = (a.textContent || '').replace(/\s+/g, ' ').trim();
+    if (EMBED) {
+      try { parent.postMessage({__dakaNav: href, __dakaTitle: title}, '*'); } catch(err){}
+    } else {
+      load(href, title);
+    }
+    document.querySelectorAll('a.nav-item').forEach(function(x){ x.classList.remove('active'); });
+    a.classList.add('active');
+  }, true);
+})();
+</script>
+</body>
+</html>
