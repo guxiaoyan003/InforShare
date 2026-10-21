@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>申请管理 - DAKA · 云管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:200px;flex:0 0 200px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--line);flex:0 0 60px}
+  .logo-mark{width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;font-weight:800;font-size:12px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35)}
+  .logo-text{flex:1;min-width:0;font-size:13px;font-weight:700;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:2px;transition:.15s;user-select:none;
+  }
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item .ico{font-size:15px;width:18px;text-align:center;opacity:.85}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item.active .ico{opacity:1}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 卡片 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .tabs{display:flex;gap:4px;padding:0 18px;border-bottom:1px solid var(--line);background:var(--white)}
+  .tab{
+    padding:14px 14px 12px;font-size:14px;color:var(--text-2);cursor:pointer;border-bottom:2px solid transparent;
+    display:flex;align-items:center;gap:6px;transition:.15s;white-space:nowrap;
+  }
+  .tab:hover{color:var(--blue-600)}
+  .tab.active{color:var(--blue-600);font-weight:600;border-bottom-color:var(--blue-600)}
+  .tab .cnt{font-size:11px;background:var(--gray-bg);color:var(--text-2);padding:1px 6px;border-radius:8px;font-weight:600}
+  .tab.active .cnt{background:var(--blue-100);color:var(--blue-600)}
+
+  .filters{padding:18px 18px 4px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px 18px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field label{font-size:12px;color:var(--muted);font-weight:500}
+  .ctrl{
+    height:36px;border:1px solid var(--line-strong);border-radius:9px;padding:0 12px;font-size:13px;color:var(--text);
+    background:var(--white);outline:none;width:100%;font-family:inherit;transition:.15s;
+  }
+  .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  select.ctrl{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
+  .filter-actions{grid-column:-3/-1;display:flex;justify-content:flex-end;align-items:center;gap:10px;align-self:end;padding-bottom:0;border-bottom:0}
+
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff;box-shadow:0 6px 16px rgba(27,98,245,.34)}
+  .btn-danger{border-color:#F3C7C8;background:var(--red-bg);color:var(--red)}
+  .btn-danger:hover{border-color:var(--red);background:#FBDCDC;color:var(--red)}
+  .btn-sm{height:28px;padding:0 10px;font-size:12px;border-radius:7px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  .toolbar{padding:14px 18px;display:flex;align-items:center;gap:10px}
+  .toolbar .spacer{flex:1}
+  .toolbar .sel-tip{font-size:12px;color:var(--blue-600);background:var(--blue-50);border:1px solid var(--blue-100);padding:5px 10px;border-radius:8px}
+
+  /* ---------- 表格 ---------- */
+  .table-wrap{overflow-x:auto;border-top:1px solid var(--line)}
+  table{width:100%;min-width:0;border-collapse:collapse}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:11px 14px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:middle}
+  tbody tr:hover{background:#F8FBFF}
+  tbody tr.checked{background:var(--blue-50)}
+  tbody tr.stopped{background:#FAFBFD}
+  tbody tr.stopped:hover{background:#F7F9FC}
+  tbody tr.stopped .c-name{color:#8A97A8;text-decoration:line-through}
+  .col-id{color:var(--muted);font-variant-numeric:tabular-nums}
+  .company{min-width:230px}
+  .c-name{font-weight:600;color:var(--text);line-height:1.3}
+  .c-sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px;color:var(--text-2);letter-spacing:.2px}
+  .tag{display:inline-block;padding:2px 8px;border-radius:7px;font-size:12px;background:var(--gray-bg);color:var(--text-2)}
+  .tag.blue{background:var(--blue-100);color:var(--blue-600)}
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-0{background:var(--gray-bg);color:#6B7989}
+  .st-1{background:var(--orange-bg);color:#C2760A}
+  .st-2{background:var(--blue-100);color:var(--blue-600)} /* 保留：枚举 2 已下线 */
+  .st-3{background:var(--green-bg);color:var(--green)}
+  .st-4{background:var(--red-bg);color:var(--red)}
+  .st-5{background:#ECEFF4;color:#8A97A8}
+  .ops{display:flex;gap:6px;white-space:nowrap}
+  .link{color:var(--blue-600);cursor:pointer;font-size:13px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+  .link.gray{color:var(--muted)}
+  .link.red{color:var(--red)}
+  .link[disabled]{color:#B9C3D1;cursor:not-allowed;text-decoration:none}
+  .empty{padding:60px 0;text-align:center;color:var(--muted);font-size:13px}
+  .empty .e-ico{font-size:38px;opacity:.35;display:block;margin-bottom:10px}
+
+  .pager{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:13px;color:var(--text-2)}
+  .pager .spacer{flex:1}
+  .pg{border:1px solid var(--line-strong);border-radius:8px;min-width:32px;height:32px;padding:0 8px;background:#fff;cursor:pointer;font-size:13px;color:var(--text-2);font-family:inherit}
+  .pg:hover{border-color:var(--blue-500);color:var(--blue-600)}
+  .pg.active{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+
+  /* ---------- 抽屉 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:720px;max-width:92vw;background:var(--white);z-index:61;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;
+    box-shadow:var(--shadow-lg);
+  }
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:14px}
+  .d-title{font-size:17px;font-weight:700}
+  .d-sub{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .d-close{margin-left:auto;width:32px;height:32px;border-radius:9px;border:1px solid var(--line-strong);background:#fff;cursor:pointer;font-size:16px;color:var(--muted)}
+  .d-close:hover{color:var(--text);border-color:var(--blue-500)}
+  .d-body{padding:4px 22px 22px;overflow-y:auto;flex:1}
+  .sec{margin-top:18px}
+  .sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .sec-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px}
+  .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px}
+  .kv.full{grid-column:1/-1}
+  .kv .k{font-size:12px;color:var(--muted)}
+  .kv .v{font-size:13px;color:var(--text);margin-top:4px;word-break:break-all;line-height:1.6}
+  .kv .v.strong{font-weight:600}
+  .lic{
+    display:flex;align-items:center;gap:14px;border:1px solid var(--line-strong);border-radius:10px;padding:12px;
+    background:#fff;
+  }
+  .lic .thumb{
+    width:96px;height:64px;border-radius:8px;background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--blue-600);
+  }
+  .timeline{border-left:2px solid var(--blue-100);margin-left:6px;padding-left:18px}
+  .tl-item{position:relative;padding-bottom:16px}
+  .tl-item::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--blue-600);border:2px solid #fff;box-shadow:0 0 0 2px var(--blue-100)}
+  .tl-item .t{font-size:13px;font-weight:600}
+  .tl-item .m{font-size:12px;color:var(--muted);margin-top:3px}
+  .d-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;background:#FCFDFF}
+  .d-foot .spacer{flex:1}
+
+  /* ---------- 弹窗 ---------- */
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:520px;max-width:92vw;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700}
+  .m-body{padding:0 22px}
+  .m-body p{font-size:13px;color:var(--text-2);line-height:1.7}
+  textarea.ctrl{min-height:110px;padding:10px 12px;line-height:1.6;resize:vertical}
+  .m-foot{padding:16px 22px 20px;display:flex;justify-content:flex-end;gap:10px}
+  .counter{font-size:11px;color:var(--muted);text-align:right;margin-top:6px}
+  .quick{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .quick span{font-size:12px;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--blue-600);padding:4px 10px;border-radius:14px;cursor:pointer}
+  .quick span:hover{background:var(--blue-100)}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .placeholder{background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);padding:70px 20px;text-align:center;color:var(--muted)}
+  .placeholder b{display:block;color:var(--text);font-size:16px;margin-bottom:8px;font-weight:700}
+  .placeholder #ph-desc{display:block;font-size:13px;max-width:560px;margin:0 auto;line-height:1.7}
+  @media (max-width:1280px){
+    .filters{grid-template-columns:repeat(2,1fr)}
+  }
+
+  /* ================================================================
+     ↓↓↓ 申请模块新增样式（合并到主设计稿时，把本段追加到原 <style> 末尾即可）
+     全部复用上方已有变量：--line / --blue-* / --gray-bg / --radius 等
+     ================================================================ */
+
+  /* 卡片标题栏：替代分段选项卡，「标题 + 数量」 */
+  .card-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;background:var(--white)}
+  .card-head .h-title{font-size:15px;font-weight:700;color:var(--text)}
+  .card-head .h-cnt{font-size:12px;font-weight:700;color:var(--blue-600);background:var(--blue-100);padding:2px 9px;border-radius:9px;font-variant-numeric:tabular-nums}
+  .card-head .spacer{flex:1}
+  .card-head .h-tip{font-size:12px;color:var(--muted)}
+  .card-head .h-tip b{color:var(--red);font-weight:700}
+
+  /* 日期区间 */
+  .date-range{display:flex;align-items:center;gap:8px}
+  .date-range .ctrl{flex:1;min-width:0}
+  .date-range .dash{color:var(--muted);font-size:12px;flex:0 0 auto}
+
+  /* 只读文本域（评价内容） */
+  .ctrl[readonly]{background:#FAFBFD;color:var(--text-2);cursor:default}
+  .ctrl[readonly]:focus{border-color:var(--line-strong);box-shadow:none}
+
+  /* 列表：评价内容截断（15 字 + 省略号），完整内容进详情看 */
+  .clip{display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--text-2)}
+  .clip.empty-text{color:#B9C3D1}
+
+  /* 申请对象：项目 / 岗位 区分色 */
+  .obj-type{font-size:11px;font-weight:600;padding:1px 6px;border-radius:6px;flex:0 0 auto}
+  .obj-type.prj{background:#EEF3FF;color:var(--blue-600)}
+  .obj-type.job{background:#F3EDFF;color:#6B46D8}
+
+  /* 已停用记录整行淡化 */
+  .stop-flag{font-size:11px;color:var(--muted);border:1px dashed var(--line-strong);border-radius:6px;padding:1px 6px}
+
+  /* 详情：跟进轨迹的差异化节点 */
+  .timeline .tl-item.done::before{background:var(--green);box-shadow:0 0 0 2px var(--green-bg)}
+  .timeline .tl-item.stop::before{background:var(--muted);box-shadow:0 0 0 2px var(--gray-bg)}
+  .timeline .tl-item.rej::before{background:var(--red);box-shadow:0 0 0 2px var(--red-bg)}
+/* ============ ui-kit-css ============ */
+/* ============ 统一规范 V3 · 字号加大 / 列宽均分 / 125% 不溢出 ============ */
+html{zoom:1.1}
+/* 链接一律无下划线：菜单、面包屑、操作项、分页、抽屉内链接 */
+a,a:link,a:visited,a:hover,a:active,a:focus{text-decoration:none!important}
+/* 跨页跳转平滑过渡：消除切菜单时的白闪与高度跳变（Chrome 126+ 生效） */
+@view-transition{navigation:auto}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.18s;animation-timing-function:ease-out}
+/* 表格末列留白，操作项不贴边 */
+tbody td:last-child,thead th:last-child{padding-right:18px}
+/* 消除切页白闪与滚动条造成的横向跳动 */
+html{background:var(--bg,#F1F3F7);scrollbar-gutter:stable}
+body{background:var(--bg,#F1F3F7)}
+/* 列表未渲染时先占位，避免整页高度跳变 */
+.table-wrap{min-height:300px}
+@media (max-width:1280px){.filter-actions{grid-column:1/-1}}
+
+/* 窄窗口：表格给足可读宽度，滚动限制在表格容器内，页面本身不横向溢出 */
+@media (max-width:1400px){.table-wrap table{min-width:1000px!important}}
+body{min-height:91vh;font-size:16px;line-height:1.55}
+.layout{min-height:91vh}
+.sidebar{min-height:91vh;height:91vh}
+.content{padding:20px 20px 40px}
+.card{border-radius:14px}
+/* ---- 筛选区 ---- */
+.filters{padding:22px 24px 16px;gap:18px 20px;align-items:end;border-bottom:1px dashed var(--line)}
+.field{gap:8px}
+.field label{font-size:14px;font-weight:500}
+.ctrl{height:42px;font-size:15px;border-radius:10px}
+/* ---- 按钮 ---- */
+.btn{height:42px;padding:0 20px;font-size:15px;border-radius:10px}
+.btn-sm{height:34px;padding:0 14px;font-size:14px;border-radius:8px}
+.toolbar{padding:18px 24px;gap:12px}
+/* ---- 表格：定宽均分，消除大片留白，宽度恒为 100% ---- */
+table{width:100%!important;table-layout:fixed;min-width:0!important}
+thead th{padding:12px 10px;font-size:13px;font-weight:600;white-space:normal}
+th,td{box-sizing:border-box}
+tbody td{padding:12px 10px;font-size:14px}
+.mono,.tag,.status,.chip{white-space:nowrap}
+tbody td:last-child,thead th:last-child{white-space:nowrap}
+.ops{display:flex;align-items:center;flex-wrap:nowrap;gap:10px}
+.ops .link{font-size:13px}
+.link{font-size:13px}
+.c-name{font-size:14px;white-space:normal;word-break:break-word;line-height:1.35}
+.c-sub{font-size:12.5px}
+.tag,.status,.chip{font-size:12.5px}
+.pager{padding:16px 24px;font-size:14px}
+/* ---- 抽屉：统一 760px ---- */
+.drawer,.drawer.wide{width:760px!important;max-width:94vw!important;font-size:15px}
+.d-head{padding:22px 26px}
+.d-title{font-size:19px}
+.d-body{padding:4px 26px 26px}
+.d-foot{padding:18px 26px;gap:12px}
+.d-body .k{font-size:13px}
+.d-body .v{font-size:15px}
+/* ---- 弹窗：统一 760px ---- */
+.modal,.modal.wide,.modal.modal-form,.modal.modal-import,.modal.modal-quick,.fmodal{width:760px!important;max-width:94vw!important;font-size:15px}
+.m-head{display:flex;align-items:center;gap:12px;padding:22px 26px 14px;font-size:19px;font-weight:700}
+.m-body{padding:0 26px}
+.m-foot,.fm-foot,.f-foot{display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:18px 26px 22px}
+.fm-head,.f-head{display:flex;align-items:center;gap:12px;padding:22px 26px 16px}
+.fm-title,.f-title{font-size:19px;font-weight:700}
+.modal label,.fmodal label,.m-body label{font-size:14px}
+.form-hint,.m-desc,.m-sub,.hint{font-size:13px}
+/* ---- 统一关闭按钮（×） ---- */
+.m-close,.d-close,.fm-close,#fClose{
+  margin-left:auto;width:42px!important;height:42px!important;min-width:42px;padding:0!important;
+  border:1px solid var(--line-strong);background:#fff;border-radius:11px!important;box-shadow:none;
+  display:inline-flex!important;align-items:center;justify-content:center;
+  font-size:21px!important;line-height:1;font-weight:400;color:var(--muted);cursor:pointer;transition:.15s;
+}
+.m-close:hover,.d-close:hover,.fm-close:hover,#fClose:hover{color:var(--text);border-color:var(--blue-500);background:var(--blue-50)}
+.m-close.abs{position:absolute;top:20px;right:20px;z-index:3}
+/* ---- V3 批量操作确认 / 导入弹层 ---- */
+.uk-mask{position:fixed;inset:0;background:rgba(16,24,40,.45);z-index:900;display:none}
+.uk-mask.show{display:block}
+.uk-dlg{position:fixed;left:50%;top:22vh;transform:translateX(-50%);width:520px;max-width:92vw;background:#fff;
+  border-radius:16px;box-shadow:0 24px 60px rgba(16,24,40,.22);z-index:901;display:none;overflow:hidden}
+.uk-dlg.show{display:block}
+.uk-h{padding:22px 26px 10px;font-size:18px;font-weight:700;color:var(--text)}
+.uk-b{padding:6px 26px 22px;font-size:15px;color:var(--muted);line-height:1.7}
+.uk-b b{color:var(--text)}
+.uk-f{display:flex;justify-content:flex-end;gap:12px;padding:0 26px 22px}
+.uk-drop{border:1px dashed var(--line-strong);border-radius:12px;background:#F8FAFD;padding:26px 20px;text-align:center;font-size:14px;color:var(--muted)}
+.uk-drop a{color:var(--blue-600)}
+.uk-file{margin-top:10px;font-size:13px;color:var(--text);font-weight:600}
+.uk-tip{margin-top:12px;font-size:13px;color:var(--muted)}
+.uk-tip a{color:var(--blue-600)}
+
+  a.nav-item{text-decoration:none;color:inherit}
+  .nav-item.child{padding-left:24px;font-size:13px;position:relative}
+  .nav-item.child::before{content:"";position:absolute;left:13px;top:50%;width:4px;height:4px;border-radius:50%;
+    background:currentColor;opacity:.4;transform:translateY(-50%)}
+  .nav-item.child.active::before{opacity:.9}
+
+
+  /* ===== 菜单（18 项）：统一密度 + AI 徽标，保证 1680×1000 一屏排完 ===== */
+  .nav{padding:8px 10px}
+  .nav-group{margin-bottom:0}
+  .nav-group-title{padding:5px 10px 4px;font-size:11px;letter-spacing:.3px}
+  .nav-item{padding:6px 11px;font-size:13.5px;line-height:1.35;margin-bottom:0;border-radius:8px}
+  .nav-item.child{padding-left:11px;font-size:13.5px}
+  .nav-item.child::before{display:none}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;padding:0 6px;border-radius:9px;font-weight:600;line-height:16px}
+  .nav-item .badge.ai{background:var(--blue-100);color:var(--blue-600);letter-spacing:.4px}
+  .nav-item.active .badge.ai{background:rgba(255,255,255,.26);color:#fff}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+            <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <a class="nav-item" href="企业.html">企业</a>
+        <a class="nav-item" href="企业联系人.html">企业联系人</a>
+        <a class="nav-item" href="大咖.html">大咖</a>
+        <a class="nav-item" href="职业规划.html">职业规划</a>
+        <a class="nav-item" href="岗位管理.html">岗位管理</a>
+        <a class="nav-item" href="项目大厅.html">项目大厅</a>
+        <a class="nav-item" href="就业课程.html">就业课程</a>
+        <a class="nav-item" href="机构管理.html">机构管理</a>
+        <a class="nav-item active" href="申请管理.html">申请管理</a>
+        <a class="nav-item" href="投诉处理.html">投诉处理</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">权限设置</div>
+        <a class="nav-item child" href="角色管理.html">角色管理</a>
+        <a class="nav-item child" href="功能管理.html">功能管理</a>
+        <a class="nav-item child" href="权限.html">权限</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <a class="nav-item" href="系统配置.html">系统配置</a>
+        <a class="nav-item" href="字典管理.html">字典管理</a>
+        <a class="nav-item" href="收费规则.html">收费规则</a>
+        <a class="nav-item" href="充值记录.html">充值记录</a>
+        <a class="nav-item" href="导入Agent.html">导入Agent<span class="badge ai">AI</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">基本信息 / <b id="crumbNow">申请管理</b></div>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="content">
+      <!-- ---------- 申请管理 ---------- -->
+      <section id="page-apply">
+        <div class="card">
+          <!-- 标题 + 数量（按需求：不做分段选项卡） -->
+          <div class="card-head">
+            <div class="h-title">申请数据</div>
+            <div class="h-cnt" id="hTotal">0</div>
+            <div class="spacer"></div>
+            <div class="h-tip">未处理 <b id="hPending">0</b> 条 · 超 7 天未跟进 <b id="hOverdue">0</b> 条 · 已停用 <b id="hStopped">0</b> 条</div>
+          </div>
+
+          <!-- 筛选区 -->
+          <div class="filters">
+            <div class="field">
+              <label>申请人</label>
+              <input class="ctrl" id="f-applicant" placeholder="请输入联系人 / 牛人 ID">
+            </div>
+            <div class="field">
+              <label>申请类型</label>
+              <select class="ctrl" id="f-type">
+                <option value="">全部</option>
+                <option value="项目">项目</option>
+                <option value="岗位">岗位</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>状态</label>
+              <select class="ctrl" id="f-status">
+                <option value="">全部</option>
+                <option value="1">未处理</option>
+                <option value="2">联系中</option>
+                <option value="3">被拒绝</option>
+                <option value="off">已停用</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>申请对象名称</label>
+              <input class="ctrl" id="f-obj" placeholder="请输入项目 / 岗位名称关键词">
+            </div>
+            <div class="field">
+              <label>申请时间</label>
+              <div class="date-range">
+                <input class="ctrl" id="f-from" type="date">
+                <span class="dash">至</span>
+                <input class="ctrl" id="f-to" type="date">
+              </div>
+            </div>
+            <div class="filter-actions">
+              <button class="btn" id="btn-reset">重置</button>
+              <button class="btn btn-primary" id="btn-search">查询</button>
+            </div>
+          </div>
+
+          <!-- 工具栏 -->
+          <div class="toolbar">
+            <button class="btn" data-batch="import" id="btn-import">批量导入</button>
+            <button class="btn" data-batch="export" id="btn-export">批量导出</button>
+            <button class="btn btn-danger" data-batch="delete" id="btn-batch-follow">批量删除</button>
+            <span class="sel-tip" id="selTip" style="display:none"></span>
+            <div class="spacer"></div>
+          </div>
+
+          <!-- 列表 -->
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:4.10%"><input type="checkbox" id="ckAll"></th>
+                  <th style="width:10.24%">申请人</th>
+                  <th style="width:7.45%">申请类型</th>
+                  <th style="width:18.62%">申请项目 / 岗位</th>
+                  <th style="width:22.35%">评价内容</th>
+                  <th style="width:9.68%">申请时间</th>
+                  <th style="width:8.94%">状态</th>
+                  <th style="width:18.62%">操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pager">
+            <span>共 <b id="total">0</b> 条 · 每页 10 条</span>
+            <div class="spacer"></div>
+            <div id="pgBox" style="display:flex;align-items:center;gap:8px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 其它菜单占位 ---------- -->
+      <section id="page-ph" style="display:none">
+        <div class="placeholder"><b id="ph-title">—</b><span id="ph-desc">—</span></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 抽屉：申请详情 ============ -->
+<div class="mask" id="mask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div>
+      <div class="d-title" id="dTitle">—</div>
+      <div class="d-sub">
+        <span class="status" id="dStatus">—</span>
+        <span>申请 ID：<span class="mono" id="dId">—</span></span>
+        <span>申请类型：<span id="dType">—</span></span>
+      </div>
+    </div>
+    <button class="d-close" id="dClose">✕</button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============ 弹窗：跟进申请 ============ -->
+<div class="modal" id="mFollow">
+  <div class="m-head">跟进申请</div>
+  <div class="m-body">
+    <p>更新进度状态并可补充企业对该次申请的评价。<b>评价内容与评价时间同存</b>：填了评价内容即自动写入当前时间。</p>
+    <div class="field" style="margin-bottom:14px">
+      <label>进度状态（progress_status）</label>
+      <select class="ctrl" id="fuStatus">
+        <option value="1">未处理</option>
+        <option value="2">联系中</option>
+        <option value="3">被拒绝</option>
+      </select>
+    </div>
+    <div class="field" style="margin-bottom:14px">
+      <label>评价内容（evaluation_content）</label>
+      <textarea class="ctrl" id="fuContent" maxlength="500" placeholder="例如：候选人经验符合岗位要求，已电话沟通并约定本周五线上面试。"></textarea>
+      <div class="counter"><span id="fuChar">0</span> / 500</div>
+      <div class="quick" id="fuQuick">
+        <span>已电话沟通，等待候选人回复</span>
+        <span>候选人经验匹配，已约面试</span>
+        <span>岗位已关闭，申请不再受理</span>
+        <span>候选人资质不符，本次不通过</span>
+        <span>项目已定标，申请作废</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>评价时间（evaluation_time · 保存时自动生成）</label>
+      <input class="ctrl" id="fuTime" readonly>
+    </div>
+  </div>
+  <div class="m-foot">
+    <button class="btn" id="fuCancel">取消</button>
+    <button class="btn btn-primary" id="fuOk">✓ 保存跟进</button>
+  </div>
+</div>
+
+<!-- ============ 弹窗：停用 / 启用申请 ============ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   一、字典枚举（与《小程序核心功能》第 8 节 apply_record 建表语句对齐）
+   ========================================================= */
+/* 进度状态：1 未处理 / 2 联系中 / 3 被拒绝 —— 复用主设计稿既有状态色，不新增色值 */
+const PSTATUS = [
+  {k:1,t:'未处理',c:'st-1'},
+  {k:2,t:'联系中',c:'st-2'},
+  {k:3,t:'被拒绝',c:'st-4'}
+];
+const stOf   = k => PSTATUS.find(x=>x.k===k);
+const tagOf  = (arr,k) => (arr.find(x=>x.k===k)||{t:'—'}).t;
+const NOW    = '2026-10-19 23:00:00';
+
+/* =========================================================
+   二、模拟数据（字段名与需求文档逐条对应）
+   ========================================================= */
+const ADATA = [
+  {id:70012, niuRenId:52018, niuRenName:'张启明', gender:1, age:31,
+   applyType:'项目', objId:41002, objName:'SaaS 平台前端重构项目',
+   evaluation:'候选人主导过同量级 SaaS 前端重构，技术栈匹配度高。已电话沟通，客户希望本周安排技术面。',
+   evaluationTime:'2026-10-19 10:22:16', progressStatus:2, isStopped:0,
+   createBy:'张启明', createTime:'2026-10-16 09:12:04', updateBy:'陈思远', updateTime:'2026-10-19 10:22:16'},
+
+  {id:70011, niuRenId:52033, niuRenName:'李文博', gender:1, age:34,
+   applyType:'岗位', objId:50440, objName:'产线普工（电子厂）',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'李文博', createTime:'2026-10-19 08:47:31', updateBy:'李文博', updateTime:'2026-10-19 08:47:31'},
+
+  {id:70010, niuRenId:52047, niuRenName:'郑凯文', gender:1, age:29,
+   applyType:'项目', objId:41055, objName:'智能制造园区安防系统建设',
+   evaluation:'候选人近 3 年均为安防集成方向，但缺少政府项目投标经验，与本项目资质要求不符。',
+   evaluationTime:'2026-10-18 16:40:52', progressStatus:3, isStopped:0,
+   createBy:'郑凯文', createTime:'2026-10-17 14:05:19', updateBy:'王审核', updateTime:'2026-10-18 16:40:52'},
+
+  {id:70009, niuRenId:52102, niuRenName:'刘星辰', gender:1, age:26,
+   applyType:'岗位', objId:50330, objName:'建材销售经理（一本学历）',
+   evaluation:'简历有 5 年建材渠道经验，客户已加微信，约周一到岗面试。',
+   evaluationTime:'2026-10-18 11:03:47', progressStatus:2, isStopped:0,
+   createBy:'刘星辰', createTime:'2026-10-16 11:20:38', updateBy:'陈思远', updateTime:'2026-10-18 11:03:47'},
+
+  {id:70008, niuRenId:52115, niuRenName:'黄磊', gender:1, age:37,
+   applyType:'项目', objId:41120, objName:'小程序视觉改版外包',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'黄磊', createTime:'2026-10-18 10:02:55', updateBy:'黄磊', updateTime:'2026-10-18 10:02:55'},
+
+  {id:70007, niuRenId:52077, niuRenName:'林筱雨', gender:2, age:27,
+   applyType:'岗位', objId:50781, objName:'资深 HR 岗位顾问（兼职）',
+   evaluation:'候选人持有 HR 中级证书，兼职意愿明确，已推送给 2 家合作机构。',
+   evaluationTime:'2026-10-17 17:28:30', progressStatus:2, isStopped:0,
+   createBy:'林筱雨', createTime:'2026-10-15 09:33:12', updateBy:'王审核', updateTime:'2026-10-17 17:28:30'},
+
+  {id:70006, niuRenId:52201, niuRenName:'吴建平', gender:1, age:41,
+   applyType:'项目', objId:41088, objName:'连锁餐饮门店数字化巡检',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'吴建平', createTime:'2026-10-15 15:49:26', updateBy:'吴建平', updateTime:'2026-10-15 15:49:26'},
+
+  {id:70005, niuRenId:52244, niuRenName:'宋佳琪', gender:2, age:25,
+   applyType:'岗位', objId:50112, objName:'蓝领招聘专员（成都）',
+   evaluation:'机构反馈该候选人已入职其他同类岗位，与本岗位重复，请勿重复推送。',
+   evaluationTime:'2026-10-16 14:11:05', progressStatus:3, isStopped:0,
+   createBy:'宋佳琪', createTime:'2026-10-14 10:22:47', updateBy:'陈思远', updateTime:'2026-10-16 14:11:05'},
+
+  {id:70004, niuRenId:52255, niuRenName:'周凯', gender:1, age:30,
+   applyType:'项目', objId:41021, objName:'工业设备数据采集网关联调',
+   evaluation:'已完成技术面，评分良好，进入终面环节。',
+   evaluationTime:'2026-10-15 16:38:09', progressStatus:2, isStopped:0,
+   createBy:'周凯', createTime:'2026-10-13 08:57:33', updateBy:'陈思远', updateTime:'2026-10-15 16:38:09'},
+
+  {id:70003, niuRenId:52099, niuRenName:'陈可欣', gender:2, age:24,
+   applyType:'岗位', objId:50355, objName:'前台行政专员（深圳南山）',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'陈可欣', createTime:'2026-10-12 20:14:58', updateBy:'陈可欣', updateTime:'2026-10-12 20:14:58'},
+
+  {id:70002, niuRenId:52310, niuRenName:'钱思远', gender:1, age:33,
+   applyType:'项目', objId:41135, objName:'企业官网改版与内容运营',
+   evaluation:'牛人二次提交同一项目申请，内容与首次完全一致。',
+   evaluationTime:'2026-10-11 09:30:11', progressStatus:1, isStopped:1,
+   createBy:'钱思远', createTime:'2026-10-10 13:45:22', updateBy:'陈思远', updateTime:'2026-10-11 09:30:11'},
+
+  {id:70001, niuRenId:52071, niuRenName:'邓子豪', gender:1, age:28,
+   applyType:'岗位', objId:50620, objName:'数控机床操作工（东莞）',
+   evaluation:'测试数据，误提交。',
+   evaluationTime:'', progressStatus:1, isStopped:1,
+   createBy:'邓子豪', createTime:'2026-10-10 09:05:00', updateBy:'陈思远', updateTime:'2026-10-10 10:02:18'},
+
+  {id:69998, niuRenId:52085, niuRenName:'马晓萱', gender:2, age:26,
+   applyType:'项目', objId:41066, objName:'社区团购履约系统搭建',
+   evaluation:'方案完整，已进入报价阶段，等待企业方确认。',
+   evaluationTime:'2026-10-09 14:26:40', progressStatus:2, isStopped:0,
+   createBy:'马晓萱', createTime:'2026-10-08 11:19:55', updateBy:'陈思远', updateTime:'2026-10-09 14:26:40'},
+
+  {id:69997, niuRenId:52130, niuRenName:'徐若彤', gender:2, age:23,
+   applyType:'岗位', objId:50218, objName:'电商客服主管（广州）',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'徐若彤', createTime:'2026-10-08 09:41:07', updateBy:'徐若彤', updateTime:'2026-10-08 09:41:07'},
+
+  {id:69996, niuRenId:52144, niuRenName:'何俊杰', gender:1, age:32,
+   applyType:'项目', objId:41102, objName:'医疗器械仓储物流优化',
+   evaluation:'项目方要求具备医疗器械行业资质，候选人暂无，不通过。',
+   evaluationTime:'2026-10-07 17:52:26', progressStatus:3, isStopped:0,
+   createBy:'何俊杰', createTime:'2026-10-06 16:08:14', updateBy:'王审核', updateTime:'2026-10-07 17:52:26'},
+
+  {id:69995, niuRenId:52158, niuRenName:'曹雅琴', gender:2, age:35,
+   applyType:'岗位', objId:50490, objName:'半导体设备技术员（无锡）',
+   evaluation:'已推荐给博远智能，对方反馈下周安排面试。',
+   evaluationTime:'2026-10-07 10:15:38', progressStatus:2, isStopped:0,
+   createBy:'曹雅琴', createTime:'2026-10-05 14:33:49', updateBy:'陈思远', updateTime:'2026-10-07 10:15:38'},
+
+  {id:69994, niuRenId:52166, niuRenName:'唐一鸣', gender:1, age:27,
+   applyType:'项目', objId:41033, objName:'连锁餐饮小程序会员体系',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'唐一鸣', createTime:'2026-10-05 10:20:03', updateBy:'唐一鸣', updateTime:'2026-10-05 10:20:03'},
+
+  {id:69993, niuRenId:52177, niuRenName:'冯雅琴', gender:2, age:30,
+   applyType:'岗位', objId:50605, objName:'人力资源共享服务中心专员',
+   evaluation:'已通过初筛，等待企业安排复面。',
+   evaluationTime:'2026-10-04 16:44:52', progressStatus:2, isStopped:0,
+   createBy:'冯雅琴', createTime:'2026-10-03 09:11:26', updateBy:'陈思远', updateTime:'2026-10-04 16:44:52'},
+
+  {id:69992, niuRenId:52190, niuRenName:'韩雪', gender:2, age:25,
+   applyType:'项目', objId:41077, objName:'园区智慧安防平台建设',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'韩雪', createTime:'2026-10-02 15:57:41', updateBy:'韩雪', updateTime:'2026-10-02 15:57:41'},
+
+  {id:69991, niuRenId:52209, niuRenName:'罗天宇', gender:1, age:29,
+   applyType:'岗位', objId:50277, objName:'汽车改装学徒工（佛山）',
+   evaluation:'岗位薪资低于候选人预期，候选人已婉拒。',
+   evaluationTime:'2026-10-03 11:09:18', progressStatus:3, isStopped:0,
+   createBy:'罗天宇', createTime:'2026-10-01 19:32:07', updateBy:'王审核', updateTime:'2026-10-03 11:09:18'},
+
+  {id:69990, niuRenId:52220, niuRenName:'梁诗雅', gender:2, age:28,
+   applyType:'项目', objId:41148, objName:'职业教育实训基地建设',
+   evaluation:'已提交方案，等待项目方组织评审。',
+   evaluationTime:'2026-10-02 11:41:33', progressStatus:2, isStopped:0,
+   createBy:'梁诗雅', createTime:'2026-09-30 14:26:50', updateBy:'陈思远', updateTime:'2026-10-02 11:41:33'},
+
+  {id:69989, niuRenId:52236, niuRenName:'彭宇轩', gender:1, age:31,
+   applyType:'岗位', objId:50512, objName:'仓库管理员（武汉）',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'彭宇轩', createTime:'2026-09-29 08:47:52', updateBy:'彭宇轩', updateTime:'2026-09-29 08:47:52'},
+
+  {id:69988, niuRenId:52056, niuRenName:'苏晴', gender:2, age:26,
+   applyType:'项目', objId:41077, objName:'园区智慧安防平台建设',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'苏晴', createTime:'2026-09-28 17:13:29', updateBy:'苏晴', updateTime:'2026-09-28 17:13:29'},
+
+  {id:69987, niuRenId:52063, niuRenName:'范志远', gender:1, age:36,
+   applyType:'岗位', objId:50620, objName:'数控机床操作工（东莞）',
+   evaluation:'候选人技能等级证书与岗位要求不符。',
+   evaluationTime:'2026-09-27 10:22:14', progressStatus:3, isStopped:0,
+   createBy:'范志远', createTime:'2026-09-26 20:58:06', updateBy:'王审核', updateTime:'2026-09-27 10:22:14'},
+
+  {id:69986, niuRenId:52044, niuRenName:'方玲', gender:2, age:33,
+   applyType:'项目', objId:41102, objName:'医疗器械仓储物流优化',
+   evaluation:'已联系候选人补充医疗器械行业证明材料，等待反馈中。',
+   evaluationTime:'2026-09-28 09:35:41', progressStatus:2, isStopped:0,
+   createBy:'方玲', createTime:'2026-09-25 11:14:38', updateBy:'陈思远', updateTime:'2026-09-28 09:35:41'},
+
+  {id:69985, niuRenId:52038, niuRenName:'田嘉伟', gender:1, age:39,
+   applyType:'岗位', objId:50112, objName:'蓝领招聘专员（成都）',
+   evaluation:'',
+   evaluationTime:'', progressStatus:1, isStopped:0,
+   createBy:'田嘉伟', createTime:'2026-09-24 13:52:20', updateBy:'田嘉伟', updateTime:'2026-09-24 13:52:20'}
+];
+
+/* =========================================================
+   三、列表渲染
+   ========================================================= */
+let curPage = 1;
+const PAGE_SIZE = 10;
+let rows = ADATA.slice();
+let checked = new Set();
+
+/* 列表展示：评价内容截断至 15 字，多出以 … 省略（完整内容进详情看） */
+function clipText(s){
+  const t = (s || '').trim();
+  if(!t) return '<span class="clip empty-text">—</span>';
+  return `<span class="clip" title="${t.replace(/"/g,'&quot;')}">${t.length > 15 ? t.slice(0,15) + '…' : t}</span>`;
+}
+
+function renderHead(){
+  document.getElementById('hTotal').textContent   = ADATA.length;
+  document.getElementById('hPending').textContent = ADATA.filter(d=>d.progressStatus===1 && !d.isStopped).length;
+  document.getElementById('hStopped').textContent = ADATA.filter(d=>d.isStopped===1).length;
+  /* 超 7 天未跟进：当前时点 2026-10-19 23:00 */
+  const NOWT = new Date('2026/10/19 23:00:00');
+  const over = ADATA.filter(d=>{
+    if(d.isStopped || d.progressStatus !== 1) return false;
+    return (NOWT - new Date(d.createTime.replace(/-/g,'/'))) > 7*24*3600*1000;
+  }).length;
+  document.getElementById('hOverdue').textContent = over;
+}
+
+/* 全量刷新：头部统计 + 列表 + 分页（数据变更后统一调用） */
+function refresh(){
+  renderHead();
+  applyFilter();
+  /* 抽屉若处于打开态，同步刷新其内容与页脚 */
+  if(curId && document.getElementById('drawer').classList.contains('show')){
+    openDrawer(curId);
+  }
+}
+
+const fmtDate = v => (!v || v === '—') ? '—' : String(v).slice(0,10).replace(/-/g,'/');
+/* 统一兜底：字段缺失时显示「—」，避免界面出现 undefined / null */
+const nz = v => (v === undefined || v === null || v === '') ? '—' : v;
+/* 性别：1 男、2 女；年龄由 age 直接展示（与牛人表一致，正式环境可由出生年月计算） */
+const GENDER = {1:'男', 2:'女'};
+const gText = v => GENDER[v] || '—';
+const aText = v => (v === undefined || v === null || v === '') ? '—' : v + ' 岁';
+
+function renderTable(){
+  const tb = document.getElementById('tbody');
+  const total = rows.length;
+  document.getElementById('total').textContent = total;
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if(curPage > pages) curPage = pages;
+  const start = (curPage - 1) * PAGE_SIZE;
+  const pageRows = rows.slice(start, start + PAGE_SIZE);
+
+  if(!pageRows.length){
+    tb.innerHTML = `<tr><td colspan="8"><div class="empty"><span class="e-ico">📭</span>没有符合条件的申请记录，试试调整筛选条件</div></td></tr>`;
+    renderPager();
+    return;
+  }
+
+  tb.innerHTML = pageRows.map(d=>{
+    const s = stOf(d.progressStatus);
+    const stopped = d.isStopped === 1;
+    /* 状态联动：停用 / 启用为同一枚可切换按钮，跟进在停用态置灰 */
+    const ops = stopped
+      ? `<button class="link" data-act="view">详情</button>
+         <button class="link" data-act="follow">编辑</button>
+         <button class="link" data-act="audit">审核</button>
+         <button class="link" data-act="enable">启用</button>`
+      : `<button class="link" data-act="view">详情</button>
+         <button class="link" data-act="follow">编辑</button>
+         <button class="link" data-act="audit">审核</button>
+         <button class="link red" data-act="stop">停用</button>`;
+
+    const objCls = d.applyType === '项目' ? 'prj' : 'job';
+
+    return `<tr class="${checked.has(d.id)?'checked':''} ${stopped?'stopped':''}" data-id="${d.id}">
+      <td><input type="checkbox" class="ck" data-id="${d.id}" ${checked.has(d.id)?'checked':''} ${stopped?'disabled':''}></td>
+      <td>
+        <div class="c-name">${nz(d.niuRenName)}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap">${gText(d.gender)} · ${aText(d.age)}</div>
+      </td>
+      <td style="white-space:nowrap"><span class="tag ${d.applyType==='项目'?'blue':''}">${d.applyType}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="obj-type ${objCls}">${d.applyType}</span>
+          <span style="font-size:13px;font-weight:500;word-break:break-all">${nz(d.objName)}</span>
+        </div>
+      </td>
+      <td>${clipText(d.evaluation)}</td>
+      <td class="mono" style="white-space:nowrap">${fmtDate(d.createTime)}</td>
+      <td style="white-space:nowrap">${stopped ? '<span class="stop-flag">已停用</span>' : `<span class="status ${s.c}">${s.t}</span>`}</td>
+      <td><div class="ops">${ops}</div></td>
+    </tr>`;
+  }).join('');
+
+  bindRows();
+  renderPager();
+}
+
+function bindRows(){
+  document.querySelectorAll('#tbody tr[data-id]').forEach(tr=>{
+    const id = Number(tr.dataset.id);
+    const view = tr.querySelector('[data-act="view"]');
+    if(view) view.onclick = ()=>openDrawer(id);
+    const fo = tr.querySelector('[data-act="follow"]');
+    if(fo && !fo.disabled) fo.onclick = ()=>openFollow(id,false);
+    const sp = tr.querySelector('[data-act="stop"]');
+    if(sp && !sp.disabled) sp.onclick = ()=>toggleStop(id,false);
+    const en = tr.querySelector('[data-act="enable"]');
+    if(en) en.onclick = ()=>doEnable(id);
+    const au = tr.querySelector('[data-act="audit"]');
+    if(au) au.onclick = ()=>ukAuditFromRow(tr, '审核 · 申请记录');
+    const ck = tr.querySelector('.ck');
+    if(ck) ck.onchange = e=>{
+      e.target.checked ? checked.add(id) : checked.delete(id);
+      tr.classList.toggle('checked', e.target.checked);
+      updateSelTip();
+    };
+  });
+  updateSelTip();
+}
+
+function updateSelTip(){
+  const tip = document.getElementById('selTip');
+  tip.style.display = checked.size ? 'inline-block' : 'none';
+  tip.textContent = `已选择 ${checked.size} 条申请记录`;
+
+  const targets = ADATA.filter(d=>checked.has(d.id) && !d.isStopped);
+  const bf = document.getElementById('btn-batch-follow');
+  bf.disabled = targets.length === 0;
+  bf.title = targets.length === 0 ? '请先勾选要删除的申请记录' : `将批量删除所选中的 ${targets.length} 条`;
+}
+
+function renderPager(){
+  const box = document.getElementById('pgBox');
+  const total = rows.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if(curPage > pages) curPage = pages;
+
+  if(pages <= 1){
+    box.innerHTML = `<button class="pg" disabled>‹</button><button class="pg active">1</button><button class="pg" disabled>›</button>`;
+    return;
+  }
+  let html = `<button class="pg" ${curPage===1?'disabled':''} data-go="prev">‹</button>`;
+  for(let i=1;i<=pages;i++){
+    html += `<button class="pg ${i===curPage?'active':''}" data-go="${i}">${i}</button>`;
+  }
+  html += `<button class="pg" ${curPage===pages?'disabled':''} data-go="next">›</button>`;
+  box.innerHTML = html;
+  box.querySelectorAll('.pg[data-go]').forEach(el=>{
+    const v = el.dataset.go;
+    if(v==='prev')      el.onclick = ()=>{ curPage--; switchPage(); };
+    else if(v==='next') el.onclick = ()=>{ curPage++; switchPage(); };
+    else                el.onclick = ()=>{ curPage = Number(v); switchPage(); };
+  });
+}
+
+/* 翻页：清空跨页选中态并重置全选框 */
+function switchPage(){
+  checked.clear();
+  document.getElementById('ckAll').checked = false;
+  renderTable();
+}
+
+function applyFilter(){
+  const applicant = document.getElementById('f-applicant').value.trim();
+  const type  = document.getElementById('f-type').value;
+  const st    = document.getElementById('f-status').value;
+  const obj   = document.getElementById('f-obj').value.trim();
+  const from  = document.getElementById('f-from').value;
+  const to    = document.getElementById('f-to').value;
+
+  rows = ADATA.filter(d=>
+    (!applicant || d.niuRenName.includes(applicant) || String(d.niuRenId) === applicant) &&
+    (!type  || d.applyType === type) &&
+    (!st || (st === 'off' ? d.isStopped === 1 : (d.isStopped !== 1 && d.progressStatus === Number(st)))) &&
+    (!obj   || d.objName.includes(obj)) &&
+    (!from  || d.createTime.slice(0,10) >= from) &&
+    (!to    || d.createTime.slice(0,10) <= to)
+  );
+  curPage = 1;
+  renderTable();
+}
+
+/* =========================================================
+   四、抽屉：申请详情（需求文档 13 项字段全覆盖）
+   ========================================================= */
+let curId = null;
+
+function openDrawer(id){
+  curId = id;
+  const d = ADATA.find(x=>x.id===id);
+  const s = stOf(d.progressStatus);
+  const stopped = d.isStopped === 1;
+
+  /* 标题：申请人姓名 + 申请类型 + 申请对象，如「王旭 申请 FDE 岗位」 */
+  document.getElementById('dTitle').textContent = `${d.niuRenName} 申请 ${d.objName}`;
+  document.getElementById('dId').textContent = d.id;
+  document.getElementById('dType').textContent = d.applyType;
+  const stEl = document.getElementById('dStatus');
+  stEl.className = 'status ' + s.c;
+  stEl.textContent = s.t + (stopped ? ' · 已停用' : '');
+
+  document.getElementById('dBody').innerHTML = `
+    <div class="sec">
+      <div class="sec-title">申请人信息</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">申请 ID（id · 主键）</div><div class="v mono">${d.id}</div></div>
+        <div class="kv"><div class="k">申请人（niu_ren_name · 自动关联牛人表）</div><div class="v strong">${nz(d.niuRenName)}</div></div>
+        <div class="kv"><div class="k">性别（gender · 1 男 / 2 女）</div><div class="v">${gText(d.gender)}${d.gender?'　枚举 '+d.gender:''}</div></div>
+        <div class="kv"><div class="k">年龄（age）</div><div class="v strong">${aText(d.age)}</div></div>
+        <div class="kv"><div class="k">牛人 ID（niu_ren_id · 关联 niu_ren.id）</div><div class="v mono">${d.niuRenId}</div></div>
+        <div class="kv"><div class="k">申请类型（apply_type · 项目 / 岗位）</div><div class="v"><span class="tag ${d.applyType==='项目'?'blue':''}">${d.applyType}</span></div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">申请对象</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">申请项目 / 岗位 ID（apply_obj_id · 按 apply_type 指向 project.id 或 job.id）</div><div class="v mono">${d.objId}</div></div>
+        <div class="kv"><div class="k">对象类型</div><div class="v"><span class="obj-type ${d.applyType==='项目'?'prj':'job'}">${d.applyType}</span></div></div>
+        <div class="kv full"><div class="k">项目 / 岗位名称（apply_obj_name · 抓取名称，便于列表与详情直接识别）</div><div class="v strong">${nz(d.objName)}</div></div>
+      </div>
+      <button class="btn btn-sm" style="margin-top:10px" onclick="toast('跳转查看${d.applyType}详情：${d.objId}')">↗ 查看该${d.applyType}详情</button>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">评价内容（evaluation_content）</div>
+      <textarea class="ctrl" readonly style="width:100%;min-height:96px" placeholder="尚无评价内容">${d.evaluation || ''}</textarea>
+      <div class="counter" style="text-align:left;margin-top:6px">${(d.evaluation||'').length} 字</div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">跟进状态</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">评价时间（evaluation_time · 有评价内容时必填）</div><div class="v mono">${nz(d.evaluationTime)}</div></div>
+        <div class="kv"><div class="k">进度状态（progress_status）</div><div class="v"><span class="status ${s.c}">${s.t}</span>　枚举 ${d.progressStatus}</div></div>
+        <div class="kv full"><div class="k">是否停用（is_deleted）</div><div class="v">${
+          stopped
+            ? '<span class="stop-flag">1 · 已停用</span>　逻辑停用，记录仍保留可启用'
+            : '0 · 正常'}</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">跟进轨迹</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="t">提交申请（${d.applyType}：${d.objName}）</div><div class="m">${d.createBy} · ${d.createTime}</div></div>
+        ${d.progressStatus===2 ? `<div class="tl-item"><div class="t">进入「联系中」，企业已与牛人取得联系</div><div class="m">${d.updateBy} · ${d.updateTime}</div></div>` : ''}
+        ${d.progressStatus===3 ? `<div class="tl-item rej"><div class="t">进度状态置为「被拒绝」</div><div class="m">${d.updateBy} · ${d.updateTime}</div></div>` : ''}
+        ${d.progressStatus===1 ? `<div class="tl-item"><div class="t">等待跟进，当前状态：未处理</div><div class="m">已等待 ${Math.max(0, Math.round((new Date('2026/10/19 23:00:00') - new Date(d.createTime.replace(/-/g,'/'))) / 86400000))} 天</div></div>` : ''}
+        ${stopped ? `<div class="tl-item stop"><div class="t">记录被停用（is_deleted → 1）</div><div class="m">${d.updateBy} · ${d.updateTime}</div></div>` : ''}
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">系统信息</div>
+      <div class="grid2">
+        <div class="kv"><div class="k">创建人（create_by · 即申请人）</div><div class="v">${d.createBy}</div></div>
+        <div class="kv"><div class="k">创建时间（create_time）</div><div class="v mono">${d.createTime}</div></div>
+        <div class="kv"><div class="k">更新人（update_by）</div><div class="v">${d.updateBy}</div></div>
+        <div class="kv"><div class="k">更新时间（update_time · 更新时自动刷新）</div><div class="v mono">${d.updateTime}</div></div>
+      </div>
+    </div>`;
+
+  /* ---------- 抽屉底部：按是否停用动态渲染 ---------- */
+  const foot = document.getElementById('dFoot');
+  if(stopped){
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">当前为已停用记录，不可跟进；可点击「启用」恢复</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fClose">关闭</button>
+      <button class="btn btn-primary" id="fEnable">启用记录</button>`;
+    foot.querySelector('#fClose').onclick  = closeDrawer;
+    foot.querySelector('#fEnable').onclick = ()=>doEnable(d.id);
+  }else{
+    foot.innerHTML = `
+      <span style="font-size:12px;color:#8A97A8">跟进将写入进度状态、评价内容与更新时间</span>
+      <div class="spacer"></div>
+      <button class="btn" id="fClose">关闭</button>
+      <button class="btn btn-danger" id="fStop">停用</button>
+      <button class="btn btn-primary" id="fFollow">✓ 跟进申请</button>`;
+    foot.querySelector('#fClose').onclick   = closeDrawer;
+    foot.querySelector('#fStop').onclick    = ()=>toggleStop(d.id,false);
+    foot.querySelector('#fFollow').onclick = ()=>openFollow(d.id,false);
+  }
+
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('drawer').classList.add('show');
+}
+
+function closeDrawer(){
+  document.getElementById('mask').classList.remove('show');
+  document.getElementById('drawer').classList.remove('show');
+}
+
+/* =========================================================
+   五、弹窗：跟进申请 / 停用申请
+   ========================================================= */
+function openFollow(id, isBatch){
+  const targets = isBatch
+    ? ADATA.filter(d=>checked.has(d.id) && !d.isStopped)
+    : [ADATA.find(x=>x.id===id)];
+
+  if(!targets.length){ toast('请先勾选未停用的申请记录'); return; }
+
+  const first = targets[0];
+  const box = document.getElementById('fuStatus').parentElement;
+
+  /* 批量时提示本次处理条数 */
+  document.getElementById('fuContent').value = isBatch ? '' : (first.evaluation || '');
+  document.getElementById('fuChar').textContent = '0';
+  document.getElementById('fuStatus').value = isBatch ? first.progressStatus : String(first.progressStatus);
+  document.getElementById('fuTime').value = '';
+
+  /* 隐藏批量场景下无意义的评价时间预填 */
+  const tField = document.getElementById('fuTime').closest('.field');
+  tField.style.display = isBatch ? 'none' : '';
+
+  box.querySelector('label').innerHTML = isBatch
+    ? `进度状态（progress_status · 本次将更新 ${targets.length} 条记录）`
+    : '进度状态（progress_status）';
+
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('mFollow').classList.add('show');
+  document.getElementById('fuOk').dataset.batch = isBatch ? '1' : '';
+  document.getElementById('fuOk').dataset.id = isBatch ? '' : String(id);
+}
+
+/* 停用 / 启用：直接切换状态，不弹二次确认（与组长设计稿的「停用」一致） */
+function toggleStop(id, isBatch){
+  const targets = isBatch
+    ? ADATA.filter(d=>checked.has(d.id) && !d.isStopped)
+    : [ADATA.find(x=>x.id===id)].filter(Boolean);
+
+  if(!targets.length){ toast('请先勾选未停用的申请记录'); return; }
+
+  targets.forEach(d=>{
+    d.isStopped = 1;
+    d.updateBy = '陈思远';
+    d.updateTime = NOW;
+  });
+
+  if(isBatch){
+    checked.clear();
+    document.getElementById('ckAll').checked = false;
+    toast(`已批量停用 ${targets.length} 条申请记录（逻辑停用，可再次点击启用恢复）`);
+  }else{
+    toast('已停用：申请 ID ' + targets[0].id + '（逻辑停用，可再次点击启用恢复）');
+  }
+  refresh();
+  updateSelTip();
+}
+
+/* 跟进弹窗：字数统计 + 快捷短语 */
+document.getElementById('fuContent').addEventListener('input',e=>{
+  document.getElementById('fuChar').textContent = e.target.value.length;
+});
+document.querySelectorAll('#fuQuick span').forEach(el=>{
+  el.onclick = ()=>{
+    const t = document.getElementById('fuContent');
+    t.value = (t.value + el.textContent + '。').slice(0,500);
+    t.dispatchEvent(new Event('input'));
+  };
+});
+/* 停用弹窗已移除：改为列表内一键切换状态 */
+
+document.getElementById('fuOk').onclick = ()=>{
+  const isBatch = document.getElementById('fuOk').dataset.batch === '1';
+  const status  = Number(document.getElementById('fuStatus').value);
+  const content = document.getElementById('fuContent').value.trim();
+
+  const targets = isBatch
+    ? ADATA.filter(d=>checked.has(d.id) && !d.isStopped)
+    : [ADATA.find(x=>x.id===Number(document.getElementById('fuOk').dataset.id))];
+
+  targets.forEach(d=>{
+    d.progressStatus = status;
+    /* 评价内容与评价时间同存：填了内容才写时间，清空内容同时清空时间 */
+    d.evaluation = content;
+    d.evaluationTime = content ? NOW : '';
+    d.updateBy = '陈思远';
+    d.updateTime = NOW;
+  });
+
+  closeModals();
+  if(isBatch){
+    checked.clear();
+    document.getElementById('ckAll').checked = false;
+    toast(`已批量跟进 ${targets.length} 条申请记录`);
+  }else{
+    toast('已保存跟进：进度状态置为「' + stOf(status).t + '」');
+  }
+  refresh();
+  updateSelTip();
+};
+
+/* 启用：is_deleted 1 → 0（与停用互斥，点击切换状态） */
+function doEnable(id){
+  const d = ADATA.find(x=>x.id===id);
+  if(!d || !d.isStopped) return;
+  d.isStopped = 0;
+  d.updateBy = '陈思远';
+  d.updateTime = NOW;
+  /* 抽屉保持打开并就地重绘，页脚按钮随之切回「停用」 */
+  const wasOpen = document.getElementById('drawer').classList.contains('show');
+  if(!wasOpen) closeDrawer();
+  toast('已启用：申请 ID ' + d.id + '　is_deleted → 0');
+  refresh();
+}
+
+function closeModals(){
+  document.getElementById('mFollow').classList.remove('show');
+  /* 抽屉仍打开时保留遮罩 */
+  if(!document.getElementById('drawer').classList.contains('show')){
+    document.getElementById('mask').classList.remove('show');
+  }
+}
+document.getElementById('fuCancel').onclick  = closeModals;
+
+/* =========================================================
+   六、交互绑定
+   ========================================================= */
+document.getElementById('mask').onclick = ()=>{ closeModals(); closeDrawer(); };
+document.getElementById('dClose').onclick = closeDrawer;
+
+document.getElementById('btn-search').onclick = ()=>{
+  applyFilter();
+  toast('查询完成，共 ' + rows.length + ' 条申请记录');
+};
+document.getElementById('btn-reset').onclick = ()=>{
+  ['f-applicant','f-type','f-status','f-obj','f-from','f-to']
+    .forEach(i=>document.getElementById(i).value='');
+  checked.clear();
+  document.getElementById('ckAll').checked = false;
+  applyFilter();
+  toast('筛选条件已重置');
+};
+document.getElementById('btn-export').onclick = ()=>{
+  if(!rows.length){ toast('当前无可导出的申请记录'); return; }
+  toast('已导出当前 ' + rows.length + ' 条申请记录为 Excel');
+};
+document.getElementById('btn-batch-follow').onclick = ()=>openFollow(null,true);
+document.getElementById('ckAll').onchange = e=>{
+  checked.clear();
+  const start = (curPage - 1) * PAGE_SIZE;
+  const ids = rows.slice(start, start + PAGE_SIZE)
+                .filter(d => !d.isStopped)          /* 已停用记录不可勾选 */
+                .map(d => d.id);
+  if(e.target.checked) ids.forEach(i => checked.add(i));
+  renderTable();
+};
+
+/* 菜单切换（与主设计稿保持一致的占位逻辑） */
+const PAGES = {
+  company:   {name:'企业',       desc:'企业档案与认证审核。'},
+  contact:   {name:'企业联系人', desc:'企业下联系人、账号与权限管理。'},
+  daka:      {name:'大咖',       desc:'专家 / 牛人档案、认证与服务记录管理。'},
+  career:    {name:'职业规划',   desc:'职业测评题库、规划方案模板与结果统计。'},
+  job:       {name:'岗位管理',   desc:'岗位发布、上下架与违规审核。'},
+  project:   {name:'项目大厅',   desc:'项目需求发布、撮合进度与结算状态。'},
+  course:    {name:'就业课程',   desc:'课程、班级、学员与学习进度管理。'},
+  org:       {name:'机构管理',   desc:'合作机构入驻资料与资质审核。'},
+  apply:     {name:'申请管理',   desc:'牛人对项目 / 岗位的申请与后续跟进（当前页）。'},
+  complaint: {name:'投诉处理',   desc:'用户投诉工单受理、流转与结案。'},
+  sysconf:   {name:'系统配置',   desc:'站点名称、Logo、备案信息与审批流程开关等全局参数。'},
+  dict:      {name:'字典管理',   desc:'company_type / staff_size / area 等字典枚举值维护。'}
+};
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.onclick = ()=>{
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+    const p = el.dataset.page, meta = PAGES[p] || {name:'—',desc:''};
+    document.getElementById('crumbNow').textContent = meta.name;
+    const isApply = p === 'apply';
+    document.getElementById('page-apply').style.display = isApply ? 'block' : 'none';
+    const ph = document.getElementById('page-ph');
+    ph.style.display = isApply ? 'none' : 'block';
+    if(!isApply){
+      document.getElementById('ph-title').textContent = meta.name;
+      document.getElementById('ph-desc').textContent = meta.desc;
+    }
+  };
+});
+
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+renderHead();
+applyFilter();
+</script>
+<script id="ui-kit-js">
+/* ============ 统一交互层：弹窗右上角 × / 通用审核抽屉 ============ */
+(function(){
+  function closeLayer(el){
+    if(el) el.classList.remove('show');
+    document.querySelectorAll('.mask').forEach(function(m){ m.classList.remove('show'); });
+    document.body.classList.remove('drawer-open');
+  }
+  window.ukClose = closeLayer;
+
+  function bindClose(btn, scope){
+    btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); closeLayer(scope); });
+  }
+
+  document.querySelectorAll('.modal, .fmodal').forEach(function(m){
+    var head = m.querySelector('.m-head') || m.querySelector('.fm-head') || m.querySelector('.f-head');
+    if(head && !head.querySelector('.m-close, .fm-close, .d-close')){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'm-close'; b.setAttribute('aria-label','关闭');
+      b.innerHTML = '&times;';
+      bindClose(b, m);
+      head.appendChild(b);
+      return;
+    }
+    if(!head && !m.querySelector('.m-close, .fm-close')){
+      var b2 = document.createElement('button');
+      b2.type = 'button'; b2.className = 'm-close abs'; b2.setAttribute('aria-label','关闭');
+      b2.innerHTML = '&times;';
+      bindClose(b2, m);
+      m.appendChild(b2);
+    }
+  });
+
+  /* ---------- 通用审核抽屉（各页面「审核」操作统一使用） ---------- */
+  var built = false, panel, mask;
+  function build(){
+    if(built) return; built = true;
+    mask = document.createElement('div'); mask.className = 'mask'; mask.id = 'ukAuditMask';
+    panel = document.createElement('aside'); panel.className = 'drawer'; panel.id = 'ukAuditDrawer';
+    panel.innerHTML = '<div class="d-head"><div><div class="d-title" id="ukTitle">审核</div>'
+      + '<div class="d-sub" id="ukSub">—</div></div>'
+      + '<button class="d-close" id="ukClose" aria-label="关闭">&times;</button></div>'
+      + '<div class="d-body"><div class="sec"><div class="sec-title">基本信息</div><div class="grid2" id="ukGrid"></div></div>'
+      + '<div class="sec"><div class="sec-title">审核意见</div>'
+      + '<textarea class="ctrl" id="ukNote" maxlength="200" style="height:100px;padding:10px 12px;resize:vertical" placeholder="请填写审核意见（驳回时必填）"></textarea></div></div>'
+      + '<div class="d-foot"><span style="font-size:12px;color:var(--muted)">审核结果将同步至列表状态</span><div class="spacer" style="flex:1"></div>'
+      + '<button class="btn" id="ukReject">驳回</button><button class="btn btn-primary" id="ukPass">审核通过</button></div>';
+    document.body.appendChild(mask); document.body.appendChild(panel);
+    document.getElementById('ukClose').onclick = function(){ closeLayer(panel); };
+    mask.onclick = function(){ closeLayer(panel); };
+    document.getElementById('ukPass').onclick = function(){ closeLayer(panel); if(window.toast) toast('审核通过，状态已更新'); };
+    document.getElementById('ukReject').onclick = function(){
+      var n = document.getElementById('ukNote').value.trim();
+      if(!n){ if(window.toast) toast('请填写驳回原因'); return; }
+      closeLayer(panel); if(window.toast) toast('已驳回，状态已更新');
+    };
+  }
+  window.ukAudit = function(opt){
+    build();
+    opt = opt || {};
+    document.getElementById('ukTitle').textContent = opt.title || '审核';
+    document.getElementById('ukSub').innerHTML = opt.sub || '—';
+    document.getElementById('ukNote').value = '';
+    document.getElementById('ukNote').parentNode.style.display = '';
+    document.getElementById('ukReject').style.display = '';
+    var passBtn = document.getElementById('ukPass');
+    passBtn.textContent = '审核通过';
+    passBtn.onclick = function(){ closeLayer(panel); if(window.toast) toast('审核通过，状态已更新'); };
+    document.getElementById('ukGrid').innerHTML = (opt.fields || []).map(function(f){
+      return '<div class="kv' + (f.full ? ' full' : '') + '"><div class="k">' + f[0] + '</div><div class="v">' + f[1] + '</div></div>';
+    }).join('');
+    mask.classList.add('show'); panel.classList.add('show');
+  };
+
+  function rowFields(tr){
+    var ths = tr.closest('table').querySelectorAll('thead th');
+    var tds = tr.children, fields = [];
+    for(var i = 0; i < tds.length; i++){
+      var label = ths[i] ? ths[i].textContent.trim() : '';
+      if(!label || label === '操作' || tds[i].querySelector('input[type=checkbox]')) continue;
+      var val = tds[i].innerText.replace(/\s+/g, ' ').trim();
+      if(val) fields.push([label, val]);
+    }
+    return fields;
+  }
+
+  /* 详情抽屉：通用字段展示 */
+  window.ukDetail = function(opt){
+    build();
+    opt = opt || {};
+    document.getElementById('ukTitle').textContent = opt.title || '详情';
+    document.getElementById('ukSub').innerHTML = opt.sub || '—';
+    document.getElementById('ukNote').parentNode.style.display = 'none';
+    document.getElementById('ukGrid').innerHTML = (opt.fields || []).map(function(f){
+      return '<div class="kv' + (f.full ? ' full' : '') + '"><div class="k">' + f[0] + '</div><div class="v">' + f[1] + '</div></div>';
+    }).join('');
+    document.getElementById('ukReject').style.display = 'none';
+    document.getElementById('ukPass').textContent = '关闭';
+    document.getElementById('ukPass').onclick = function(){ closeLayer(panel); };
+    mask.classList.add('show'); panel.classList.add('show');
+  };
+  window.ukDetailFromRow = function(tr, title){
+    if(!tr) return;
+    var fields = rowFields(tr);
+    window.ukDetail({ title: title || '详情', sub: '字段信息汇总', fields: fields });
+  };
+
+  /* 从当前行读取展示字段，供「审核」操作直接使用 */
+  window.ukAuditFromRow = function(tr, title){
+    if(!tr) return;
+    var fields = rowFields(tr);
+    var first = fields.length ? fields[0][1] : '';
+    window.ukAudit({ title: title || ('审核 · ' + first), sub: '请核对以下信息后提交审核结果', fields: fields });
+  };
+})();
+</script>
+
+<script id="ui-kit-js3">
+(function(){
+  if(document.getElementById('ukMask')) return;
+  var mask=document.createElement('div');mask.className='uk-mask';mask.id='ukMask';
+  var conf=document.createElement('div');conf.className='uk-dlg';conf.id='ukConf';
+  conf.innerHTML='<div class="uk-h">批量删除</div><div class="uk-b">确定删除选中的 <b id="ukN">0</b> 条记录吗？删除后不可恢复。</div>'+
+    '<div class="uk-f"><button class="btn" id="ukNo">取消</button><button class="btn btn-danger" id="ukYes">确认删除</button></div>';
+  var imp=document.createElement('div');imp.className='uk-dlg';imp.id='ukImp';
+  imp.innerHTML='<div class="uk-h">批量导入</div><div class="uk-b"><div class="uk-drop" id="ukDrop">将 Excel / CSV 文件拖拽到这里，或 <a href="javascript:;">点击选择文件</a>'+
+    '<div class="uk-file" id="ukFile">未选择文件</div></div><div class="uk-tip">支持 .xlsx / .xls / .csv，单次上限 5000 行 · <a href="javascript:;">下载导入模板</a></div></div>'+
+    '<div class="uk-f"><button class="btn" id="ukImpNo">取消</button><button class="btn btn-primary" id="ukImpYes">开始导入</button></div>';
+  document.body.appendChild(mask);document.body.appendChild(conf);document.body.appendChild(imp);
+
+  function say(m){
+    if(typeof window.toast==='function'){try{window.toast(m);return;}catch(e){}}
+    var t=document.createElement('div');
+    t.style.cssText='position:fixed;left:50%;top:32px;transform:translateX(-50%);background:#101828;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:999';
+    t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove();},1800);
+  }
+  function sel(){
+    return [].slice.call(document.querySelectorAll('table tbody input[type=checkbox]:checked'))
+      .map(function(c){return c.closest('tr');}).filter(Boolean);
+  }
+  function closeAll(){mask.classList.remove('show');conf.classList.remove('show');imp.classList.remove('show');}
+  mask.onclick=closeAll;
+
+  var pend=[];
+  document.getElementById('ukNo').onclick=closeAll;
+  document.getElementById('ukYes').onclick=function(){
+    var n=pend.length;
+    pend.forEach(function(tr){
+      var id=tr.getAttribute('data-id');
+      if(id){var k=document.querySelectorAll('table tbody tr[data-id="'+id+'"]');for(var i=0;i<k.length;i++)k[i].remove();}
+      else tr.remove();
+    });
+    closeAll();
+    [].forEach.call(document.querySelectorAll('tbody input[type=checkbox]'),function(c){c.checked=false;});
+    var all=document.getElementById('ckAll');if(all)all.checked=false;
+    say('已删除 '+n+' 条记录');
+  };
+  document.getElementById('ukImpNo').onclick=closeAll;
+  document.getElementById('ukImpYes').onclick=function(){
+    closeAll();say('批量导入已提交，导入完成后可在列表中查看结果');
+  };
+  document.getElementById('ukDrop').onclick=function(){
+    document.getElementById('ukFile').textContent='企业批量导入模板.xlsx';
+  };
+
+  document.querySelectorAll('[data-batch]').forEach(function(b){
+    var act=b.getAttribute('data-batch');
+    if(act==='delete'){
+      b.onclick=function(){
+        pend=sel();
+        if(!pend.length){say('请先勾选要删除的记录');return;}
+        document.getElementById('ukN').textContent=pend.length;
+        mask.classList.add('show');conf.classList.add('show');
+      };
+    }else if(act==='export'){
+      if(!b.onclick) b.onclick=function(){
+        var n=sel().length;
+        say('已导出 '+(n||'全部')+' 条记录（Excel）');
+      };
+    }else if(act==='import'){
+      if(!b.onclick) b.onclick=function(){mask.classList.add('show');imp.classList.add('show');};
+    }
+  });
+})();
+</script>
+<!-- ===== 无跳转菜单切换：双 iframe 预载 + 淡入，切换只换内容不重载窗口 ===== -->
+<script id="nav-smooth">
+(function(){
+  var EMBED = /[?&]embed=1/.test(location.search);
+  var stage = null, frames = [], active = -1, busy = false, timer = null, pending = null;
+
+  if (EMBED) {
+    /* 被外层 iframe 承载：外层负责 110% 缩放，内层回到 1 倍并修正 vh 补偿 */
+    document.documentElement.setAttribute('data-embed', '1');
+    document.documentElement.style.zoom = '1';
+    var st = document.createElement('style');
+    st.textContent = 'html[data-embed] body,html[data-embed] .layout,html[data-embed] .sidebar{min-height:100vh!important}';
+    (document.head || document.documentElement).appendChild(st);
+  }
+
+  function sizeStage(){
+    var z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    var de = document.documentElement;
+    var vw = de.clientWidth  || window.innerWidth;
+    var vh = de.clientHeight || window.innerHeight;
+    stage.style.width  = (vw / z) + 'px';
+    stage.style.height = (vh / z) + 'px';
+  }
+
+  function build(){
+    stage = document.createElement('div');
+    stage.id = '__navStage';
+    stage.style.cssText = 'position:fixed;top:0;left:0;z-index:2147483000;background:#F1F3F7;' +
+                         'visibility:hidden;';
+    for (var i = 0; i < 2; i++) {
+      var f = document.createElement('iframe');
+      f.setAttribute('title', '内容页');
+      f.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:0;background:#F1F3F7;' +
+                        'opacity:0;visibility:hidden;pointer-events:none;';
+      stage.appendChild(f);
+      frames.push(f);
+    }
+    document.body.appendChild(stage);
+    document.documentElement.style.overflow = 'hidden';
+    sizeStage();
+    window.addEventListener('resize', sizeStage);
+    window.addEventListener('message', function(ev){
+      var d = ev.data || {};
+      if (d.__dakaNav) load(d.__dakaNav, d.__dakaTitle);
+    });
+  }
+
+  function load(href, title){
+    if (!stage) build();
+    if (busy) { pending = { href: href, title: title }; return; }
+    busy = true;
+    var idx = active === 0 ? 1 : 0;
+    var f = frames[idx];
+    var done = false;
+    function show(){
+      if (done) return;
+      done = true; busy = false;
+      sizeStage();
+      stage.style.visibility = 'visible';
+      clearTimeout(timer);
+      var nf = frames[idx];
+      /* 先让旧帧瞬间离场，再整块换上 New 帧：两帧永不同时可见，杜绝叠影 */
+      frames.forEach(function(x, i){
+        if (i === idx) return;
+        x.style.opacity = '0';
+        x.style.visibility = 'hidden';
+        x.style.pointerEvents = 'none';
+      });
+      nf.style.visibility = 'visible';
+      nf.style.opacity = '1';
+      nf.style.pointerEvents = 'auto';
+      active = idx;
+      if (title) document.title = title + ' · DAKA · 云管理平台';
+      if (pending) { var p = pending; pending = null; setTimeout(function(){ load(p.href, p.title); }, 0); }
+    }
+    f.onload = function(){ requestAnimationFrame(show); };
+    timer = setTimeout(show, 6000);
+    f.src = href + (href.indexOf('?') > -1 ? '&' : '?') + 'embed=1';
+  }
+
+  document.addEventListener('click', function(e){
+    var a = e.target && e.target.closest ? e.target.closest('a.nav-item') : null;
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (!href || href.charAt(0) === '#') return;
+    e.preventDefault();
+    var title = (a.textContent || '').replace(/\s+/g, ' ').trim();
+    if (EMBED) {
+      try { parent.postMessage({__dakaNav: href, __dakaTitle: title}, '*'); } catch(err){}
+    } else {
+      load(href, title);
+    }
+    document.querySelectorAll('a.nav-item').forEach(function(x){ x.classList.remove('active'); });
+    a.classList.add('active');
+  }, true);
+})();
+</script>
+<script>
+/* 侧边栏已统一为真实 <a> 链接：清除旧版 data-page 拦截，避免弹出「页原型尚未产出」误提示 */
+(function(){
+  var as = document.querySelectorAll('a.nav-item');
+  for (var i = 0; i < as.length; i++) as[i].onclick = null;
+})();
+</script>
+</body>
+</html>
