@@ -1288,6 +1288,25 @@
   .km .k-l{font-size:11.5px;color:var(--muted)}
   .km .k-v{font-size:20px;font-weight:800;margin-top:4px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
   .km .k-s{font-size:11px;color:var(--muted);margin-top:3px}
+
+  /* 我的课程：报名记录卡片（学习中 / 已结业 两条色带） */
+  .mc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:16px}
+  .mc-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-sm);display:flex;flex-direction:column}
+  .mc-band{padding:14px 18px;color:#fff;position:relative;min-height:64px;display:flex;align-items:center}
+  .mc-band.learn{background:linear-gradient(120deg,#1657F0,#2E7CFF)}
+  .mc-band.done{background:linear-gradient(120deg,#0E8A5F,#12A150)}
+  .mc-band .mc-badge{position:absolute;right:14px;top:12px;height:22px;padding:0 10px;border-radius:11px;background:rgba(255,255,255,.22);font-size:11px;display:inline-flex;align-items:center}
+  .mc-band .mc-t{font-size:16px;font-weight:700;line-height:1.45;padding-right:80px}
+  .mc-body{padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .mc-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .mc-meta .dot{width:3px;height:3px;border-radius:50%;background:#C6CFDB;display:inline-block}
+  .mc-cls{font-size:12.5px;color:var(--text-2)}
+  .mc-prog{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .mc-prog b{color:var(--blue-600);font-weight:700}
+  .mc-next{font-size:12px;color:var(--text-2);background:var(--blue-50);border-radius:8px;padding:8px 10px}
+  .mc-card.is-done .mc-next{background:#EAF9F1;color:#0E8A5F}
+  .mc-acts{display:flex;gap:8px;margin-top:auto;padding-top:4px;flex-wrap:wrap}
+  @media(max-width:1180px){.mc-grid{grid-template-columns:1fr}}
   .km.blue .k-v{color:var(--blue-600)}
   .km.green .k-v{color:var(--green)}
   .km.amber .k-v{color:var(--amber)}
@@ -1435,14 +1454,6 @@
       <span class="role-chip" id="roleChip"><span class="r-dot"></span><span id="roleChipTxt">企业端 · 全部管理权限</span></span>
       <div class="spacer"></div>
       <div class="top-actions">
-        <button class="icon-btn" id="btnMsg" title="消息通知">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 15.4V10.8a6 6 0 1 0-12 0v4.6L4.6 18h14.8L18 15.4Z"/>
-            <path d="M9.6 20.6a2.6 2.6 0 0 0 4.8 0"/>
-          </svg>
-          <span class="dot" id="msgDot">3</span>
-        </button>
-        <span class="v-line"></span>
         <div class="profile" id="btnProfile">
           <span class="avatar" id="pfAvatar">云</span>
           <span class="p-info">
@@ -2432,16 +2443,13 @@ function doEnter(role){
 const ROLES = {
   person:{ key:'person', label:'求职者', short:'个人端',
     chip:'求职者 · 找机会与成长',
-    who:{ name:'王旭', role:'求职中 · AI 产品经理', avatar:'王', crumb:'求职者' },
-    dot:5 },
+    who:{ name:'王旭', role:'求职中 · AI 产品经理', avatar:'王', crumb:'求职者' } },
   company:{ key:'company', label:'企业', short:'企业端',
     chip:'企业 · 招人、发包与采购',
-    who:{ name:'云启科技', role:'企业管理员 · 已认证', avatar:'云', crumb:'企业' },
-    dot:3 },
+    who:{ name:'云启科技', role:'企业管理员 · 已认证', avatar:'云', crumb:'企业' } },
   sp:{ key:'sp', label:'服务商', short:'服务商端',
     chip:'服务商 · 提供服务与承接',
-    who:{ name:'深圳智远 AI 咨询', role:'服务机构 · 已认证', avatar:'智', crumb:'服务商' },
-    dot:4 }
+    who:{ name:'深圳智远 AI 咨询', role:'服务机构 · 已认证', avatar:'智', crumb:'服务商' } }
 };
 
 const PERM = {
@@ -2449,15 +2457,15 @@ const PERM = {
     'job','project','outs','consult','train','coach','career','intern',
     /* 求职者也可以作为甲方发布项目外包 → 开放「项目外包管理」发布端界面 */
     'projectManage',
-    'resume','applyP','myCourse','order','interview','complaint','setting'
+    /* 个人端不展示「工单与交易 → 订单中心」 */
+    'resume','applyP','myCourse','interview','complaint','setting'
   ],
   company:[
-    /* 企业端不展示 AI培训 / AI私教 / AI职业规划，也不展示 AI培训管理 / AI实习管理 */
-    'job','project','outs','consult','intern',
+    /* 企业端不展示 岗位招聘 / 数智化资讯 / AI实习，也不展示 面试管理 / 工单中心 / 订单中心 */
+    'project','outs',
     'certEnt',
     'jobManage','projectManage','outsManage',
-    'applyE','interview',
-    'ticket','order',
+    'applyE',
     'complaint','setting'
   ],
   sp:[
@@ -2478,7 +2486,6 @@ function applyRoleUI(){
   $('pfAvatar').textContent = r.who.avatar;
   $('pfName').textContent = r.who.name;
   $('pfRole').textContent = r.who.role;
-  $('msgDot').textContent = r.dot;
 }
 /* 详情页（无独立菜单，从列表进入）不受菜单权限限制 */
 const DETAIL_PAGES = ['candidate','bidDetail','teacher'];
@@ -2606,6 +2613,16 @@ const CO_LABEL = {job:'企业',outs:'用工企业',intern:'实习企业',train:'
 function modKV(m,k){ return state.fv[m.key] ? state.fv[m.key][k] : ''; }
 
 /* ================================================================
+   申请动作：个人端按模块投递 / 报名；企业端在「项目外包 / 岗位外包」
+   上以承接方身份提交承接申请（其余模块企业不出现申请按钮）
+   ================================================================ */
+const COMPANY_APPLY = { project:'申请承接', outs:'申请承接' };
+function isCompanyApply(m){ return state.acting==='company' && !!COMPANY_APPLY[m.baseKey||m.key]; }
+function canApply(m){ return state.role!=='company' || !!COMPANY_APPLY[m.baseKey||m.key]; }
+function applyLabel(m){ return isCompanyApply(m) ? COMPANY_APPLY[m.baseKey||m.key] : m.personCta; }
+function applyDoneLabel(m){ return isCompanyApply(m) ? '已申请' : m.personDone; }
+
+/* ================================================================
    可投递状态：核心业务（展示页）只展示这些状态的记录
    · 草稿 / 待审核 / 对接中 / 已驳回 / 已停用 / 已过期 / 已关闭 均不展示
    · 项目外包的可投递状态是「招募中」(1)，其余模块是「招聘中 / 报名中 / 服务中」(2)
@@ -2650,7 +2667,7 @@ function renderCorePage(m){
   const isManage = !!m.isManage;                            /* 功能管理：企业发布页 */
   /* 核心业务（8 模块）= 只浏览 + 投递：屏蔽企业端发布/编辑/停用/删除 */
   const showEnt = isManage ? true : false;                   /* 企业端管理动作 */
-  const showPer = isManage ? false : state.role!=='company';  /* 求职端动作：浏览 / 投递 */
+  const showPer = isManage ? false : canApply(m);              /* 浏览 / 投递（企业端仅项目外包、岗位外包可申请承接） */
   const box = $('pageBox');
 
   box.innerHTML = `
@@ -2842,7 +2859,7 @@ function syncSelTip(m){
 function renderCards(m, rows){
   const box = $('mCards');
   const showEnt = m.isManage ? true : false;
-  const showPer = m.isManage ? false : state.role!=='company';
+  const showPer = m.isManage ? false : canApply(m);
 
   if(!rows.length){
     box.innerHTML = `<div class="cards-empty">
@@ -2951,7 +2968,8 @@ function bizCard(m,r,showEnt,showPer){
         ? `<button class="btn btn-sm ${(r.status===1||r.status===2)?'act-stop':'act-on'}" data-act="toggle" ${(r.status===3||r.status===5)?'disabled':''}>${(r.status===1||r.status===2)?'停用':'启用'}</button><button class="btn btn-sm" data-act="view">查看详情</button><button class="btn btn-sm btn-primary" style="height:30px" data-act="edit">${m.editBtn}</button>`
         : `<button class="btn btn-sm ${r.status===4?'act-on':'act-stop'}" data-act="toggle">${r.status===4?'启用':'停用'}</button><button class="btn btn-sm" data-act="view">查看详情</button><button class="btn btn-sm btn-primary" style="height:30px" data-act="edit">${m.editBtn}</button>`));
   const perAct = (showPer && !isDraft)
-    ? `<button class="btn btn-sm btn-primary" style="height:30px" data-act="apply" ${applied?'disabled':''}>${applied?m.personDone:m.personCta}</button>`
+    ? `<button class="btn btn-sm" data-act="view">查看详情</button>`
+      + `<button class="btn btn-sm btn-primary" style="height:30px" data-act="apply" ${applied?'disabled':''}>${applied?applyDoneLabel(m):applyLabel(m)}</button>`
     : '';
   const acts = entActs + perAct;
 
@@ -2996,7 +3014,7 @@ function bindCardActs(m, box){
 /* ---------- 合并表格 ---------- */
 function renderTable(m, rows){
   const showEnt = m.isManage ? true : false;
-  const showPer = m.isManage ? false : state.role!=='company';
+  const showPer = m.isManage ? false : canApply(m);
   const tb = $('mTbody');
   if(!rows.length){
     tb.innerHTML = `<tr><td colspan="12"><div class="empty-state"><b>没有符合条件的${m.noun}</b><span>试试调整关键词或筛选条件，也可以点「重置」查看全部</span></div></td></tr>`;
@@ -3150,11 +3168,12 @@ function actApply(m,r){
 /* ================================================================
    10. 详情抽屉（双端合并字段）
    ================================================================ */
-function openDrawer(m,r){
+function openDrawer(m,r,opt){
+  opt = opt || {};
   const st = m.statusMap[r.status];
   $('dTitle').textContent = r.title;
   const showEnt = m.isManage ? true : false;
-  const showPer = m.isManage ? false : state.role!=='company';
+  const showPer = m.isManage ? false : canApply(m);
   const applied = isApplied(m,r);
 
   let sub, body;
@@ -3253,8 +3272,8 @@ function openDrawer(m,r){
   const footActs = (showEnt
       ? `<button class="btn" data-dact="toggle">${r.status===4?'启用':'停用'}</button><button class="btn btn-primary" data-dact="edit">${m.editBtn}</button>`
       : '')
-    + (showPer && r.status!==0
-      ? `<button class="btn btn-primary" data-dact="apply" ${applied?'disabled':''}>${applied?m.personDone:m.personCta}</button>`
+    + (showPer && !opt.noCta && r.status!==0
+      ? `<button class="btn btn-primary" data-dact="apply" ${applied?'disabled':''}>${applied?(opt.ctaDone||applyDoneLabel(m)):(opt.cta||applyLabel(m))}</button>`
       : '');
   $('dFoot').innerHTML =
     `<span class="hint">${(r.views||0)} 次浏览 · ${(r.applies||0)} 人已申请</span><span class="spacer"></span>${footActs}`;
@@ -3265,7 +3284,7 @@ function openDrawer(m,r){
       if(act==='toggle') actToggle(m,r);
       else if(act==='edit'){ closeDrawer(); openPublish(m,r); }
       else if(act==='apply') actApply(m,r);
-      if(act==='apply'||act==='toggle') setTimeout(()=>{ if($('drawer').classList.contains('show')) openDrawer(m,r); }, 260);
+      if(act==='apply'||act==='toggle') setTimeout(()=>{ if($('drawer').classList.contains('show')) openDrawer(m,r,opt); }, 260);
     });
   });
 
@@ -3589,37 +3608,46 @@ function gwRenderPanel(){
   GW.pct = Math.round(got.length / GW_DIMS.length * 100);
 }
 /* ----------------------------------------------------------------
-   报告 · 3 个匹配岗位
-   指向「岗位招聘」中的真实记录，点击可直接进入岗位详情并投递
+   报告 · 3 门匹配课程
+   指向「AI培训」中的真实课程，点击可查看课程详情并报名
    ---------------------------------------------------------------- */
 const GW_MATCH = [
-  {id:'J-8801',   match:90, tag:'首选', why:'4 年 B 端产品 + AI 应用落地，需求拆解与 PRD 已达标'},
-  {id:'J-200339', match:82, tag:'推荐', why:'技术理解与方案表达可迁移，架构与政企经验待补'},
-  {id:'J-8808',   match:76, tag:'推荐', why:'提示词与效果评测有实操，可直接迁移到企业场景'}
+  {id:'T-9305', match:92, tag:'首选', why:'补齐 Agent 编排与工具调用，线上直播不耽误上班'},
+  {id:'T-9306', match:85, tag:'推荐', why:'强化指标体系与自动报表，直接补足数据决策短板'},
+  {id:'T-9302', match:76, tag:'推荐', why:'短周期见效，先带动团队把 AI 用起来，再反哺产品设计'}
 ];
-function gwMatchJobs(){
-  const jm = CORE.find(x=>x.key==='job');
-  if(!jm) return [];
+function gwMatchCourses(){
+  const tm = CORE.find(x=>x.key==='train');
+  if(!tm) return [];
   return GW_MATCH.map(g=>{
-    const r = jm.records.find(x=>x.id===g.id);
+    const r = tm.records.find(x=>x.id===g.id);
     return r ? {r:r, match:g.match, tag:g.tag, why:g.why} : null;
   }).filter(Boolean);
 }
+function gwTf(r,k){
+  const hit = (r.tfacts||[]).find(p=>p[0]===k);
+  return hit ? hit[1] : '';
+}
 function gwReportHTML(){
-  const jobs = gwMatchJobs();
-  const top = jobs.length ? jobs[0].match : 90;
-  const jobsHtml = jobs.map((j,i)=>
-    '<div class="gw-job" data-gwjob="'+esc(j.r.id)+'" title="查看岗位详情">'
-    + '<div class="gj-rank">'+(i+1)+'</div>'
-    + '<div class="gj-main">'
-    +   '<div class="gj-t">'+esc(j.r.title)
-    +     '<span class="tag blue" style="font-size:10px;padding:1px 7px">'+j.tag+'</span></div>'
-    +   '<div class="gj-m">'+esc(j.r.co)+' · '+esc(j.r.city)+' · '+esc(j.r.exp)+' · '+esc(j.r.salary||'面议')+'</div>'
-    +   '<div class="gj-why">匹配理由：'+esc(j.why)+'</div>'
-    + '</div>'
-    + '<div class="gj-right"><div class="gj-match">'+j.match+'%</div>'
-    +   '<div class="gj-go">查看岗位 ›</div></div>'
-    + '</div>').join('');
+  const list = gwMatchCourses();
+  const top = list.length ? list[0].match : 90;
+  const listHtml = list.map((j,i)=>{
+    const r = j.r;
+    const start = gwTf(r,'开课');
+    const price = gwTf(r,'价格');
+    const meta = [r.co, start ? start+' 开课' : '', price].filter(Boolean).join(' · ');
+    return '<div class="gw-job" data-gwcourse="'+esc(r.id)+'" title="查看课程详情">'
+      + '<div class="gj-rank">'+(i+1)+'</div>'
+      + '<div class="gj-main">'
+      +   '<div class="gj-t">'+esc(r.title)
+      +     '<span class="tag blue" style="font-size:10px;padding:1px 7px">'+j.tag+'</span></div>'
+      +   '<div class="gj-m">'+esc(meta)+'</div>'
+      +   '<div class="gj-why">推荐理由：'+esc(j.why)+'</div>'
+      + '</div>'
+      + '<div class="gj-right"><div class="gj-match">'+j.match+'%</div>'
+      +   '<div class="gj-go">报名课程 ›</div></div>'
+      + '</div>';
+  }).join('');
 
   return '<div class="gw-rep">'
     + '<div class="gw-rep-head">'
@@ -3628,21 +3656,21 @@ function gwReportHTML(){
     + '</div>'
     + '<div class="gw-rep-body">'
     +   '<div class="gw-text">你的画像指向同一个方向：<b>技术背景 + 4 年 B 端产品 + AI 应用落地</b>。'
-    +     '下面是 3 个最匹配的岗位，点开即可查看岗位详情，并直接投递。</div>'
+    +     '针对数据决策与行业纵深两块短板，下面 3 门课程匹配度最高，点开可看课程详情并直接报名。</div>'
     +   '<div class="gw-stats">'
     +     '<div class="gw-stat"><div class="gv">'+top+'%</div><div class="gl">最高匹配度</div></div>'
-    +     '<div class="gw-stat"><div class="gv">'+jobs.length+' 个</div><div class="gl">匹配岗位</div></div>'
-    +     '<div class="gw-stat"><div class="gv">12 周</div><div class="gl">建议补齐周期</div></div>'
+    +     '<div class="gw-stat"><div class="gv">'+list.length+' 门</div><div class="gl">匹配课程</div></div>'
+    +     '<div class="gw-stat"><div class="gv">8 周</div><div class="gl">建议学习周期</div></div>'
     +   '</div>'
-    +   '<div class="gw-sec-t" style="margin-top:16px">推荐岗位<span class="st-sub">按匹配度排序 · 点击卡片查看岗位详情</span></div>'
-    +   (jobsHtml || '<div class="gw-hintbox">暂无可匹配的在招岗位。</div>')
+    +   '<div class="gw-sec-t" style="margin-top:16px">推荐课程<span class="st-sub">按匹配度排序 · 点击卡片查看课程详情</span></div>'
+    +   (listHtml || '<div class="gw-hintbox">暂无可推荐的课程。</div>')
     +   '<div class="gw-sec-t" style="margin-top:16px">下一步建议<span class="st-sub">主要缺口：数据驱动决策、商业 / 行业纵深</span></div>'
     +   '<div class="gw-text" style="line-height:2">'
     +     '· 把「投递转化率 +23%」拆成可复用的指标体系与实验设计，沉淀 1 套归因框架；<br>'
     +     '· 补齐 RAG / Agent 的效果评测方法，输出 1 套评测集与 1 份效果对比结论；<br>'
     +     '· 选 1 个非 SaaS 行业做完整需求调研，形成 1 份行业方案与商业化故事。'
     +   '</div>'
-    +   '<div class="gw-hintbox">结论基于你的简历与本次对话生成，仅供方向参考；推荐岗位来自平台在招职位，点击可直接投递。</div>'
+    +   '<div class="gw-hintbox">结论基于你的简历与本次对话生成，仅供方向参考；推荐课程来自平台在售课程，点击可直接报名。</div>'
     + '</div>'
     + '<div class="gw-rep-foot">'
     +   '<span class="hf">想换个方向或补充信息，可以重新评估</span>'
@@ -3725,19 +3753,19 @@ function gwAnswer(text){
 function gwFinish(){
   GW.done = true;
   gwSay('所有关键信息都齐了 ✅ 我正在把简历解析结果与您刚才的回答做交叉计算…')
-    .then(()=> gwSay('方案已生成。核心结论是：您的画像<b>「技术背景 + B 端产品 + AI 应用落地」三重叠加</b>，在 AI 产品方向上有明显优势，短板集中在数据决策与行业纵深。我按匹配度挑了 3 个岗位 👇'))
+    .then(()=> gwSay('方案已生成。核心结论是：您的画像<b>「技术背景 + B 端产品 + AI 应用落地」三重叠加</b>，在 AI 产品方向上有明显优势，短板集中在数据决策与行业纵深。我按匹配度挑了 3 门课程 👇'))
     .then(()=>{
       const wrap = document.createElement('div');
       wrap.className = 'gw-msg ai gw-wide';
       wrap.innerHTML = '<div class="gw-av">AI</div><div style="min-width:0;width:100%">'+gwReportHTML()+'</div>';
       $('gwMsgs').appendChild(wrap);
       gwScrollTo(wrap);
-      /* 推荐岗位：点卡片进入岗位详情（可直接投递） */
-      wrap.querySelectorAll('[data-gwjob]').forEach(el=>{
+      /* 推荐课程：点卡片进入课程详情，底部按钮为「报名课程」 */
+      wrap.querySelectorAll('[data-gwcourse]').forEach(el=>{
         el.addEventListener('click', ()=>{
-          const jm = CORE.find(x=>x.key==='job');
-          const rec = jm && jm.records.find(x=>x.id === el.dataset.gwjob);
-          if(rec) openDrawer(jm, rec);
+          const tm = CORE.find(x=>x.key==='train');
+          const rec = tm && tm.records.find(x=>x.id === el.dataset.gwcourse);
+          if(rec) openDrawer(tm, rec, {cta:'报名课程', ctaDone:'已报名'});
         });
       });
       const rst = $('gwRestart2');
@@ -3752,17 +3780,10 @@ function renderAiPlanPage(){
     <div class="page-head">
       <div>
         <div class="page-title">AI职业规划</div>
-        <div class="page-desc">提交个人背景与职业诉求 · 预约职业顾问 · 查看服务进度与结果</div>
+        <div class="page-desc">提交个人背景与职业诉求 · 基于画像给出方向建议并推荐匹配课程</div>
       </div>
     </div>
 
-    <div class="subtabs" id="gwTabs">
-      <button class="sub-tab active" data-panel="p-gw-chat">AI 对话规划</button>
-      <button class="sub-tab" data-panel="p-gw-book">预约职业顾问</button>
-      <button class="sub-tab" data-panel="p-gw-prog">服务进度与结果</button>
-    </div>
-
-    <div class="subpanel active" id="p-gw-chat">
       <div class="gw-wrap">
         <div class="gw-chat">
           <div class="gw-chat-head">
@@ -3807,44 +3828,7 @@ function renderAiPlanPage(){
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="subpanel" id="p-gw-book">
-      <div class="panel">
-        <div class="panel-head"><b>预约职业顾问</b><span class="spacer"></span><span class="note">AI 画像可同步给顾问，提升首次沟通效率</span></div>
-        <div class="table-scroll"><table class="tbl" style="min-width:940px">
-          <thead><tr>
-            <th style="min-width:180px">顾问</th><th style="width:150px">擅长方向</th><th style="width:170px">可预约时间</th>
-            <th style="width:110px">费用</th><th style="width:100px">状态</th><th style="width:140px">操作</th>
-          </tr></thead>
-          <tbody id="gwBookTbody"></tbody>
-        </table></div>
-      </div>
-    </div>
-
-    <div class="subpanel" id="p-gw-prog">
-      <div class="panel">
-        <div class="panel-head"><b>服务进度与结果</b><span class="spacer"></span><span class="note" id="gwProgCount">0 条</span></div>
-        <div class="table-scroll"><table class="tbl" style="min-width:940px">
-          <thead><tr>
-            <th style="width:150px">服务编号</th><th style="min-width:220px">服务内容</th><th style="width:150px">服务方式</th>
-            <th style="width:150px">当前进度</th><th style="width:140px">更新时间</th><th style="width:140px">操作</th>
-          </tr></thead>
-          <tbody id="gwProgTbody"></tbody>
-        </table></div>
-      </div>
-    </div>
   `;
-
-  /* 子页签切换 */
-  document.querySelectorAll('#gwTabs .sub-tab').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      document.querySelectorAll('#gwTabs .sub-tab').forEach(x=>x.classList.toggle('active', x===b));
-      document.querySelectorAll('.subpanel').forEach(p=>p.classList.toggle('active', p.id===b.dataset.panel));
-      if(b.dataset.panel === 'p-gw-book') renderGwBook();
-      if(b.dataset.panel === 'p-gw-prog') renderGwProgress();
-    });
-  });
 
   /* 对话入口 */
   $('gwHero').querySelectorAll('[data-gwstart]').forEach(b=>{
@@ -3880,81 +3864,6 @@ function renderAiPlanPage(){
     if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); $('gwSend').click(); }
   });
 
-  renderGwBook();
-  renderGwProgress();
-}
-
-/* ---------- 顾问预约表 ---------- */
-function renderGwBook(){
-  const tb = $('gwBookTbody');
-  if(!tb) return;
-  tb.innerHTML = GW_ADVISORS.map(a=>
-    '<tr>'
-    + '<td><div class="job-name">'+esc(a.name)+'</div></td>'
-    + '<td class="t-nowrap">'+esc(a.dir)+'</td>'
-    + '<td class="t-time">'+esc(a.time)+'</td>'
-    + '<td><span class="salary">¥'+a.fee+'</span></td>'
-    + '<td>'+stPill(['可预约','on'])+'</td>'
-    + '<td><div class="ops-cell"><span class="row-act" data-ab="'+a.id+'">预约</span></div></td>'
-    + '</tr>').join('');
-  tb.querySelectorAll('[data-ab]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const a = GW_ADVISORS.find(x=>x.id===b.dataset.ab);
-      if(!a) return;
-      openFormModal('预约职业顾问 · ' + a.name, a.dir + ' · ' + a.time,
-        [
-          {k:'time',label:'确认时间',type:'sel',opts:[a.time,'另约时间（待沟通确认）'],value:a.time},
-          {k:'name',label:'姓名',value:'王旭',req:true},
-          {k:'brief',label:'希望讨论的问题',type:'txa',value:'AI 职业规划已生成的画像摘要',ph:'简述当前困惑与期望达成的目标'}
-        ],
-        (v)=>{
-          GW_SERVICES.unshift({
-            id:'GS'+String(GW_SERVICES.length+1).padStart(11,'0'),
-            content:'职业顾问 1v1 咨询（'+a.name+'）',
-            mode:'视频咨询', progress:'待开始', time:nowStamp()
-          });
-          toast('预约成功，AI 画像已同步给顾问','ok');
-          closeFormModal();
-          renderGwProgress();
-          return true;
-        }, '确认预约');
-    });
-  });
-}
-
-/* ---------- 服务进度表 ---------- */
-function renderGwProgress(){
-  const tb = $('gwProgTbody');
-  if(!tb) return;
-  $('gwProgCount').textContent = GW_SERVICES.length + ' 条';
-  tb.innerHTML = GW_SERVICES.length
-    ? GW_SERVICES.map(g=>
-        '<tr>'
-        + '<td><span class="mono" style="font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12px">'+esc(g.id)+'</span></td>'
-        + '<td><div class="job-name">'+esc(g.content)+'</div></td>'
-        + '<td><span class="tag blue">'+esc(g.mode)+'</span></td>'
-        + '<td>'+stPill(g.progress==='报告已生成'?['报告已生成','on']:['待开始','pending'])+'</td>'
-        + '<td class="t-time">'+esc(g.time)+'</td>'
-        + '<td><div class="ops-cell"><span class="row-act" data-gsp="'+esc(g.id)+'">查看结果</span></div></td>'
-        + '</tr>').join('')
-    : '<tr><td colspan="6"><div class="empty-state"><b>暂无服务记录</b><span>完成 AI 对话或预约顾问后生成服务记录</span></div></td></tr>';
-  tb.querySelectorAll('[data-gsp]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const g = GW_SERVICES.find(x=>x.id===b.dataset.gsp);
-      if(!g) return;
-      if(g.progress === '报告已生成'){
-        openFormModal('服务结果 · ' + g.content, '服务方式：'+g.mode+' · 生成时间：'+g.time, [], ()=>{ closeFormModal(); return true; }, '关闭');
-        $('fmBody').innerHTML =
-            '<div class="gw-sec-t">核心结论</div>'
-          + '<div class="gw-text">你的画像呈现「技术背景 + B 端产品 + AI 应用落地」三重叠加，短板集中在数据决策与行业纵深。完整报告含逐周任务清单、能力差距明细与面试准备建议。</div>'
-          + '<div class="gw-hintbox">可返回「AI 对话规划」重新评估以生成新一版方案。</div>';
-      }else{
-        askConfirm('服务进度 · ' + g.content,
-          '服务方式：'+g.mode+'　当前进度：'+g.progress+'　更新时间：'+g.time+'\n\n顾问会在开始前通过站内消息提醒你。',
-          '知道了', null, 'info');
-      }
-    });
-  });
 }
 
 function renderExtraPage(key){
@@ -4144,14 +4053,27 @@ function renderExtraPage(key){
         + `<div class="note-block" style="margin-bottom:16px">投诉受理范围：虚假职位、薪资不符、骚扰行为、交付纠纷。平台在 <b>1 个工作日内</b>受理，处理结果以站内消息通知。</div>
         <div class="blk"><div class="blk-head"><h2>我的投诉记录</h2><span class="sub">${COMPLAINTS.length} 条</span><span class="spacer"></span><span class="note">处理结果会以站内消息通知</span></div>
           ${simpleTable(
-            [{t:'投诉对象',w:'240px'},{t:'投诉类型',w:'120px'},{t:'问题描述',w:'300px'},{t:'提交时间',w:'140px'},{t:'状态',w:'100px'},{t:'操作',w:'100px'}],
-            COMPLAINTS.map(c=>`<tr><td class="cell-strong">${c.obj}</td><td><span class="tag">${c.type}</span></td>
+            [{t:'投诉对象',w:'240px'},{t:'投诉类型',w:'120px'},{t:'问题描述',w:'280px'},{t:'提交时间',w:'140px'},{t:'状态',w:'100px'},{t:'操作',w:'130px'}],
+            COMPLAINTS.map((c,i)=>`<tr><td class="cell-strong">${c.obj}</td><td><span class="tag">${c.type}</span></td>
               <td>${esc(c.desc)}</td><td class="t-time">${c.time}</td><td>${stPill(CP_ST[c.st])}</td>
-              <td><span class="row-act" data-cp="1">详情</span></td></tr>`).join(''),
+              <td><div class="ops-cell"><span class="row-act" data-cp="1">详情</span>${c.st===1?`<span class="row-act" data-cp="2" data-idx="${i}">撤回</span>`:''}</div></td></tr>`).join(''),
             940)}
         </div>`;
       $('cpNotice').onclick = ()=>toast('投诉须知：受理范围、举证要求与处理时限（演示占位）');
-      box.querySelectorAll('[data-cp]').forEach(b=>b.onclick=()=>toast('投诉详情为演示占位'));
+      box.querySelectorAll('[data-cp]').forEach(b=>{
+        b.onclick = ()=>{
+          if(b.dataset.cp==='1'){ toast('投诉详情为演示占位'); return; }
+          const c = COMPLAINTS[+b.dataset.idx];
+          if(!c) return;
+          askConfirm('撤回该投诉？','撤回后平台将不再受理此条投诉，如仍有问题可重新发起。','确认撤回',
+            ()=>{
+              const i = COMPLAINTS.indexOf(c);
+              if(i>-1) COMPLAINTS.splice(i,1);
+              F.complaint();
+              toast('投诉已撤回');
+            },'danger');
+        };
+      });
       $('cpNew').onclick = ()=> openFormModal('发起投诉','平台在 1 个工作日内受理（来源：牛人端）',
         [
           {k:'obj',label:'投诉对象',req:true,ph:'岗位 / 项目 / 企业名称'},
@@ -4214,29 +4136,32 @@ function renderExtraPage(key){
 
     /* ================= 设置 ================= */
     setting(){
-      box.innerHTML = pageHead('设置','来源：企业端 · 企业信息、账号安全与通知偏好',
+      const isPerson = state.acting==='person';
+      const isSp = state.acting==='sp';
+      const infoTitle = isPerson ? '个人信息' : (isSp ? '机构信息' : '企业信息');
+      const rows = isPerson
+        ? [['姓名','王旭',0],['手机号','138 0013 6688',0],['所在城市','广东省 深圳市 南山区',0],['求职状态','在职 · 月内到岗',0]]
+        : isSp
+          ? [['机构名称','深圳智远 AI 咨询有限公司',0],['联系人','周昱',1],['手机号','139****8830',0],['所在地区','广东省 深圳市 南山区',0]]
+          : [['公司名称','云启科技有限公司',0],['联系人','李明',1],['手机号','138****6621',0],['所在地区','广东省 深圳市 南山区',0]];
+      box.innerHTML = pageHead('设置', isPerson ? '个人端 · 个人信息与账号安全'
+            : isSp ? '服务商端 · 机构信息与账号安全' : '企业端 · 企业信息与账号安全',
           '<button class="btn btn-primary" id="stSave">保存设置</button>')
-        + `<div class="ov-cols">
-          <div class="blk"><div class="blk-head"><h2>企业信息</h2></div>
+        + `<div class="ov-cols" style="align-items:stretch">
+          <div class="blk"><div class="blk-head"><h2>${infoTitle}</h2></div>
             <div class="blk-body">
-              <div class="field row"><label class="lb">公司名称</label><input class="ipt" value="云启科技有限公司" disabled></div>
-              <div class="field row" style="margin-top:12px"><label class="lb">联系人</label><input class="ipt" id="stName" value="李明"></div>
-              <div class="field row" style="margin-top:12px"><label class="lb">手机号</label><input class="ipt" value="138****6621" disabled></div>
-              <div class="field row" style="margin-top:12px"><label class="lb">所在地区</label><input class="ipt" value="广东省 深圳市 南山区" disabled></div>
+              ${rows.map((r,i)=>`<div class="field row" style="margin-top:${i?'12px':'0'}"><label class="lb">${r[0]}</label>
+                <input class="ipt" ${r[2]?'id="stName"':'disabled'} value="${r[1]}"></div>`).join('')}
             </div></div>
           <div class="blk"><div class="blk-head"><h2>账号与安全</h2></div>
             <div class="blk-body">
               <div class="switch-row"><div><div class="sw-t">登录密码</div><div class="sw-m">上次修改：2026-09-12</div></div><button class="btn btn-sm" id="stPwd">修改密码</button></div>
-              <div class="switch-row"><div><div class="sw-t">微信扫码绑定</div><div class="sw-m">已绑定 · 用于扫码登录与消息通知</div></div>${stPill(['已绑定','on'])}</div>
+              <div class="switch-row"><div><div class="sw-t">微信扫码绑定</div><div class="sw-m">已绑定 · 用于扫码登录</div></div>${stPill(['已绑定','on'])}</div>
+              <div class="switch-row"><div><div class="sw-t">登录设备</div><div class="sw-m">当前仅 1 台设备在线</div></div><button class="btn btn-sm" id="stDev">查看</button></div>
             </div></div>
-        </div>
-        <div class="blk" style="margin-top:16px"><div class="blk-head"><h2>消息通知</h2></div>
-          <div class="blk-body">
-            <div class="switch-row"><div><div class="sw-t">新申请提醒</div><div class="sw-m">大咖 / 牛人投递意向时站内消息提醒</div></div><input type="checkbox" checked></div>
-            <div class="switch-row"><div><div class="sw-t">审核结果通知</div><div class="sw-m">发布内容审核通过或驳回时通知</div></div><input type="checkbox" checked></div>
-            <div class="switch-row"><div><div class="sw-t">到期提醒</div><div class="sw-m">需求有效期剩余 3 天时提醒</div></div><input type="checkbox"></div>
-          </div></div>`;
+        </div>`;
       $('stPwd').onclick = ()=>toast('修改密码为演示占位');
+      $('stDev').onclick = ()=>toast('登录设备管理为演示占位');
       $('stSave').onclick = ()=>toast('设置已保存（演示）','ok');
     }
   };
@@ -4244,17 +4169,6 @@ function renderExtraPage(key){
     box.innerHTML = pageHead('模块建设中','该模块将在后续版本并入统一工作台');
   }))();
 }
-
-/* ================================================================
-   14. 顶部消息按钮
-   ================================================================ */
-$('btnMsg').addEventListener('click', ()=>{
-  toast(state.role==='all'
-    ? '8 条未读：申请 · 邀约 · 审核结果 · 开课提醒（消息中心在后续版本并入）'
-    : state.role==='company'
-      ? '3 条未读：2 条新申请 · 1 条审核结果（消息中心在后续版本并入）'
-      : '5 条未读：2 条邀约 · 2 条申请反馈 · 1 条开课提醒（消息中心在后续版本并入）');
-});
 
 /* ================================================================
    16. 全功能版新增模块
@@ -5158,7 +5072,9 @@ function resumePickField(){
 }
 function openApplyForm(m, r){
   const bk = m.baseKey || m.key;
-  const common = {t:'投递材料', note:'企业看到的将是你选择的简历 + 本次填写的补充信息', fields:[
+  /* 已报名的课程不重复报名 */
+  if(bk==='train' && MY_COURSES.some(x=>x.id===r.id)){ toast('你已报名该课程，可在「我的课程」中继续学习','ok'); return; }
+  const common = {t:(bk==='train'?'报名材料':'投递材料'), note:'企业看到的将是你选择的简历 + 本次填写的补充信息', fields:[
     resumePickField(),
     {k:'letter', label:'自荐语', type:'txa', h:80, ph:'用 2~3 句话说明你为什么适合，会显著提升通过率'}
   ]};
@@ -5205,7 +5121,7 @@ function openApplyForm(m, r){
     ]}
   }[bk] || {t:'补充信息', fields:[{k:'memo', label:'备注', type:'txa', h:70, ph:'补充说明'}]};
 
-  openBigForm('投递 · ' + esc(r.title), m.title + ' · ' + esc(r.co||''),
+  openBigForm((bk==='train'?'报名 · ':'投递 · ') + esc(r.title), m.title + ' · ' + esc(r.co||''),
     [common, byMod],
     (v)=>{
       if(!v.rType){ toast('请选择投递方式','err'); return false; }
@@ -5253,20 +5169,21 @@ function openApplyForm(m, r){
       toast(m.personToast || '投递成功', 'ok');
       closeFormModal();
       return true;
-    }, '提交投递', 'md');
+    }, bk==='train'?'提交报名':'提交投递', 'md');
 }
 
 /* ---------- 能力资料 / 承接申请（N10 / N25 共用） ---------- */
 function openBidForm(m, r, mode){
   const isApply = mode === 'apply';
+  const asCompany = state.acting === 'company';
   openBigForm(
     isApply ? '承接申请 · ' + esc(r.title) : '申请接单 · ' + esc(r.title),
-    isApply ? '企业方将看到你的方案、报价与可投入档期' : '项目制合作需要提交能力资料，而不是简历',
+    isApply ? '发布方将看到你的方案、报价与可投入档期' : '项目制合作需要提交能力资料，而不是简历',
     [
       {t:'承接主体', fields:[
-        {k:'who', label:'承接主体', req:1, value:'深圳智远 AI 咨询有限公司'},
+        {k:'who', label:'承接主体', req:1, value: asCompany ? '深圳市云启科技有限公司' : '深圳智远 AI 咨询有限公司'},
         {k:'kind', label:'主体类型', type:'sel', half:1, opts:['个人','团队','机构'], value:'机构'},
-        {k:'contact', label:'联系人 / 电话', value:'周昱 · 139****8830', half:1},
+        {k:'contact', label:'联系人 / 电话', value: asCompany ? '李明 · 138****6621' : '周昱 · 139****8830', half:1},
         {k:'team', label:'投入团队', value:'4 人（1 架构 + 2 开发 + 1 产品）'}
       ]},
       {t:'能力资料', note:'平台审核时会核对案例真实性', fields:[
@@ -6011,8 +5928,7 @@ function openTakeForm(b, p){
       if(p){ p.intents = (p.intents||0)+1; }
       toast('已确认承接，订单 '+oid+' 已生成','ok');
       closeFormModal();
-      state.tkTab='project';
-      go('ticket');
+      if(canSee('ticket')){ state.tkTab='project'; go('ticket'); }
       return true;
     }, '确认承接');
 }
@@ -6310,6 +6226,9 @@ function renderRevenue(box){
 function renderMyCourse(box){
   const list = MY_COURSES;
   const cur = list.find(c=>c.id===state.mcId) || list[0];
+  const totalDone = list.reduce((a,c)=>a+c.done,0);
+  const totalAll = list.reduce((a,c)=>a+c.total,0);
+  const doneCnt = list.filter(c=>c.done>=c.total).length;
 
   box.innerHTML = `
     <div class="page-head"><div>
@@ -6320,36 +6239,35 @@ function renderMyCourse(box){
     </div></div>
     <div class="kpi-mini">
       <div class="km blue"><div class="k-l">在读课程</div><div class="k-v">${list.filter(c=>c.done<c.total).length}</div><div class="k-s">共 ${list.length} 门</div></div>
-      <div class="km"><div class="k-l">已完成课时</div><div class="k-v">${list.reduce((a,c)=>a+c.done,0)}</div><div class="k-s">总 ${list.reduce((a,c)=>a+c.total,0)} 课时</div></div>
-      <div class="km green"><div class="k-l">已结业</div><div class="k-v">${list.filter(c=>c.done>=c.total).length}</div><div class="k-s">可下载证书</div></div>
+      <div class="km"><div class="k-l">已完成课时</div><div class="k-v">${totalDone}</div><div class="k-s">总 ${totalAll} 课时</div></div>
+      <div class="km green"><div class="k-l">已结业</div><div class="k-v">${doneCnt}</div><div class="k-s">可下载证书</div></div>
       <div class="km amber"><div class="k-l">待交作业</div><div class="k-v">2</div><div class="k-s">本周截止</div></div>
     </div>
-    <div class="course-row">
-      ${list.map(c=>`<div class="course-card">
-        <div class="course-cover c${c.cover}">
-          <span class="cc-tag">${c.done>=c.total?'已结业':'学习中'}</span>
-          <div class="cc-t">${esc(c.title)}</div>
-        </div>
-        <div class="course-body">
-          <div class="course-meta"><span>讲师 ${esc(c.teacher)}</span><span>${esc(c.mode)}</span></div>
-          <div style="font-size:12px;color:var(--text-2)">${esc(c.cls)}</div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
-              <span>学习进度</span><b style="color:var(--blue-600)">${c.done} / ${c.total} 课时</b></div>
-            ${pbarHtml(c.done/c.total*100, c.done>=c.total)}
+    <div class="mc-grid">
+      ${list.map(c=>{
+        const done = c.done >= c.total;
+        return `<div class="mc-card${done?' is-done':''}">
+          <div class="mc-band ${done?'done':'learn'}">
+            <span class="mc-badge">${done?'已结业':'学习中'}</span>
+            <div class="mc-t">${esc(c.title)}</div>
           </div>
-          <div style="font-size:12px;color:var(--text-2);background:var(--blue-50);border-radius:8px;padding:8px 10px">
-            ${c.done>=c.total?'✔ ':'▶ '}${esc(c.next)}
+          <div class="mc-body">
+            <div class="mc-meta"><span>讲师 ${esc(c.teacher)}</span><span class="dot"></span><span>${esc(c.mode)}</span></div>
+            <div class="mc-cls">${esc(c.cls)}</div>
+            <div>
+              <div class="mc-prog"><span>学习进度</span><b>${c.done} / ${c.total} 课时</b></div>
+              ${pbarHtml(c.done/c.total*100, done)}
+            </div>
+            <div class="mc-next">${done?'✓ ':'▶ '}${esc(c.next)}</div>
+            <div class="mc-acts">
+              <button class="btn btn-sm" data-mc="${c.id}">课程详情</button>
+              <button class="btn btn-sm" data-mcplay="${c.id}">${done?'看回放':'继续学习'}</button>
+              <button class="btn btn-sm btn-primary" style="height:30px" data-mccert="${c.id}">${done?'下载证书':'学习报告'}</button>
+            </div>
           </div>
-          <div style="display:flex;gap:8px;margin-top:auto;padding-top:4px">
-            <button class="btn btn-sm" data-mc="${c.id}">课程详情</button>
-            <button class="btn btn-sm" data-mcplay="${c.id}">${c.done>=c.total?'看回放':'继续学习'}</button>
-            <button class="btn btn-sm btn-primary" style="height:30px" data-mccert="${c.id}">${c.done>=c.total?'下载证书':'学习报告'}</button>
-          </div>
-        </div>
-      </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>
-    <div style="height:16px"></div>
     ${blkBox(cur?'课时安排 · '+esc(cur.title):'课时安排','', '',
       (cur?cur.lessons:[]).map((l,i)=>`<div class="lesson ${l.ok?'done':''}">
         <span class="ls-n">${l.ok?'✓':i+1}</span>
@@ -6359,8 +6277,18 @@ function renderMyCourse(box){
       </div>`).join('') || '<div class="empty-state"><b>暂无课时</b></div>')}`;
 
   $('mcAll').onclick = ()=>go('train');
-  box.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>{ state.mcId=b.dataset.mc; renderMyCourse(box); });
-  box.querySelectorAll('[data-mcplay]').forEach(b=>b.onclick=()=>{ state.mcId=b.dataset.mcplay; toast('正在打开直播 / 回放（演示占位）'); });
+  /* 课程详情：连接到「AI培训」的课程详情，同时把下方课时安排切到该课程 */
+  box.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>{
+    state.mcId = b.dataset.mc;
+    renderMyCourse(box);
+    const tm = CORE.find(x=>x.key==='train');
+    const rec = tm && tm.records.find(x=>x.id===b.dataset.mc);
+    if(rec) openDrawer(tm, rec, {noCta:true});
+  });
+  box.querySelectorAll('[data-mcplay]').forEach(b=>b.onclick=()=>{
+    state.mcId = b.dataset.mcplay;
+    toast('正在打开直播 / 回放（演示占位）');
+  });
   box.querySelectorAll('[data-mccert]').forEach(b=>b.onclick=()=>{
     const c = MY_COURSES.find(x=>x.id===b.dataset.mccert);
     if(c.done>=c.total) toast('结业证书已下载（演示）','ok');
@@ -6475,9 +6403,15 @@ function openCoachBook(t){
         co:'讲师 · '+t.name, amount:amt, st:1, at:now, pay:'待支付',
         detail:[['套餐',pay],['时段',v.slot||'待定'],['诉求',(v.goal||'').slice(0,26)],['交付物','按套餐约定']]
       });
-      toast('预约已提交，请在「订单中心」完成支付','ok');
-      closeFormModal();
-      state.ordTab='coach'; go('order');
+      if(canSee('order')){
+        toast('预约已提交，请在「订单中心」完成支付','ok');
+        closeFormModal();
+        state.ordTab='coach'; go('order');
+      }else{
+        /* 个人端已隐藏订单中心：预约直接提交给讲师 */
+        toast('预约已提交，讲师将在 24 小时内确认时间','ok');
+        closeFormModal();
+      }
       return true;
     }, '提交预约','md');
 }
@@ -6925,12 +6859,6 @@ function renderApplyP(box){
   const list = APPLIES_P.filter(a=>tab==='all' || a.type===map[tab]);
   const cnt = k => APPLIES_P.filter(a=>a.st===k).length;
 
-  const ivOf = (a)=>{
-    const iv = INTERVIEWS.find(x=>x.dir==='in' && a.obj.indexOf(x.job)>-1);
-    if(!iv) return '<span class="t-muted">—</span>';
-    return `<span class="st ${IV_ST[iv.st][1]}">${IV_ST[iv.st][0]}</span>`;
-  };
-
   box.innerHTML = `
     <div class="page-head"><div>
       <div class="page-title">我的申请</div>
@@ -6947,29 +6875,20 @@ function renderApplyP(box){
       ['intern','实习'],['train','培训'],['coach','私教']], tab)}
     <div class="blk">
       ${simpleTable(
-        [{t:'申请对象',w:'230px'},{t:'类型',w:'86px'},{t:'薪资 / 预算',w:'120px'},{t:'投递时间',w:'120px'},
-         {t:'进度状态',w:'110px'},{t:'面试进度',w:'110px'},{t:'简历授权',w:'110px'},
-         {t:'企业反馈',w:'220px'},{t:'操作',w:'180px'}],
-        list.map(a=>{
-          const lv = a.resumeAuth ? authLevel(a) : 0;
-          const authCell = a.resumeAuth ? stPill([AUTH_TEXT[lv].t, AUTH_TEXT[lv].c]) : stPill(['未授权','draft']);
-          const needAuth = a.st===5 && a.resumeAuth && !a.resumeAuth.seeker;
-          return `<tr>
+        [{t:'申请对象',w:'260px'},{t:'类型',w:'86px'},{t:'薪资 / 预算',w:'130px'},{t:'投递时间',w:'120px'},
+         {t:'进度状态',w:'110px'},{t:'企业反馈',w:'260px'},{t:'操作',w:'160px'}],
+        list.map(a=>`<tr>
             <td><div class="job-name">${esc(a.obj)}<span class="sub">${esc(a.id)} · ${esc(a.co)}</span></div></td>
             <td><span class="tag blue">${esc(a.type)}</span></td>
             <td><span class="salary">${esc(a.salary)}</span></td>
             <td class="t-time">${esc(a.time)}</td>
             <td>${stPill(AP_ST[a.st])}</td>
-            <td>${ivOf(a)}</td>
-            <td>${authCell}</td>
             <td><div class="t-req" title="${esc(a.fb)}">${esc(a.fb)}</div></td>
             <td><div class="ops-cell">
               <span class="row-act" data-ap="d" data-id="${a.id}">详情</span>
-              ${needAuth?`<span class="row-act" data-ap="grant" data-id="${a.id}">同意授权</span>`:''}
-              ${(a.type==='外包'&&a.st===5)?`<span class="row-act" data-labor="1">查看录用</span>`:''}
+              ${(a.type==='外包'&&a.st===5&&canSee('order'))?`<span class="row-act" data-labor="1">查看录用</span>`:''}
               <span class="row-act" data-ap="w" data-id="${a.id}">撤回</span>
-            </div></td></tr>`;
-        }).join('') || emptyRow(9,'该分类下暂无申请','切换上方分类看看'),1300)}
+            </div></td></tr>`).join('') || emptyRow(7,'该分类下暂无申请','切换上方分类看看'),1300)}
     </div>`;
 
   bindSubTabs(box,'apTabs',k=>state.apTab=k,()=>renderApplyP(box));
@@ -6986,15 +6905,9 @@ function renderApplyP(box){
         const iv = INTERVIEWS.find(x=>x.dir==='in' && a.obj.indexOf(x.job)>-1);
         askConfirm('申请详情 · '+a.obj,
           '企业：'+a.co+'\n投递时间：'+a.time+'\n状态：'+AP_ST[a.st][0]
-          +'\n简历授权：'+(a.resumeAuth?AUTH_TEXT[authLevel(a)].t:'未授权')
           +'\n\n企业反馈：'+a.fb
           +(iv?'\n\n面试：'+iv.time+' · '+iv.mode+'\n'+IV_ST[iv.st][0]:''),
           '知道了', null, 'info');
-        return;
-      }
-      if(b.dataset.ap==='grant'){
-        askConfirm('同意向「'+a.co+'」公开简历？','同意后该企业可查看你的在线简历，授权仅对该企业生效。','同意授权',
-          ()=>{ a.resumeAuth.seeker=1; a.auth=1; renderApplyP(box); toast('已同意公开简历','ok'); },'ok');
         return;
       }
       askConfirm('撤回该申请？','撤回后企业将无法查看该申请，操作不可恢复。','确认撤回',
@@ -7022,10 +6935,12 @@ const EXTRA_PAGES = {
   candidate:renderCandidate
 };
 
-/* 投递动作重定向：项目 → 能力资料；私教 → 讲师主页；其余 → 投递弹层 */
+/* 投递动作重定向：项目 → 能力资料；私教 → 讲师主页；其余 → 投递弹层
+   企业端在项目外包 / 岗位外包上走「承接申请」，其余企业端不出现申请入口 */
 const _origActApply = actApply;
 actApply = function(m, r){
   const bk = m.baseKey || m.key;
+  if(isCompanyApply(m)){ openBidForm(m, r, 'apply'); return; }
   if(bk==='project'){ openBidForm(m, r, 'bid'); return; }
   if(bk==='coach'){
     state.teacherId = (String(r.co||'').indexOf('周昱')>-1) ? 'L002' : 'L001';
@@ -7074,7 +6989,7 @@ openConsultForm = function(){
       });
       closeFormModal();
       toast('咨询需求已提交，工单已生成','ok');
-      state.tkTab='consult'; go('ticket');
+      if(canSee('ticket')){ state.tkTab='consult'; go('ticket'); }
       return true;
     }, '提交需求');
 };
