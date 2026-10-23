@@ -1837,7 +1837,7 @@ const CORE = [
     statusMap:{0:['草稿','draft'],1:['待审核','pending'],2:['报名中','on'],3:['已驳回','reject'],4:['已停用','closed'],5:['已结课','closed']},
     descPrefix:'课程内容', payLabel:'学费', countLabel:'招生', noun:'课程',
     editBtn:'编辑课程', publishBtn:'＋ 发布课程',
-    personCta:'立即报名', personDone:'已报名', personToast:'报名成功，可在「我的申请」查看课程报名记录',
+    personCta:'立即报名', personDone:'已报名', personToast:'报名成功，可在「我的课程」查看报名记录',
     filters:[
       {k:'type',label:'全部课程类型',opts:['企业内训','公开课','训练营','一对一辅导','驻场培训']},
       {k:'city',label:'全部城市',opts:['深圳','上海','杭州','北京']}
@@ -2458,7 +2458,8 @@ const PERM = {
     /* 求职者也可以作为甲方发布项目外包 → 开放「项目外包管理」发布端界面 */
     'projectManage',
     /* 个人端不展示「工单与交易 → 订单中心」 */
-    'resume','applyP','myCourse','interview','complaint','setting'
+    /* 个人端不展示「业务协作 → 面试管理」（面试邀约统一在「我的申请」中跟进） */
+    'resume','applyP','myCourse','complaint','setting'
   ],
   company:[
     /* 企业端不展示 岗位招聘 / 数智化资讯 / AI实习，也不展示 面试管理 / 工单中心 / 订单中心 */
@@ -3324,6 +3325,7 @@ let curForm = null;
 function openFormModal(title, sub, fields, onOk, okTxt){
   $('fmTitle').textContent = title;
   $('fmSub').textContent = sub || '';
+  $('fmCancel').style.display = '';
   $('fmBody').innerHTML = '<div class="grid">' + fields.map(f=>`
     <div class="field row ${f.full!==false?'col-2':''} ${f.type==='txa'?'ta':''}">
       <label class="lb">${esc(f.label)}${f.req?'<i class="req">*</i>':''}</label>
@@ -4440,28 +4442,34 @@ const INTERN_POOL = [
 ];
 
 /* ---------------- 16.8 课程学习 / 讲师 ---------------- */
+/* 我的课程 = 报名记录（培训课程 / 私教预约），只保留报名与缴费信息 */
 const MY_COURSES = [
-  {id:'T-9301', title:'大模型应用实战训练营（第 6 期）', teacher:'周昱', cover:1,
-   cls:'2026-11-10 ~ 12-22 · 每周二 / 四 20:00', mode:'线上直播 + 2 天线下（深圳）',
-   done:13, total:32, score:null, cert:'结课后发放',
-   next:'11-17 20:00 · Agent 工具调用与多轮编排',
-   lessons:[
-     {n:'第 1 讲 · 大模型能力边界与选型', d:'2 课时', ok:1},
-     {n:'第 2 讲 · 结构化提示词与多轮设计', d:'2 课时', ok:1},
-     {n:'第 3 讲 · RAG 链路搭建（上）', d:'2 课时', ok:1},
-     {n:'第 4 讲 · RAG 链路搭建（下）与评测', d:'2 课时', ok:1},
-     {n:'第 5 讲 · Agent 工具调用与多轮编排', d:'2 课时', ok:0},
-     {n:'第 6 讲 · 企业级实战项目立项', d:'2 课时', ok:0}
-   ]},
-  {id:'T-9303', title:'提示词工程公开课（深圳场）', teacher:'孙倩', cover:3,
-   cls:'2026-10-27 09:30 ~ 17:30 · 单日', mode:'线下 · 深圳福田',
-   done:6, total:6, score:'优秀', cert:'已发放',
-   next:'已结课 · 可下载结业证明',
-   lessons:[
-     {n:'上午 · 结构化提示词四要素', d:'3 课时', ok:1},
-     {n:'下午 · 20 个真实任务演练', d:'3 课时', ok:1}
-   ]}
+  {id:'T-9302', no:'BM-20261023-004', title:'企业 AI 办公提效内训（3 天）', type:'培训课程',
+   teacher:'孙倩', batch:'第 3 期 · 11-15 开班', mode:'企业内训 · 上海浦东',
+   at:'2026-10-23 09:41', st:'待确认', amount:299, pay:'待支付', order:'OD20261023004',
+   note:'报名已提交，待课程顾问确认班期后开课。'},
+  {id:'P-9401', no:'BM-20261022-003', title:'AI 产品经理 1v1 私教（4 次套餐）', type:'私教预约',
+   teacher:'李铭', batch:'4 次套餐 · 待确认首课', mode:'线上 1v1 · 每次 90 分钟',
+   at:'2026-10-22 20:15', st:'待开班', amount:1680, pay:'已支付', order:'OD20261022003',
+   note:'讲师将在 24 小时内确认首课时间，可在记录详情中查看。'},
+  {id:'T-9301', no:'BM-20261021-001', title:'大模型应用实战训练营（第 6 期）', type:'培训课程',
+   teacher:'周昱', batch:'第 6 期 · 11-10 开班', mode:'线上直播 + 2 天线下（深圳）',
+   at:'2026-10-21 14:32', st:'学习中', amount:3600, pay:'已支付', order:'OD20261021001',
+   note:'已开班 · 每周二 / 四 20:00 直播，回放保留 12 个月。'},
+  {id:'T-9303', no:'BM-20260918-002', title:'提示词工程公开课（深圳场）', type:'培训课程',
+   teacher:'孙倩', batch:'单日场 · 10-27', mode:'线下 · 深圳福田',
+   at:'2026-09-18 10:06', st:'已结业', amount:299, pay:'已支付', order:'OD20260918002',
+   note:'已结课，结业证明可在记录详情中下载。'}
 ];
+
+/* 报名状态 → 状态胶囊 */
+const MC_ST = {
+  '待确认':['待确认','pending'],
+  '待开班':['待开班','info'],
+  '学习中':['学习中','info'],
+  '已结业':['已结业','on'],
+  '已取消':['已取消','closed']
+};
 
 const TEACHERS = {
   L001:{ id:'L001', name:'李铭', title:'AI 产品 · 6 年 · 前大厂产品专家', level:'金牌讲师',
@@ -4567,6 +4575,7 @@ function bigField(f){
 function openBigForm(title, sub, sections, onOk, okTxt, size){
   $('fmTitle').innerHTML = title;
   $('fmSub').textContent = sub || '';
+  $('fmCancel').style.display = '';
   $('fmBody').innerHTML = sections.map(s=>
     `<div class="sec"><div class="sec-head"><span class="bar"></span><b>${s.t}</b>`
     + (s.note?`<span style="margin-left:auto;font-size:12px;color:var(--muted)">${s.note}</span>`:'')
@@ -5073,7 +5082,7 @@ function resumePickField(){
 function openApplyForm(m, r){
   const bk = m.baseKey || m.key;
   /* 已报名的课程不重复报名 */
-  if(bk==='train' && MY_COURSES.some(x=>x.id===r.id)){ toast('你已报名该课程，可在「我的课程」中继续学习','ok'); return; }
+  if(bk==='train' && MY_COURSES.some(x=>x.id===r.id)){ toast('你已报名该课程，可在「我的课程」查看报名记录','ok'); return; }
   const common = {t:(bk==='train'?'报名材料':'投递材料'), note:'企业看到的将是你选择的简历 + 本次填写的补充信息', fields:[
     resumePickField(),
     {k:'letter', label:'自荐语', type:'txa', h:80, ph:'用 2~3 句话说明你为什么适合，会显著提升通过率'}
@@ -5101,7 +5110,7 @@ function openApplyForm(m, r){
       {k:'school', label:'学校 / 专业', value:'华中科技大学 · 电子信息工程', half:1},
       {k:'needCert', label:'是否需要实习证明', type:'sel', half:1, opts:['需要','不需要'], value:'需要'}
     ]},
-    train:{t:'报名信息', note:'报名后可在「我的课程」查看班期与学习进度', fields:[
+    train:{t:'报名信息', note:'报名后可在「我的课程」查看报名记录与班期', fields:[
       {k:'batch', label:'选择班期', type:'sel', req:1,
         opts:['第 6 期 · 2026-11-10 开班（周二 / 四 20:00）','第 7 期 · 2027-01-05 开班（周二 / 四 20:00）'],
         value:'第 6 期 · 2026-11-10 开班（周二 / 四 20:00）'},
@@ -5139,12 +5148,18 @@ function openApplyForm(m, r){
         msg:(v.letter || '（未填写自荐语）') + (v.slot?'｜期望时段：'+v.slot:'') + (v.period?'｜可实习：'+v.period+' · 每周 '+v.days:'')
       });
       if(bk==='train'){
+        const priceTxt = ((r.tfacts||[]).find(x=>x[0]==='价格')||[])[1] || '';
+        const amount = parseInt((String(priceTxt).match(/[\d,]+/)||['0'])[0].replace(/,/g,'')) || 0;
+        const dayKey = nowStamp({full:true}).slice(0,10).replace(/-/g,'');
         MY_COURSES.unshift({
-          id:r.id, title:r.title, teacher:(r.co||'讲师').replace('讲师 · ',''), cover:2,
-          cls:'2026-11-10 ~ 12-22 · 每周二 / 四 20:00', mode:'线上直播 + 2 天线下（深圳）',
-          done:0, total:32, score:null, cert:'结课后发放', next:'开班后解锁',
-          lessons:[{n:'第 1 讲 · 大模型能力边界与选型', d:'2 课时', ok:0},
-                   {n:'第 2 讲 · 结构化提示词与多轮设计', d:'2 课时', ok:0}]
+          id:r.id, no:'BM-' + dayKey + '-' + String(MY_COURSES.length+1).padStart(3,'0'),
+          title:r.title, type:'培训课程',
+          teacher:(r.co||'讲师').replace('讲师 · ','').replace(/（.*$/,''),
+          batch:String(v.batch||'第 6 期').split(' · ')[0] + ' · 待开班',
+          mode:'线上直播 + 2 天线下（深圳）',
+          at:nowStamp({full:true}), st:'待确认', amount:amount, pay:'待支付',
+          order:'OD'+Date.now().toString().slice(-10),
+          note:'报名已提交，待课程顾问确认班期后开课。'
         });
         ORDERS.unshift({
           id:'OD'+Date.now().toString().slice(-10), cat:'train', title:r.title,
@@ -6225,76 +6240,71 @@ function renderRevenue(box){
    ================================================================ */
 function renderMyCourse(box){
   const list = MY_COURSES;
-  const cur = list.find(c=>c.id===state.mcId) || list[0];
-  const totalDone = list.reduce((a,c)=>a+c.done,0);
-  const totalAll = list.reduce((a,c)=>a+c.total,0);
-  const doneCnt = list.filter(c=>c.done>=c.total).length;
+  const PAY_COLOR = {'已支付':'var(--green)','待支付':'var(--amber)','已退款':'var(--muted)'};
 
   box.innerHTML = `
     <div class="page-head"><div>
       <div class="page-title">我的课程</div>
-      <div class="page-desc">已报名课程的班期、学习进度、课件与结业材料 · 视频回放保留 12 个月</div>
+      <div class="page-desc">课程与私教的报名记录 · 报名状态、班期与缴费信息统一在此查看</div>
     </div><div class="spacer"></div><div class="head-ops">
       <button class="btn" id="mcAll">去逛课程</button>
     </div></div>
-    <div class="kpi-mini">
-      <div class="km blue"><div class="k-l">在读课程</div><div class="k-v">${list.filter(c=>c.done<c.total).length}</div><div class="k-s">共 ${list.length} 门</div></div>
-      <div class="km"><div class="k-l">已完成课时</div><div class="k-v">${totalDone}</div><div class="k-s">总 ${totalAll} 课时</div></div>
-      <div class="km green"><div class="k-l">已结业</div><div class="k-v">${doneCnt}</div><div class="k-s">可下载证书</div></div>
-      <div class="km amber"><div class="k-l">待交作业</div><div class="k-v">2</div><div class="k-s">本周截止</div></div>
-    </div>
-    <div class="mc-grid">
-      ${list.map(c=>{
-        const done = c.done >= c.total;
-        return `<div class="mc-card${done?' is-done':''}">
-          <div class="mc-band ${done?'done':'learn'}">
-            <span class="mc-badge">${done?'已结业':'学习中'}</span>
-            <div class="mc-t">${esc(c.title)}</div>
-          </div>
-          <div class="mc-body">
-            <div class="mc-meta"><span>讲师 ${esc(c.teacher)}</span><span class="dot"></span><span>${esc(c.mode)}</span></div>
-            <div class="mc-cls">${esc(c.cls)}</div>
-            <div>
-              <div class="mc-prog"><span>学习进度</span><b>${c.done} / ${c.total} 课时</b></div>
-              ${pbarHtml(c.done/c.total*100, done)}
-            </div>
-            <div class="mc-next">${done?'✓ ':'▶ '}${esc(c.next)}</div>
-            <div class="mc-acts">
-              <button class="btn btn-sm" data-mc="${c.id}">课程详情</button>
-              <button class="btn btn-sm" data-mcplay="${c.id}">${done?'看回放':'继续学习'}</button>
-              <button class="btn btn-sm btn-primary" style="height:30px" data-mccert="${c.id}">${done?'下载证书':'学习报告'}</button>
-            </div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-    ${blkBox(cur?'课时安排 · '+esc(cur.title):'课时安排','', '',
-      (cur?cur.lessons:[]).map((l,i)=>`<div class="lesson ${l.ok?'done':''}">
-        <span class="ls-n">${l.ok?'✓':i+1}</span>
-        <span class="ls-t">${esc(l.n)}</span>
-        <span class="ls-d">${esc(l.d)}</span>
-        <span class="row-act" data-lesson="1">${l.ok?'看回放':'去上课'}</span>
-      </div>`).join('') || '<div class="empty-state"><b>暂无课时</b></div>')}`;
+    <div class="blk">
+      <div class="blk-head">
+        <h2>报名记录</h2><span class="sub">共 ${list.length} 条</span>
+        <span class="spacer"></span><span class="note">报名结果以课程顾问确认为准 · 开课前 24 小时可取消</span>
+      </div>
+      ${simpleTable(
+        [{t:'报名编号',w:'172px'},{t:'课程 / 私教',w:'280px'},{t:'班期',w:'210px'},
+         {t:'讲师',w:'80px'},{t:'报名时间',w:'130px'},{t:'报名状态',w:'100px'},
+         {t:'金额 / 支付',w:'110px'},{t:'操作',w:'90px'}],
+        list.length ? list.map(c=>{
+          const payColor = PAY_COLOR[c.pay] || 'var(--muted)';
+          return `<tr>
+            <td class="t-small" style="white-space:nowrap">${esc(c.no)}</td>
+            <td><div class="job-name">${esc(c.title)}<span class="sub">${esc(c.type)} · ${esc(c.mode)}</span></div></td>
+            <td class="t-small">${esc(c.batch)}</td>
+            <td>${esc(c.teacher)}</td>
+            <td class="t-time">${esc(c.at)}</td>
+            <td>${stPill(MC_ST[c.st] || [c.st,'draft'])}</td>
+            <td><span class="salary">¥${Number(c.amount||0).toLocaleString()}</span>
+              <div class="t-small" style="color:${payColor}">${esc(c.pay)}</div></td>
+            <td><div class="ops-cell"><span class="row-act" data-mc="${esc(c.id)}">详情</span></div></td>
+          </tr>`;
+        }).join('') : emptyRow(8, '暂无报名记录', '去「AI培训」或「AI私教」浏览并报名后，记录会显示在这里'),
+        1080)}
+    </div>`;
 
   $('mcAll').onclick = ()=>go('train');
-  /* 课程详情：连接到「AI培训」的课程详情，同时把下方课时安排切到该课程 */
   box.querySelectorAll('[data-mc]').forEach(b=>b.onclick=()=>{
-    state.mcId = b.dataset.mc;
-    renderMyCourse(box);
-    const tm = CORE.find(x=>x.key==='train');
-    const rec = tm && tm.records.find(x=>x.id===b.dataset.mc);
-    if(rec) openDrawer(tm, rec, {noCta:true});
+    const c = MY_COURSES.find(x=>x.id===b.dataset.mc);
+    if(c) openEnrollDetail(c);
   });
-  box.querySelectorAll('[data-mcplay]').forEach(b=>b.onclick=()=>{
-    state.mcId = b.dataset.mcplay;
-    toast('正在打开直播 / 回放（演示占位）');
-  });
-  box.querySelectorAll('[data-mccert]').forEach(b=>b.onclick=()=>{
-    const c = MY_COURSES.find(x=>x.id===b.dataset.mccert);
-    if(c.done>=c.total) toast('结业证书已下载（演示）','ok');
-    else toast('学习报告已生成：已完成 '+c.done+' / '+c.total+' 课时（演示）','ok');
-  });
-  box.querySelectorAll('[data-lesson]').forEach(b=>b.onclick=()=>toast('课时内容为演示占位'));
+}
+
+/* 报名记录详情（复用通用表单弹层的壳，内容为只读信息） */
+function openEnrollDetail(c){
+  $('fmTitle').textContent = '报名详情';
+  $('fmSub').textContent = c.no + ' · ' + c.title;
+  $('fmBody').innerHTML = `<div class="kv-grid">
+    <div class="kv"><div class="k">报名编号</div><div class="v strong">${esc(c.no)}</div></div>
+    <div class="kv"><div class="k">报名状态</div><div class="v">${stPill(MC_ST[c.st] || [c.st,'draft'])}</div></div>
+    <div class="kv full"><div class="k">课程 / 私教</div><div class="v strong">${esc(c.title)}</div></div>
+    <div class="kv"><div class="k">类型</div><div class="v">${esc(c.type)}</div></div>
+    <div class="kv"><div class="k">讲师</div><div class="v">${esc(c.teacher)}</div></div>
+    <div class="kv full"><div class="k">班期 / 套餐</div><div class="v">${esc(c.batch)}</div></div>
+    <div class="kv full"><div class="k">上课方式</div><div class="v">${esc(c.mode)}</div></div>
+    <div class="kv"><div class="k">报名时间</div><div class="v">${esc(c.at)}</div></div>
+    <div class="kv"><div class="k">关联订单</div><div class="v">${esc(c.order||'—')}</div></div>
+    <div class="kv"><div class="k">金额</div><div class="v strong">¥${Number(c.amount||0).toLocaleString()}</div></div>
+    <div class="kv"><div class="k">支付状态</div><div class="v">${esc(c.pay)}</div></div>
+    <div class="kv full"><div class="k">备注</div><div class="v">${esc(c.note||'—')}</div></div>
+  </div>`;
+  curForm = { onOk: ()=>{ closeFormModal(); return true; } };
+  $('fmOk').textContent = '关闭';
+  $('fmCancel').style.display = 'none';
+  $('formOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
 }
 
 /* ================================================================
