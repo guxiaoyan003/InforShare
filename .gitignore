@@ -1,0 +1,16 @@
+# 本地 Agent 记忆与缓存（不入库）
+.workbuddy/
+
+# 原型截图 / 批量渲染的临时产物
+_shots/
+_tools/
+
+# 依赖与缓存
+__pycache__/
+*.pyc
+node_modules/
+
+# 系统文件
+Thumbs.db
+.DS_Store
+desktop.ini

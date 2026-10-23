@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>权限 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;--blue-600:#1B62F5;--blue-500:#2E7CFF;--blue-100:#E3EDFF;--blue-50:#F2F7FF;
+    --line:#E6ECF5;--line-strong:#D5DEEC;--text:#1A2231;--text-2:#4A5568;--muted:#8A97A8;
+    --bg:#F5F8FD;--white:#fff;
+    --green:#12A150;--green-bg:#E8F8EF;--orange:#F59E0B;--orange-bg:#FEF4E4;
+    --red:#E5484D;--red-bg:#FDECEC;--gray-bg:#F1F3F7;
+    --radius:12px;--shadow-sm:0 1px 2px rgba(18,38,74,.05);--shadow-lg:0 18px 48px rgba(18,38,74,.14);
+    --s-personal:#1B62F5;--s-personal-bg:#E9F1FF;
+    --s-enterprise:#0E9F6E;--s-enterprise-bg:#E6F7F0;
+    --s-daka:#C2760A;--s-daka-bg:#FEF4E4;
+    --s-admin:#6B46C1;--s-admin-bg:#F3EEFF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  .layout{display:flex;min-height:100vh}
+  .sidebar{width:224px;flex:0 0 224px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+  .logo{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .logo-mark{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35)}
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px}
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:1px;transition:.15s;user-select:none}
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;
+    box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item .badge{margin-left:auto;display:inline-block;background:var(--red);color:#fff;font-size:11px;
+    padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  /* 子菜单项与一级菜单项保持完全一致的格式与选中态（不缩进、不加圆点） */
+  .nav-item.child{padding-left:12px;font-size:14px}
+  .nav-item.child::before{display:none}
+  a.nav-item{text-decoration:none}
+  .nav-item .badge.ai{background:var(--blue-100);color:var(--blue-600);letter-spacing:.4px}
+  .nav-item.active .badge.ai{background:rgba(255,255,255,.26);color:#fff}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{height:60px;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;
+    padding:0 24px;gap:16px;position:sticky;top:0;z-index:20}
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .topbar .model-tip{font-size:12px;color:var(--muted)}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  .page-head{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:.2px}
+  .page-desc{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .page-head .spacer{flex:1}
+
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);overflow:hidden}
+
+  .perm-layout{display:flex;gap:14px;align-items:flex-start}
+  .side-card{width:290px;flex:0 0 290px;position:sticky;top:76px}
+  .sc-head{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;
+    display:flex;align-items:center;gap:8px}
+  .sc-head .cnt{font-size:11.5px;font-weight:600;color:var(--muted);margin-left:auto}
+  .sc-list{padding:8px}
+  .sc-item{padding:11px 12px;border-radius:10px;cursor:pointer;transition:.14s;border:1px solid transparent}
+  .sc-item:hover{background:var(--blue-50)}
+  .sc-item.on{background:var(--blue-50);border-color:#D3E2FD;box-shadow:0 2px 8px rgba(27,98,245,.08)}
+  .sc-line{display:flex;align-items:center;gap:7px}
+  .sc-n{font-size:13.5px;font-weight:700}
+  .sc-item.on .sc-n{color:var(--blue-700)}
+  .sc-meta{display:flex;align-items:center;gap:8px;margin-top:7px}
+  .sc-bar{flex:1;height:4px;border-radius:3px;background:#EDF1F7;overflow:hidden}
+  .sc-bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--blue-500),var(--blue-600))}
+  .sc-bar i.full{background:linear-gradient(90deg,#2FC77E,var(--green))}
+  .sc-pct{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .sc-foot{padding:11px 16px;border-top:1px solid var(--line);background:#FCFDFF}
+
+  .perm-card{flex:1;min-width:0}
+  .pc-head{display:flex;align-items:flex-start;gap:16px;padding:14px 18px;border-bottom:1px solid var(--line);
+    flex-wrap:wrap}
+  .pch-t{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+  .pch-s{font-size:12px;color:var(--muted);margin-top:5px;max-width:520px;line-height:1.6}
+  .pch-r{display:flex;align-items:center;gap:9px;margin-left:auto;flex-wrap:wrap}
+  .mini-field{display:flex;align-items:center;gap:7px}
+  .mini-field label{font-size:12px;color:var(--muted);white-space:nowrap}
+  .mini-field select{height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 30px 0 10px;
+    font-size:12.5px;font-family:inherit;color:var(--text);background:#fff;outline:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
+  .mini-field select:disabled{background:#F7F9FC;color:var(--muted);cursor:not-allowed}
+
+  .pc-bar{display:flex;align-items:center;gap:10px;padding:9px 18px;background:#FCFDFF;
+    border-bottom:1px solid var(--line);font-size:12.5px;color:var(--text-2);flex-wrap:wrap}
+  .pc-bar b{color:var(--blue-700);font-weight:700;font-variant-numeric:tabular-nums}
+  .pc-bar .dot{color:#D3DBE6}
+  .pc-bar .spacer{flex:1}
+  .dirty{color:var(--orange);font-weight:600}
+  .locked-tip{display:flex;align-items:center;gap:6px;background:var(--s-admin-bg);color:var(--s-admin);
+    font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px}
+
+  .tree-wrap{max-height:calc(100vh - 300px);overflow:auto}
+  table.tree{width:100%;min-width:640px;border-collapse:collapse;table-layout:fixed}
+  table.tree thead th{position:sticky;top:0;z-index:3;background:var(--blue-50);color:var(--text-2);
+    font-size:12px;font-weight:600;text-align:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+  table.tree thead th:first-child{text-align:left;padding-left:18px}
+  table.tree td{padding:9px 12px;border-bottom:1px solid #F2F5F9;font-size:13px;text-align:center;
+    vertical-align:middle}
+  table.tree td:first-child{text-align:left;padding-left:18px}
+  table.tree tr:last-child td{border-bottom:none}
+
+  tr.band td{background:#F7FAFF;padding:8px 18px;text-align:left;border-bottom:1px solid var(--line)}
+  .band-in{display:flex;align-items:center;gap:9px}
+  .band-in .bcount{margin-left:auto;font-size:11.5px;color:var(--muted)}
+  tr.band.dim td{background:#FBFCFE}
+  .dimtext{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+
+  tr.mod td{background:#FDFEFF}
+  tr.mod:hover td{background:#F8FBFF}
+  tr.leaf:hover td{background:#F8FBFF}
+  tr.dim td{opacity:.5}
+  .nm{display:flex;align-items:center;gap:8px}
+  .nm .t{font-weight:700;font-size:13.5px}
+  .nm .cnt{font-size:11px;color:var(--muted);font-weight:400}
+  .lfname{display:flex;align-items:center;gap:8px;padding-left:20px}
+  .lfname::before{content:"";width:5px;height:5px;border-radius:50%;background:#C9D4E4;flex:0 0 auto}
+
+  .ck{width:16px;height:16px;accent-color:var(--blue-600);cursor:pointer;vertical-align:-3px}
+  .ck:disabled{cursor:not-allowed}
+  .ck-na{font-size:11.5px;color:#C3CCD9}
+  .ck-sub{font-size:11px;color:var(--muted);margin-left:2px;font-variant-numeric:tabular-nums}
+
+  .tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;padding:2px 9px;
+    border-radius:6px;white-space:nowrap;line-height:1.7}
+  .tag.personal{background:var(--s-personal-bg);color:var(--s-personal)}
+  .tag.enterprise{background:var(--s-enterprise-bg);color:var(--s-enterprise)}
+  .tag.daka{background:var(--s-daka-bg);color:var(--s-daka)}
+  .tag.admin{background:var(--s-admin-bg);color:var(--s-admin)}
+  .tag.gray{background:var(--gray-bg);color:#6B7989}
+  .tag.t-op{background:#FFF6E8;color:#B4740A}
+  .tag.t-menu{background:#EEF3FB;color:#3C5B85}
+
+  .pc-foot{padding:12px 18px;font-size:12px;color:var(--muted);background:#FCFDFF;border-top:1px solid var(--line);
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .pc-foot .spacer{flex:1}
+  .pc-foot b{color:var(--text-2)}
+
+  .btn{height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap}
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn:disabled:hover{border-color:var(--line-strong);color:var(--text-2);background:#fff}
+  .btn-primary{background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;color:#fff;
+    font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff}
+  .btn-primary:disabled{background:#C9D8F5;box-shadow:none}
+  .link{color:var(--blue-600);cursor:pointer;font-size:12.5px;background:none;border:none;font-family:inherit;padding:0}
+  .link:hover{text-decoration:underline}
+
+  .toast{position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:74vw}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1180px){
+    .perm-layout{flex-direction:column}
+    .side-card{width:100%;flex:1 1 auto;position:static}
+  }
+
+  /* ===== 菜单（18 项）：统一密度 + AI 徽标，保证 1680×1000 一屏排完 ===== */
+  .nav{padding:8px 10px}
+  .nav-group{margin-bottom:0}
+  .nav-group-title{padding:5px 10px 4px;font-size:11px;letter-spacing:.3px}
+  .nav-item{padding:6px 11px;font-size:13.5px;line-height:1.35;margin-bottom:0;border-radius:8px}
+  .nav-item.child{padding-left:11px;font-size:13.5px}
+  .nav-item.child::before{display:none}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;padding:0 6px;border-radius:9px;font-weight:600;line-height:16px}
+  .nav-item .badge.ai{background:var(--blue-100);color:var(--blue-600);letter-spacing:.4px}
+  .nav-item.active .badge.ai{background:rgba(255,255,255,.26);color:#fff}
+</style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <a class="nav-item" href="企业.html">企业</a>
+        <a class="nav-item" href="企业联系人.html">企业联系人</a>
+        <a class="nav-item" href="大咖.html">大咖</a>
+        <a class="nav-item" href="职业规划.html">职业规划</a>
+        <a class="nav-item" href="岗位管理.html">岗位管理</a>
+        <a class="nav-item" href="项目大厅.html">项目大厅</a>
+        <a class="nav-item" href="就业课程.html">就业课程</a>
+        <a class="nav-item" href="机构管理.html">机构管理</a>
+        <a class="nav-item" href="申请管理.html">申请管理</a>
+        <a class="nav-item" href="投诉处理.html">投诉处理</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">权限设置</div>
+        <a class="nav-item child" href="角色管理.html">角色管理</a>
+        <a class="nav-item child" href="功能管理.html">功能管理</a>
+        <a class="nav-item child active" href="权限.html">权限</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <a class="nav-item" href="系统配置.html">系统配置</a>
+        <a class="nav-item" href="字典管理.html">字典管理</a>
+        <a class="nav-item" href="收费规则.html">收费规则</a>
+        <a class="nav-item" href="充值记录.html">充值记录</a>
+        <a class="nav-item" href="导入Agent.html">导入Agent<span class="badge ai">AI</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">权限设置 / <b>权限</b></div>
+      <div class="spacer"></div>
+      <div class="model-tip">先选角色，再按功能点勾「可见 / 可操作」；模块级可一键全选</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div>
+          <div class="page-title">权限</div>
+        </div>
+      </div>
+
+      <div class="perm-layout">
+        <!-- 左：角色 -->
+        <aside class="card side-card">
+          <div class="sc-head">角色 <span class="cnt" id="roleCnt">3</span></div>
+          <div class="sc-list" id="roleList"></div>
+          <div class="sc-foot">
+            <button class="link" id="toRole">角色管理 →</button>
+          </div>
+        </aside>
+
+        <!-- 右：功能权限 -->
+        <section class="card perm-card">
+          <div class="pc-head">
+            <div>
+              <div class="pch-t">
+                <span id="curName">—</span>
+              </div>
+              <div class="pch-s" id="curDesc"></div>
+            </div>
+            <div class="pch-r">
+              <div class="mini-field">
+                <label>数据范围</label>
+                <select id="scopeSel">
+                  <option value="all">全部数据</option>
+                  <option value="own">本企业数据</option>
+                  <option value="self">仅本人数据</option>
+                </select>
+              </div>
+              <button class="btn" id="btnAll">全选本端</button>
+              <button class="btn" id="btnNone">清空本端</button>
+              <button class="btn btn-primary" id="btnSave" disabled>保存</button>
+            </div>
+          </div>
+
+          <div class="pc-bar">
+            <span>已授权 <b id="cntGrant">0</b> / <b id="cntTotal">0</b> 项功能</span>
+            <span class="dot">·</span>
+            <span>其中可操作 <b id="cntOp">0</b> 项</span>
+            <div class="spacer"></div>
+            <span id="dirtyTip">未修改</span>
+          </div>
+
+          <div class="tree-wrap">
+            <table class="tree">
+              <thead>
+                <tr>
+                  <th>功能（端 / 模块 / 功能点）</th>
+                  <th style="width:88px">可见</th>
+                  <th style="width:102px">可操作</th>
+                </tr>
+              </thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="pc-foot">
+            <span id="footNote"></span>
+            <div class="spacer"></div>
+            <span>保存后写入本机数据，角色管理 / 功能管理同步可见</span>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- rbac-data.js 内联：本页为单文件，可独立打开或直接发送，无需同目录依赖 -->
+<script>
+/* ============================================================
+   高科共享人才 · 后台 RBAC 数据层（三页共用）
+   供 list_role_manage.html / list_function_manage.html / list_permission.html 使用
+   功能清单来源：《高科共享人才-MVP需求确认思维导图》五大板块
+   数据落在 localStorage：gkxr_rbac_v1（三个页面共享同一份，改完互相可见）
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  var KEY = 'gkxr_rbac_v1';
+  var VERSION = 2;   // 2：后台运营「系统设置」新增「充值记录」菜单
+
+  /* 端（一级归属） */
+  var SIDES = {
+    personal:   { name: '个人端',   sub: '微信小程序',        order: 1 },
+    enterprise: { name: '企业端',   sub: '小程序 + 企业后台',  order: 2 },
+    daka:       { name: '服务商端', sub: '大咖工作台',         order: 3 },
+    admin:      { name: '后台运营', sub: '运营管理平台',       order: 4 }
+  };
+
+  var TYPES = { dir: '目录', menu: '菜单', op: '操作' };
+
+  /* ---------- 功能清单（模块 = 目录，其下为功能点） ---------- */
+  var RAW = [
+    /* ===== 一、个人端 | 找机会与成长 ===== */
+    { side: 'personal', name: '招聘', code: 'p.recruit', funcs: [
+      { code: 'p.recruit.browse',   name: '浏览、搜索、筛选岗位', type: 'menu', route: '/pages/job/list',      status: 1 },
+      { code: 'p.recruit.deliver',  name: '完善简历并投递',       type: 'op',   route: '/pages/resume/edit',   status: 1 },
+      { code: 'p.recruit.progress', name: '查看投递与面试进度',   type: 'menu', route: '/pages/apply/list',    status: 1 }
+    ]},
+    { side: 'personal', name: '项目外包', code: 'p.project', funcs: [
+      { code: 'p.project.browse', name: '浏览全国项目',           type: 'menu', route: '/pages/project/list',  status: 1 },
+      { code: 'p.project.apply',  name: '提交能力资料并申请接单', type: 'op',   route: '/pages/project/apply', status: 1 },
+      { code: 'p.project.order',  name: '查看申请与项目订单',     type: 'menu', route: '/pages/project/order', status: 1 }
+    ]},
+    { side: 'personal', name: '岗位外包', code: 'p.dispatch', funcs: [
+      { code: 'p.dispatch.browse', name: '浏览外包岗位',           type: 'menu', route: '/pages/dispatch/list',  status: 1 },
+      { code: 'p.dispatch.apply',  name: '申请灵活用工或派遣岗位', type: 'op',   route: '/pages/dispatch/apply', status: 1 },
+      { code: 'p.dispatch.status', name: '查看录用与服务状态',     type: 'menu', route: '/pages/dispatch/status',status: 1 }
+    ]},
+    { side: 'personal', name: 'AI私教', code: 'p.tutor', funcs: [
+      { code: 'p.tutor.browse', name: '浏览讲师与服务套餐', type: 'menu', route: '/pages/tutor/list',  status: 1 },
+      { code: 'p.tutor.book',   name: '预约沟通或私教服务', type: 'op',   route: '/pages/tutor/book',  status: 1 },
+      { code: 'p.tutor.order',  name: '查看预约订单',       type: 'menu', route: '/pages/tutor/order', status: 1 }
+    ]},
+    { side: 'personal', name: 'AI培训', code: 'p.training', funcs: [
+      { code: 'p.training.browse', name: '浏览培训课程',   type: 'menu', route: '/pages/course/list', status: 1 },
+      { code: 'p.training.enroll', name: '报名课程',       type: 'op',   route: '/pages/course/pay',  status: 1 },
+      { code: 'p.training.mine',   name: '查看已报名课程', type: 'menu', route: '/pages/course/mine', status: 1 }
+    ]},
+    { side: 'personal', name: 'AI职业规划', code: 'p.career', funcs: [
+      { code: 'p.career.submit',   name: '提交个人背景与职业诉求', type: 'op',   route: '/pages/career/form',     status: 1 },
+      { code: 'p.career.book',     name: '预约职业顾问',           type: 'op',   route: '/pages/career/book',     status: 1 },
+      { code: 'p.career.progress', name: '查看服务进度与结果',     type: 'menu', route: '/pages/career/progress', status: 1 }
+    ]},
+    { side: 'personal', name: 'AI实习', code: 'p.intern', funcs: [
+      { code: 'p.intern.browse',   name: '浏览实习岗位', type: 'menu', route: '/pages/intern/list',   status: 1 },
+      { code: 'p.intern.apply',    name: '投递实习简历', type: 'op',   route: '/pages/intern/apply',  status: 1 },
+      { code: 'p.intern.progress', name: '查看申请进度', type: 'menu', route: '/pages/intern/progress',status: 1 }
+    ]},
+    { side: 'personal', name: '数智化咨询', code: 'p.consult', funcs: [
+      { code: 'p.consult.entry', name: '咨询入口（是否向个人开放待客户确认）', type: 'menu', route: '待定', status: 0 }
+    ]},
+
+    /* ===== 二、企业端 | 招人、发包与采购 ===== */
+    { side: 'enterprise', name: '招聘', code: 'e.recruit', funcs: [
+      { code: 'e.recruit.auth',   name: '企业认证',               type: 'op',   route: '/biz/auth',         status: 1 },
+      { code: 'e.recruit.job',    name: '发布与管理招聘岗位',     type: 'menu', route: '/biz/job/list',     status: 1 },
+      { code: 'e.recruit.resume', name: '查看简历',               type: 'menu', route: '/biz/resume/list',  status: 1 },
+      { code: 'e.recruit.invite', name: '邀约面试',               type: 'op',   route: '/biz/resume/invite',status: 1 },
+      { code: 'e.recruit.result', name: '记录面试结果',           type: 'op',   route: '/biz/interview/log',status: 1 }
+    ]},
+    { side: 'enterprise', name: '数智化咨询', code: 'e.consult', funcs: [
+      { code: 'e.consult.submit', name: '提交企业咨询需求',         type: 'op',   route: '/biz/consult/form',  status: 1 },
+      { code: 'e.consult.form',   name: '填写预算、周期与问题描述', type: 'op',   route: '/biz/consult/edit',  status: 1 },
+      { code: 'e.consult.match',  name: '查看匹配结果与咨询工单',   type: 'menu', route: '/biz/consult/order', status: 1 }
+    ]},
+    { side: 'enterprise', name: '项目外包', code: 'e.project', funcs: [
+      { code: 'e.project.publish',   name: '发布项目需求',             type: 'op',   route: '/biz/project/edit',     status: 1 },
+      { code: 'e.project.form',      name: '填写预算、周期与所需技能', type: 'op',   route: '/biz/project/form',     status: 1 },
+      { code: 'e.project.applicant', name: '查看申请人或团队',         type: 'menu', route: '/biz/project/applicant',status: 1 },
+      { code: 'e.project.confirm',   name: '确认承接方并生成订单',     type: 'op',   route: '/biz/project/confirm',  status: 1 }
+    ]},
+    { side: 'enterprise', name: '岗位外包', code: 'e.dispatch', funcs: [
+      { code: 'e.dispatch.submit',    name: '提交外包用人需求',         type: 'op',   route: '/biz/dispatch/form',    status: 1 },
+      { code: 'e.dispatch.form',      name: '填写岗位、人数、周期与地点', type: 'op', route: '/biz/dispatch/edit',    status: 1 },
+      { code: 'e.dispatch.recommend', name: '查看平台推荐人才',         type: 'menu', route: '/biz/dispatch/talent',  status: 1 }
+    ]},
+    { side: 'enterprise', name: 'AI私教', code: 'e.tutor', funcs: [
+      { code: 'e.tutor.purchase', name: '企业采购私教课程（是否允许待客户确认）', type: 'op', route: '待定', status: 0 }
+    ]},
+    { side: 'enterprise', name: 'AI培训', code: 'e.training', funcs: [
+      { code: 'e.training.buy',    name: '采购企业内训',         type: 'op',   route: '/biz/training/buy',   status: 1 },
+      { code: 'e.training.submit', name: '提交培训主题、人数与时间', type: 'op', route: '/biz/training/edit',  status: 1 },
+      { code: 'e.training.order',  name: '查看培训订单',         type: 'menu', route: '/biz/training/order', status: 1 }
+    ]},
+    { side: 'enterprise', name: 'AI职业规划', code: 'e.career', funcs: [
+      { code: 'e.career.staff', name: '员工职业规划服务（是否提供待确认）', type: 'op', route: '待定', status: 0 }
+    ]},
+    { side: 'enterprise', name: 'AI实习', code: 'e.intern', funcs: [
+      { code: 'e.intern.publish', name: '发布实习岗位',     type: 'op',   route: '/biz/intern/edit',  status: 1 },
+      { code: 'e.intern.need',    name: '提交实习生需求',   type: 'op',   route: '/biz/intern/need',  status: 1 },
+      { code: 'e.intern.screen',  name: '查看与筛选实习生', type: 'menu', route: '/biz/intern/list',  status: 1 }
+    ]},
+
+    /* ===== 三、服务商端 | 提供服务 ===== */
+    { side: 'daka', name: '入驻与资质', code: 'd.entry', funcs: [
+      { code: 'd.entry.submit', name: '提交个人、机构、团队资质', type: 'op',   route: '/daka/apply',  status: 1 },
+      { code: 'd.entry.audit',  name: '查看审核进度',             type: 'menu', route: '/daka/status', status: 1 }
+    ]},
+    { side: 'daka', name: '项目与咨询', code: 'd.business', funcs: [
+      { code: 'd.business.project', name: '承接项目外包',         type: 'op',   route: '/daka/project/take', status: 1 },
+      { code: 'd.business.consult', name: '承接数智化咨询',       type: 'op',   route: '/daka/consult/take', status: 1 },
+      { code: 'd.business.order',   name: '查看项目和咨询工单',   type: 'menu', route: '/daka/order',        status: 1 }
+    ]},
+    { side: 'daka', name: '课程与服务', code: 'd.service', funcs: [
+      { code: 'd.service.course', name: '上架 AI 培训课程',     type: 'op', route: '/daka/course/edit', status: 1 },
+      { code: 'd.service.tutor',  name: '上架 AI 私教服务',     type: 'op', route: '/daka/tutor/edit',  status: 1 },
+      { code: 'd.service.career', name: '上架 AI 职业规划服务', type: 'op', route: '/daka/career/edit', status: 1 }
+    ]},
+    { side: 'daka', name: '收益管理', code: 'd.income', funcs: [
+      { code: 'd.income.order', name: '查看订单',           type: 'menu', route: '/daka/income/order', status: 1 },
+      { code: 'd.income.share', name: '查看收益与分成记录', type: 'menu', route: '/daka/income/share', status: 1 }
+    ]},
+
+    /* ===== 四、后台运营 | 一期核心 ===== */
+    { side: 'admin', name: '审核管理', code: 'a.audit', funcs: [
+      { code: 'a.audit.qual',    name: '个人、企业、服务商资质审核',   type: 'op', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.audit.content', name: '岗位、项目、课程、服务内容审核', type: 'op', route: 'infoshar_bus_manage.html', status: 1 }
+    ]},
+    { side: 'admin', name: '人工撮合', code: 'a.match', funcs: [
+      { code: 'a.match.talent',  name: '岗位与人才匹配',         type: 'op', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.match.project', name: '项目与个人或团队匹配',   type: 'op', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.match.consult', name: '咨询需求与服务商匹配',   type: 'op', route: 'infoshar_bus_manage.html', status: 1 }
+    ]},
+    { side: 'admin', name: '订单管理', code: 'a.order', funcs: [
+      { code: 'a.order.training', name: '培训报名订单', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.order.project',  name: '项目外包订单', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.order.tutor',    name: '私教预约订单', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.order.career',   name: '职业规划订单', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.order.consult',  name: '企业咨询工单', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 }
+    ]},
+    { side: 'admin', name: '分成结算', code: 'a.settle', funcs: [
+      { code: 'a.settle.ratio',  name: '配置平台、服务商、渠道分成比例', type: 'op',   route: 'list_charge_rule.html', status: 1 },
+      { code: 'a.settle.flow',   name: '记录每笔订单分成流水',           type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.settle.export', name: '导出对账',                       type: 'op',   route: 'infoshar_bus_manage.html', status: 1 }
+    ]},
+    { side: 'admin', name: '主体与内容', code: 'a.user', funcs: [
+      { code: 'a.user.company',   name: '企业管理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.daka',      name: '大咖管理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.job',       name: '岗位管理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.project',   name: '项目大厅', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.course',    name: '就业课程', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.org',       name: '机构管理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.apply',     name: '申请管理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 },
+      { code: 'a.user.complaint', name: '投诉处理', type: 'menu', route: 'infoshar_bus_manage.html', status: 1 }
+    ]},
+    { side: 'admin', name: '权限设置', code: 'a.rbac', funcs: [
+      { code: 'a.rbac.role',       name: '角色管理', type: 'menu', route: 'list_role_manage.html',     status: 1 },
+      { code: 'a.rbac.function',   name: '功能管理', type: 'menu', route: 'list_function_manage.html', status: 1 },
+      { code: 'a.rbac.permission', name: '权限',     type: 'menu', route: 'list_permission.html',      status: 1 }
+    ]},
+    { side: 'admin', name: '系统设置', code: 'a.setting', funcs: [
+      { code: 'a.setting.config', name: '系统配置',  type: 'menu', route: 'list_system_setting.html',       status: 1 },
+      { code: 'a.setting.dict',   name: '字典管理',  type: 'menu', route: 'list_dictionary_management.html', status: 1 },
+      { code: 'a.setting.charge', name: '收费规则',  type: 'menu', route: 'list_charge_rule.html',          status: 1 },
+      { code: 'a.setting.recharge', name: '充值记录', type: 'menu', route: 'list_recharge_record.html',    status: 1 },
+      { code: 'a.setting.agent',  name: '导入 Agent', type: 'menu', route: 'import_agent.html',             status: 1 }
+    ]}
+  ];
+
+  /* ---------- 构建扁平功能列表 ---------- */
+  function buildFuncs() {
+    var out = [];
+    var sideSort = {};
+    RAW.forEach(function (m) {
+      sideSort[m.side] = (sideSort[m.side] || 0) + 1;
+      out.push({
+        code: m.code, pid: '', name: m.name, side: m.side,
+        type: 'dir', route: '—', status: 1, sort: sideSort[m.side], remark: ''
+      });
+      var fs = m.funcs.slice();
+      fs.forEach(function (f, i) {
+        out.push({
+          code: f.code, pid: m.code, name: f.name, side: m.side,
+          type: f.type, route: f.route, status: f.status, sort: i + 1, remark: ''
+        });
+      });
+    });
+    return out;
+  }
+
+  /* ---------- 角色 ---------- */
+  function defaultRoles(funcs) {
+    var all = {};
+    funcs.forEach(function (f) { if (f.type !== 'dir') all[f.code] = { v: 1, o: 1 }; });
+
+    function pickFor(side, excludePrefix) {
+      var p = {};
+      funcs.forEach(function (f) {
+        if (f.type === 'dir' || f.side !== side) return;
+        if (excludePrefix && f.code.indexOf(excludePrefix) === 0) return;
+        p[f.code] = { v: 1, o: 1 };
+      });
+      return p;
+    }
+
+    return [
+      {
+        id: 'r_super', name: '超级管理员', code: 'super_admin', side: 'admin', scope: 'all',
+        desc: '平台运营最高权限，拥有全部功能与全量数据，不可编辑、停用或删除',
+        status: 1, locked: 1, perms: all, updatedAt: '2026-09-30 10:00', updatedBy: '系统初始化'
+      },
+      {
+        id: 'r_ent', name: '企业', code: 'enterprise', side: 'enterprise', scope: 'own',
+        desc: '企业账号：发岗位 / 发项目 / 采购服务 / 查看本企业数据',
+        // 初始态：企业端全开，仅「AI 实习」留待二期开放，用来演示部分授权的场景
+        status: 1, locked: 0, perms: pickFor('enterprise', 'e.intern.'),
+        updatedAt: '2026-10-19 15:22', updatedBy: '陈思远'
+      },
+      {
+        id: 'r_daka', name: '大咖', code: 'daka', side: 'daka', scope: 'self',
+        desc: '服务商账号（讲师 / 顾问 / 团队）：入驻、接单、上架服务、查收益',
+        status: 1, locked: 0, perms: pickFor('daka'), updatedAt: '2026-10-19 15:22', updatedBy: '陈思远'
+      }
+    ];
+  }
+
+  /* ---------- 角色成员（示例数据） ---------- */
+  var MEMBERS = {
+    r_super: [
+      { name: '陈思远', account: 'chensy', dept: '平台运营中心', status: 1, last: '2026-10-21 09:42' },
+      { name: '李敏',   account: 'limin',  dept: '平台运营中心', status: 1, last: '2026-10-20 18:11' },
+      { name: '赵启明', account: 'zhaoqm', dept: '技术中心',     status: 1, last: '2026-10-19 14:03' }
+    ],
+    r_ent: [
+      { name: '王海涛', account: 'wanght', dept: '华辰智造 · HR',     status: 1, last: '2026-10-21 08:55' },
+      { name: '刘倩',   account: 'liuqian', dept: '华辰智造 · 项目',  status: 1, last: '2026-10-20 17:30' },
+      { name: '孙宇',   account: 'sunyu',  dept: '博联数据 · 招聘',   status: 1, last: '2026-10-20 11:07' },
+      { name: '周文',   account: 'zhouwen', dept: '博联数据 · 采购',  status: 0, last: '2026-09-28 16:22' },
+      { name: '何晓',   account: 'hexiao', dept: '云启教育 · 内训',   status: 1, last: '2026-10-18 10:40' }
+    ],
+    r_daka: [
+      { name: '郑立群', account: 'zhenglq', dept: 'AI 私教 · 讲师',   status: 1, last: '2026-10-21 07:58' },
+      { name: '马晓东', account: 'maxd',    dept: '职业规划 · 顾问',  status: 1, last: '2026-10-20 21:04' },
+      { name: '柳青',   account: 'liuqing', dept: '技术外包 · 团队长', status: 1, last: '2026-10-20 15:36' },
+      { name: '孟凡',   account: 'mengfan', dept: 'AI 培训 · 机构',   status: 0, last: '2026-09-30 09:12' }
+    ]
+  };
+
+  /* ---------- 读写 ---------- */
+  function seed() {
+    var funcs = buildFuncs();
+    return { version: VERSION, funcs: funcs, roles: defaultRoles(funcs), savedAt: '' };
+  }
+
+  /* 老数据（version < 2）补齐新增功能点，避免本机存量状态看不到新菜单 */
+  function migrate(st) {
+    if (st.version === VERSION) return st;
+    var have = {};
+    st.funcs.forEach(function (f) { have[f.code] = 1; });
+    seed().funcs.forEach(function (f) { if (!have[f.code]) st.funcs.push(f); });
+    // 内置超管恒为全量权限
+    var sup = st.roles.filter(function (r) { return r.locked; })[0];
+    if (sup) {
+      st.funcs.forEach(function (f) {
+        if (f.type !== 'dir' && !sup.perms[f.code]) sup.perms[f.code] = { v: 1, o: 1 };
+      });
+    }
+    st.version = VERSION;
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+    return st;
+  }
+
+  function load() {
+    var base = seed();
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return base;
+      var st = JSON.parse(raw);
+      if (!st || !st.funcs || !st.roles) return base;
+      return migrate(st);
+    } catch (e) {
+      return base;
+    }
+  }
+
+  function save(state) {
+    try {
+      state.savedAt = nowStr();
+      localStorage.setItem(KEY, JSON.stringify(state));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function reset() {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+  }
+
+  /* ---------- 工具 ---------- */
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function nowStr(d) {
+    d = d || new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+      ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+
+  function modules(state, side) {
+    return state.funcs.filter(function (f) {
+      return f.type === 'dir' && (!side || f.side === side);
+    }).sort(function (a, b) { return a.sort - b.sort; });
+  }
+  function children(state, pid) {
+    return state.funcs.filter(function (f) { return f.pid === pid; })
+      .sort(function (a, b) { return a.sort - b.sort; });
+  }
+  function leafsOfSide(state, side) {
+    return state.funcs.filter(function (f) { return f.type !== 'dir' && f.side === side; });
+  }
+  function countPerms(role, state) {
+    return Object.keys(role.perms || {}).filter(function (k) {
+      return state.funcs.some(function (f) { return f.code === k; });
+    }).length;
+  }
+  function sideOrder() { return ['personal', 'enterprise', 'daka', 'admin']; }
+
+  global.RBAC = {
+    KEY: KEY, SIDES: SIDES, TYPES: TYPES, MEMBERS: MEMBERS,
+    seed: seed, load: load, save: save, reset: reset,
+    modules: modules, children: children, leafsOfSide: leafsOfSide,
+    countPerms: countPerms, sideOrder: sideOrder,
+    nowStr: nowStr,
+    scopeName: function (s) {
+      return { all: '全部数据', own: '本企业数据', self: '仅本人数据' }[s] || s;
+    }
+  };
+})(window);
+</script>
+<script>
+(function(){
+  if(!window.RBAC){
+    document.body.innerHTML = '<div style="padding:40px;font-size:14px">数据层加载失败，请刷新页面重试。</div>';
+    return;
+  }
+  var $ = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+
+  var S = RBAC.load();
+  var SIDE = RBAC.SIDES;
+  var TYPE_NAME = RBAC.TYPES;
+
+  var qs = new URLSearchParams(location.search);
+  var roleId = qs.get('role');
+  var readonlyParam = qs.get('readonly') === '1';
+
+  var role = S.roles.filter(function(r){ return r.id === roleId; })[0] || S.roles[1] || S.roles[0];
+  var dirty = false;
+
+  var toastTimer;
+  function toast(msg){
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function isLocked(){ return !!role.locked || readonlyParam; }
+
+  /* ---------- 授权判断 ---------- */
+  function leafsOf(pid){
+    return S.funcs.filter(function(f){ return f.pid === pid; })
+      .sort(function(a,b){ return a.sort - b.sort; });
+  }
+  function granted(code){ return role.perms[code] || null; }
+  function grant(code, isOp){
+    role.perms[code] = isOp ? { v:1, o:1 } : { v:1, o:0 };
+    dirty = true;
+  }
+  function revoke(code){ delete role.perms[code]; dirty = true; }
+
+  function shownSides(){
+    return role.locked ? RBAC.sideOrder() : [role.side];
+  }
+  function hiddenSides(){
+    return RBAC.sideOrder().filter(function(s){ return shownSides().indexOf(s) < 0; });
+  }
+  function shownLeafs(){
+    return S.funcs.filter(function(f){
+      return f.type !== 'dir' && shownSides().indexOf(f.side) > -1;
+    });
+  }
+
+  /* ---------- 左侧角色 ---------- */
+  function renderRoles(){
+    $('roleCnt').textContent = S.roles.length;
+    $('roleList').innerHTML = S.roles.map(function(r){
+      var leafs = r.locked
+        ? S.funcs.filter(function(f){ return f.type !== 'dir'; })
+        : RBAC.leafsOfSide(S, r.side);
+      var cnt = RBAC.countPerms(r, S);
+      var pct = leafs.length ? Math.round(cnt / leafs.length * 100) : 0;
+      var mem = (RBAC.MEMBERS[r.id] || []).length;
+      return '<div class="sc-item ' + (r.id === role.id ? 'on' : '') + '" data-id="' + r.id + '">' +
+        '<div class="sc-line"><span class="sc-n">' + esc(r.name) + '</span>' +
+          '<span class="tag ' + r.side + '" style="margin-left:auto">' + SIDE[r.side].name + '</span></div>' +
+        '<div class="sc-meta"><div class="sc-bar"><i class="' + (pct === 100 ? 'full' : '') +
+          '" style="width:' + pct + '%"></i></div>' +
+          '<span class="sc-pct">' + cnt + '/' + leafs.length + '</span></div>' +
+        '</div>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('.sc-item'), function(el){
+      el.onclick = function(){
+        if(dirty && !confirm('当前角色有未保存的改动，切换将丢弃，确定继续？')) return;
+        location.href = '权限.html?role=' + el.dataset.id + (readonlyParam ? '&readonly=1' : '');
+      };
+    });
+  }
+
+  /* ---------- 右侧树 ---------- */
+  function renderHead(){
+    $('curName').textContent = role.name;
+    $('curDesc').textContent = role.desc || '（该角色暂无描述）';
+
+    $('scopeSel').value = role.scope;
+    $('scopeSel').disabled = isLocked();
+
+    var lock = isLocked();
+    $('btnAll').disabled = lock;
+    $('btnNone').disabled = lock;
+
+    if(role.locked){
+      if(!document.querySelector('.locked-tip')){
+        var tip = document.createElement('span');
+        tip.className = 'locked-tip';
+        tip.textContent = '内置角色 · 权限固定为全部功能';
+        document.querySelector('.pc-head .pch-r').insertBefore(tip, document.querySelector('.pch-r').firstChild);
+      }
+    }
+    if(readonlyParam && !role.locked && !document.querySelector('.locked-tip')){
+      var tip2 = document.createElement('span');
+      tip2.className = 'locked-tip';
+      tip2.textContent = '只读查看';
+      document.querySelector('.pc-head .pch-r').insertBefore(tip2, document.querySelector('.pch-r').firstChild);
+    }
+  }
+
+  function renderTree(){
+    var lock = isLocked();
+    var html = [];
+
+    shownSides().forEach(function(side){
+      var mods = S.funcs.filter(function(f){ return f.type === 'dir' && f.side === side; })
+        .sort(function(a,b){ return a.sort - b.sort; });
+      var sideLeafs = S.funcs.filter(function(f){ return f.type !== 'dir' && f.side === side; });
+      var sideGranted = sideLeafs.filter(function(f){ return !!granted(f.code); }).length;
+
+      html.push('<tr class="band"><td colspan="3"><div class="band-in">' +
+        '<span class="tag ' + side + '">' + SIDE[side].name + '</span>' +
+        '<span style="font-size:11.5px;color:var(--muted)">' + SIDE[side].sub + '</span>' +
+        '<span class="bcount">已授权 ' + sideGranted + ' / ' + sideLeafs.length + ' 项</span>' +
+        '</div></td></tr>');
+
+      mods.forEach(function(m){
+        var kids = leafsOf(m.code);
+        var active = kids.filter(function(k){ return k.status; });
+        var gv = kids.filter(function(k){ return granted(k.code); }).length;
+        var all = kids.length && gv === kids.length;
+        var some = gv > 0 && !all;
+
+        var ops = kids.filter(function(k){ return k.type === 'op'; });
+        var opsGranted = ops.filter(function(k){ return granted(k.code) && granted(k.code).o; }).length;
+
+        var ckMod = lock
+          ? '<input type="checkbox" class="ck" disabled ' + (all ? 'checked' : '') + '>'
+          : '<input type="checkbox" class="ck" data-mod="' + m.code + '" ' + (all ? 'checked' : '') +
+            (some ? ' data-indet="1"' : '') + (kids.length ? '' : ' disabled') + '>';
+
+        html.push('<tr class="mod"><td><div class="nm"><span class="t">' + esc(m.name) + '</span>' +
+          '<span class="cnt">' + kids.length + ' 项' + (active.length < kids.length ? ' · ' + (kids.length - active.length) + ' 停用' : '') + '</span>' +
+          '</div></td>' +
+          '<td>' + ckMod + '</td>' +
+          '<td>' + (ops.length ? '<span class="ck-sub">' + opsGranted + '/' + ops.length + '</span>' : '<span class="ck-na">—</span>') + '</td></tr>');
+
+        kids.forEach(function(k){
+          var g = granted(k.code);
+          var dis = lock || !k.status;
+          var ckCell, opCell;
+
+          if(k.type === 'op'){
+            ckCell = '<span class="ck-na">随操作</span>';
+            opCell = '<input type="checkbox" class="ck" data-op="' + k.code + '" ' +
+              (g && g.o ? 'checked' : '') + (dis ? ' disabled' : '') + '>';
+          }else{
+            ckCell = '<input type="checkbox" class="ck" data-view="' + k.code + '" ' +
+              (g ? 'checked' : '') + (dis ? ' disabled' : '') + '>';
+            opCell = '<span class="ck-na">—</span>';
+          }
+
+          html.push('<tr class="leaf ' + (k.status ? '' : 'dim') + '"><td>' +
+            '<div class="lfname"><span style="font-size:13px">' + esc(k.name) + '</span>' +
+            '<span class="tag ' + (k.type === 'op' ? 't-op' : 't-menu') + '">' + TYPE_NAME[k.type] + '</span>' +
+            (k.status ? '' : '<span class="tag gray">停用</span>') + '</div></td>' +
+            '<td>' + ckCell + '</td><td>' + opCell + '</td></tr>');
+        });
+      });
+    });
+
+    var hs = hiddenSides();
+    if(hs.length){
+      var n = S.funcs.filter(function(f){ return f.type !== 'dir' && hs.indexOf(f.side) > -1; }).length;
+      html.push('<tr class="band dim"><td colspan="3"><div class="dimtext">' +
+        '其余端：' + hs.map(function(s){ return SIDE[s].name; }).join(' / ') +
+        ' · 共 ' + n + ' 个功能点与本角色无关，不参与授权（角色所属端在「角色管理」里改）' +
+        '</div></td></tr>');
+    }
+
+    $('tbody').innerHTML = html.join('') ||
+      '<tr><td colspan="3" style="padding:40px;color:var(--muted)">该端下暂无功能，请先到「功能管理」新增</td></tr>';
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-indet]'), function(el){
+      el.indeterminate = true;
+    });
+    bindTree();
+    updateCounts();
+  }
+
+  function bindTree(){
+    var lock = isLocked();
+    if(lock) return;
+
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mod]'), function(el){
+      el.onchange = function(){
+        var code = el.dataset.mod;
+        var kids = leafsOf(code);
+        kids.forEach(function(k){
+          if(!k.status) return;
+          if(el.checked) grant(k.code, k.type === 'op'); else revoke(k.code);
+        });
+        renderTree(); renderRoles(); markDirty();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function(el){
+      el.onchange = function(){
+        var code = el.dataset.view;
+        if(el.checked) grant(code, false); else revoke(code);
+        renderTree(); renderRoles(); markDirty();
+      };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-op]'), function(el){
+      el.onchange = function(){
+        var code = el.dataset.op;
+        if(el.checked) grant(code, true); else revoke(code);
+        renderTree(); renderRoles(); markDirty();
+      };
+    });
+  }
+
+  function updateCounts(){
+    var leafs = shownLeafs();
+    var g = leafs.filter(function(f){ return !!granted(f.code); });
+    var ops = g.filter(function(f){ return granted(f.code).o; });
+    $('cntGrant').textContent = g.length;
+    $('cntTotal').textContent = leafs.length;
+    $('cntOp').textContent = ops.length;
+  }
+
+  function markDirty(){
+    dirty = true;
+    $('dirtyTip').textContent = '有未保存的改动';
+    $('dirtyTip').className = 'dirty';
+    $('btnSave').disabled = false;
+  }
+
+  function resetDirty(){
+    dirty = false;
+    $('dirtyTip').textContent = '未修改';
+    $('dirtyTip').className = '';
+    $('btnSave').disabled = true;
+  }
+
+  /* ---------- 动作 ---------- */
+  $('btnAll').onclick = function(){
+    shownLeafs().forEach(function(f){
+      if(!f.status) return;
+      if(!granted(f.code)) grant(f.code, f.type === 'op');
+      else if(f.type === 'op') granted(f.code).o = 1;
+    });
+    renderTree(); renderRoles(); markDirty();
+    toast('已全选本端 ' + shownLeafs().length + ' 项功能');
+  };
+
+  $('btnNone').onclick = function(){
+    if(!confirm('将清空「' + role.name + '」在本端的全部功能授权，确定继续？')) return;
+    shownLeafs().forEach(function(f){ delete role.perms[f.code]; });
+    dirty = true;
+    renderTree(); renderRoles(); markDirty();
+    toast('已清空本端授权');
+  };
+
+  $('scopeSel').onchange = function(){
+    role.scope = $('scopeSel').value;
+    markDirty();
+  };
+
+  $('btnSave').onclick = function(){
+    role.updatedAt = RBAC.nowStr();
+    role.updatedBy = '陈思远';
+    RBAC.save(S);
+    resetDirty();
+    toast('已保存「' + role.name + '」的功能权限（' + RBAC.countPerms(role, S) + ' 项）');
+  };
+
+  $('toRole').onclick = function(){ location.href = '角色管理.html'; };
+
+  window.addEventListener('beforeunload', function(e){
+    if(!dirty) return;
+    e.preventDefault();
+    e.returnValue = '';
+  });
+
+  /* ---------- 菜单 ---------- */
+
+  renderRoles();
+  renderHead();
+  renderTree();
+  resetDirty();
+})();
+</script>
+<!-- nav-common -->
+<script>
+(function(){
+  /* 高亮项自动进入可视区 */
+  var nav = document.querySelector('.sidebar .nav'), act = document.querySelector('.sidebar .nav-item.active');
+  if(nav && act){
+    var nr = nav.getBoundingClientRect(), ar = act.getBoundingClientRect();
+    if(ar.bottom > nr.bottom) nav.scrollTop += (ar.bottom - nr.bottom) + 10;
+    else if(ar.top < nr.top) nav.scrollTop -= (nr.top - ar.top) + 10;
+  }
+  var here = (location.pathname.split('/').pop() || '').toLowerCase();
+  if(here === 'infoshar_bus_manage.html') return;   // 该页菜单由页面自身接管（切换占位页）
+  Array.prototype.forEach.call(document.querySelectorAll('.sidebar .nav-item'), function(el){
+    el.onclick = function(e){
+      var href = el.getAttribute('href');
+      if(href && href !== '#') return;               // 有对应页面，交给浏览器跳转
+      e.preventDefault();
+      var msg = '「' + el.textContent.trim() + '」页未在本次原型范围内';
+      var t = document.getElementById('toast');
+      if(t){
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(window.__navTimer);
+        window.__navTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>

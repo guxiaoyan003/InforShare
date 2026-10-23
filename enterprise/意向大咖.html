@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>意向大咖 - 企业端</title>
+<style>
+  :root{
+    --blue-800:#0A37C2;
+    --blue-700:#0F45E0;
+    --blue-600:#1750F0;
+    --blue-500:#2F6BFF;
+    --blue-400:#5B8CFF;
+    --blue-100:#E1EBFF;
+    --blue-50:#F1F6FF;
+    --line:#E7EDF9;
+    --line-strong:#D8E2F5;
+    --text:#111A2E;
+    --text-2:#46536B;
+    --muted:#8794AB;
+    --bg:#F4F7FD;
+    --white:#fff;
+    --radius:14px;
+    --shadow-sm:0 1px 2px rgba(16,35,80,.05);
+    --shadow-md:0 8px 24px rgba(16,35,80,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  svg{display:block}
+  button{font-family:inherit}
+
+  /* ---------- 骨架 ---------- */
+  .layout{display:flex;min-height:100vh}
+
+  /* ---------- 侧边栏 ---------- */
+  .sidebar{
+    width:236px;flex:0 0 236px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:20;
+  }
+  .logo{
+    height:66px;display:flex;align-items:center;gap:11px;padding:0 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;flex:0 0 36px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 14px rgba(23,80,240,.34);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;line-height:1.25}
+  .logo-text span{display:block;font-size:10.5px;font-weight:500;color:var(--muted);letter-spacing:1.2px;margin-top:2px}
+
+  .nav{padding:14px 12px;display:flex;flex-direction:column;gap:3px}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;height:42px;padding:0 12px;border-radius:10px;
+    color:var(--text-2);font-size:14px;cursor:pointer;user-select:none;
+    transition:background .16s,color .16s,transform .16s;
+  }
+  .nav-item .ico{width:18px;height:18px;flex:0 0 18px;color:#7B88A0;transition:color .16s}
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item:hover .ico{color:var(--blue-500)}
+  .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));
+    color:#fff;font-weight:600;
+    box-shadow:0 8px 18px rgba(23,80,240,.30);
+  }
+  .nav-item.active .ico{color:#fff}
+
+  .sidebar-bottom{
+    margin-top:auto;padding:12px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;gap:3px;
+  }
+  .sidebar-bottom .nav-item{height:40px;font-size:13.5px;color:#5D6B82}
+  .sidebar-bottom .nav-item.active{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));color:#fff;
+  }
+
+  /* ---------- 主区 ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;
+    position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
+  .crumb .sep{color:#C6D1E4}
+  .crumb b{color:var(--text);font-weight:600;font-size:13.5px}
+  .topbar .spacer{flex:1}
+
+  .tbtn{
+    height:36px;padding:0 13px;border-radius:10px;border:1px solid transparent;background:transparent;
+    color:var(--text-2);font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    transition:.16s;position:relative;
+  }
+  .tbtn:hover{background:var(--blue-50);border-color:var(--blue-100);color:var(--blue-600)}
+  .tbtn .ico{width:18px;height:18px;color:#6C7A93}
+  .tbtn:hover .ico{color:var(--blue-600)}
+  .tbtn.me{padding-left:6px}
+  .avatar{
+    width:28px;height:28px;border-radius:50%;flex:0 0 28px;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+    color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 3px 8px rgba(23,80,240,.28);
+  }
+  .badge-dot{
+    position:absolute;top:-5px;right:-7px;min-width:16px;height:16px;padding:0 5px;border-radius:9px;
+    background:#E5484D;color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;
+    box-shadow:0 0 0 2px #fff;
+  }
+  .ico-wrap{position:relative;display:inline-flex;width:18px;height:18px;flex:0 0 18px}
+  .vline{width:1px;height:20px;background:var(--line-strong);margin:0 6px}
+
+  .content{
+    flex:1;padding:22px 24px 28px;min-width:0;
+    background:
+      radial-gradient(1100px 380px at 8% -12%, #E9F1FF 0%, rgba(233,241,255,0) 62%),
+      radial-gradient(800px 300px at 100% 0%, #EFF5FF 0%, rgba(239,245,255,0) 55%),
+      var(--bg);
+  }
+
+  /* ---------- 占位卡片 ---------- */
+  .stage{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-sm);min-height:calc(100vh - 158px);
+    display:flex;align-items:center;justify-content:center;padding:48px 32px;
+  }
+  .stage-inner{display:flex;flex-direction:column;align-items:center;text-align:center;max-width:520px}
+  .stage-ico{
+    width:74px;height:74px;border-radius:22px;
+    background:linear-gradient(135deg,#EAF1FF,#D9E6FF);
+    border:1px solid #DCE8FF;
+    display:flex;align-items:center;justify-content:center;color:var(--blue-600);
+    box-shadow:0 10px 26px rgba(23,80,240,.12);
+    margin-bottom:22px;
+  }
+  .stage-ico svg{width:30px;height:30px}
+  .stage-title{font-size:21px;font-weight:700;letter-spacing:.2px;color:var(--text)}
+  .stage-sub{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.8}
+  .stage-flag{
+    margin-top:20px;display:inline-flex;align-items:center;gap:7px;
+    font-size:12px;color:var(--blue-600);background:var(--blue-50);
+    border:1px solid var(--blue-100);border-radius:20px;padding:5px 13px;
+  }
+  .stage-flag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--blue-500)}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#0F1830;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.22s;
+    box-shadow:0 12px 32px rgba(0,0,0,.22);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1080px){
+    .sidebar{width:200px;flex:0 0 200px}
+    .content{padding:18px}
+  }
+
+  /* ==============================================================
+     【本页新增·隔离区】
+     以上自 infoshar_company_portal.html 原样搬入（token / 侧栏 / 顶栏 /
+     面包屑 / 消息与个人中心 / content 光晕 / stage 占位 / toast），未改动。
+     以下仅新增「意向大咖」的卡片列表体系，卡片结构对齐岗位管理页。
+     ============================================================== */
+
+  /* ---------- 页头 ---------- */
+  .page-head{display:flex;align-items:baseline;gap:13px;margin-bottom:16px;flex-wrap:wrap}
+  .ph-title{font-size:21px;font-weight:700;letter-spacing:.2px}
+  .ph-sub{font-size:12.5px;color:var(--muted)}
+
+  /* ---------- 状态页签 ---------- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{
+    height:34px;padding:0 13px;border-radius:9px;border:1px solid var(--line);background:#fff;
+    color:var(--text-2);font-size:13px;cursor:pointer;transition:.16s;
+    display:inline-flex;align-items:center;gap:7px;font-family:inherit;
+  }
+  .tab:hover{border-color:#C9D8F2;color:var(--blue-600)}
+  .tab .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .tab.on{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;
+    color:#fff;font-weight:600;box-shadow:0 7px 16px rgba(23,80,240,.24);
+  }
+  .tab.on .n{color:rgba(255,255,255,.82)}
+
+  /* ---------- 筛选 ---------- */
+  .filters{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+  .search{position:relative;flex:1 1 300px;max-width:430px;min-width:240px}
+  .search .si{
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);
+    width:15px;height:15px;color:#9AA6BA;pointer-events:none;
+  }
+  .search input{
+    width:100%;height:38px;padding:0 13px 0 36px;border-radius:10px;
+    border:1px solid var(--line-strong);background:#fff;font-size:13px;color:var(--text);
+    outline:none;font-family:inherit;transition:.16s;
+  }
+  .search input::placeholder{color:#B6C0D0}
+  .search input:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(47,107,255,.13)}
+
+  .sel{
+    height:38px;min-width:134px;padding:0 34px 0 13px;border-radius:10px;
+    border:1px solid var(--line-strong);background:#fff;font-size:13px;color:var(--text-2);
+    cursor:pointer;outline:none;font-family:inherit;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2.4 4.4 6 8l3.6-3.6' stroke='%238794AB' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 13px center;
+    transition:.16s;
+  }
+  .sel:hover{border-color:#C9D8F2}
+
+  .btn{
+    height:38px;padding:0 17px;border-radius:10px;border:1px solid var(--line-strong);
+    background:#fff;color:var(--text-2);font-size:13.5px;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    transition:.16s;white-space:nowrap;font-family:inherit;
+  }
+  .btn:hover{border-color:var(--blue-400);color:var(--blue-600);background:var(--blue-50)}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--blue-600),var(--blue-500));border-color:transparent;
+    color:#fff;font-weight:600;box-shadow:0 8px 18px rgba(23,80,240,.28);
+  }
+  .btn-primary:hover{background:linear-gradient(135deg,var(--blue-700),var(--blue-600));color:#fff}
+  .btn-sm{height:32px;padding:0 13px;font-size:12.5px;border-radius:9px}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--muted)}
+  .btn-ghost:hover{background:var(--blue-50);color:var(--blue-600)}
+
+  .more{height:38px;padding:0 8px 0 12px;border:none;background:transparent;color:var(--text-2);
+    font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:inherit;border-radius:9px}
+  .more:hover{background:var(--blue-50);color:var(--blue-600)}
+  .more svg{width:12px;height:12px;transition:transform .18s}
+  .more.open svg{transform:rotate(180deg)}
+
+  .more-panel{display:none;gap:10px;margin:-6px 0 18px;padding:14px;border-radius:12px;
+    background:#FBFCFE;border:1px solid var(--line);flex-wrap:wrap}
+  .more-panel.show{display:flex}
+
+  /* ---------- 卡片网格 ---------- */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+  .tcard{
+    background:var(--white);border:1px solid var(--line);border-radius:var(--radius);
+    padding:17px 18px 0;display:flex;flex-direction:column;
+    transition:border-color .16s,box-shadow .16s;min-width:0;
+  }
+  .tcard:hover{border-color:#C9D8F2;box-shadow:0 8px 24px rgba(16,35,80,.07)}
+
+  .tc-head{display:flex;align-items:center;gap:11px;margin-bottom:12px;min-width:0}
+  .av{
+    width:38px;height:38px;border-radius:11px;flex:0 0 38px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:600;color:#fff;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-800));
+  }
+  .tc-id{min-width:0;flex:1}
+  .tc-name{font-size:15px;font-weight:700;letter-spacing:.2px;display:flex;align-items:baseline;gap:8px;min-width:0}
+  .tc-name b{font-weight:700;white-space:nowrap}
+  .tc-name small{font-size:12px;font-weight:400;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+
+  /* 状态胶囊 */
+  .st{
+    display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;
+    border-radius:20px;font-size:11.5px;font-weight:600;white-space:nowrap;flex:0 0 auto;
+  }
+  .st::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+  .st-0{background:#FEF5E7;color:#B4730C}
+  .st-1{background:var(--blue-50);color:var(--blue-600)}
+  .st-2{background:#E9F8F0;color:#0E8A4E}
+  .st-3{background:#EFF3FA;color:#68758D}
+  .st-4{background:#F6F7FA;color:#9AA6BA}
+
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;min-height:22px}
+  .tags span{
+    font-size:11.5px;color:#5D6B82;background:#F3F6FB;border-radius:6px;
+    padding:2px 8px;white-space:nowrap;
+  }
+
+  .tc-desc{
+    font-size:12.5px;color:var(--text-2);line-height:1.72;margin-bottom:11px;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    min-height:43px;
+  }
+
+  .tc-meta{
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+    font-size:12px;color:var(--muted);padding-bottom:14px;
+  }
+  .tc-meta b{color:var(--text-2);font-weight:600}
+  .tc-meta .dot{width:3px;height:3px;border-radius:50%;background:#CBD5E5;flex:0 0 3px}
+  .tc-meta .sal{color:var(--text-2);font-weight:600;font-variant-numeric:tabular-nums}
+
+  .tc-foot{
+    border-top:1px solid var(--line);padding:11px 0 13px;margin-top:auto;
+    display:flex;align-items:center;gap:10px;
+  }
+  .who{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);min-width:0}
+  .who i{
+    width:22px;height:22px;border-radius:50%;flex:0 0 22px;font-style:normal;
+    background:var(--blue-100);color:var(--blue-600);font-size:10.5px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .who b{color:var(--text-2);font-weight:600}
+  .acts{margin-left:auto;display:flex;gap:8px;flex:0 0 auto}
+
+  /* 空态 */
+  .empty{
+    grid-column:1/-1;background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:64px 20px;text-align:center;color:var(--muted);font-size:13px;
+  }
+  .empty b{display:block;color:var(--text);font-size:15px;font-weight:600;margin-bottom:8px}
+
+  /* 分页 */
+  .pager{display:flex;align-items:center;gap:10px;margin-top:20px;font-size:13px;color:var(--text-2)}
+  .pager .spacer{flex:1}
+  .pg{min-width:32px;height:32px;padding:0 9px;border-radius:8px;border:1px solid var(--line-strong);
+    background:#fff;color:var(--text-2);font-size:13px;cursor:pointer;font-family:inherit}
+  .pg:hover{border-color:var(--blue-400);color:var(--blue-600)}
+  .pg.on{background:var(--blue-600);border-color:var(--blue-600);color:#fff;font-weight:600}
+
+  @media (max-width:1180px){
+    .grid2{grid-template-columns:1fr}
+  }
+
+  /* ===== 查看详情右侧抽屉（尺寸同大咖搜索） ===== */
+  .d-mask{
+    position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;
+    transition:.22s;z-index:62;
+  }
+  .d-mask.show{opacity:1;pointer-events:auto}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;width:680px;max-width:94vw;background:#fff;z-index:63;
+    transform:translateX(100%);transition:transform .26s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column;box-shadow:0 18px 48px rgba(18,38,74,.14);
+  }
+  .drawer.show{transform:translateX(0)}
+  .d-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:13px}
+  .hd-av{
+    width:50px;height:50px;flex:0 0 50px;border-radius:13px;color:#fff;font-size:18px;font-weight:700;
+    background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .hd-main{min-width:0;flex:1}
+  .hd-name{display:flex;align-items:center;gap:9px;font-size:17px}
+  .hd-name .st{font-size:11.5px;padding:2px 8px;border-radius:6px}
+  .hd-sub{font-size:12px;color:var(--muted);margin-top:6px}
+  .d-close{
+    width:36px;height:36px;border-radius:10px;border:1px solid var(--line-strong);background:#fff;
+    color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .d-close:hover{color:var(--text);border-color:var(--blue-400)}
+  .d-close svg{width:18px;height:18px}
+  .d-body{flex:1;overflow-y:auto;padding:4px 22px 22px}
+  .d-sec{margin-top:18px}
+  .d-sec-t{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .d-sec-t::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--blue-600)}
+  .kv{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
+  .kv span{flex:0 0 76px;color:var(--muted)}
+  .kv b{font-weight:600;color:var(--text)}
+  .d-desc{margin:0;font-size:13.5px;line-height:1.8;color:var(--text-2)}
+
+  /* ===== 详情抽屉内容（同申请管理页） ===== */
+  .d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+  .d-grid .kv{background:var(--blue-50);border:1px solid #EDF2FB;border-radius:10px;padding:10px 12px;min-width:0}
+  .d-grid .kv.full{grid-column:1/-1}
+  .d-grid .kv .k{font-size:11.5px;color:var(--muted)}
+  .d-grid .kv .v{font-size:13px;color:var(--text);margin-top:4px;line-height:1.7;word-break:break-word;font-variant-numeric:tabular-nums}
+  .d-grid .kv .v.strong{font-weight:600}
+  .d-grid .kv .v.pre{white-space:pre-line;color:var(--text-2)}
+  .d-tl{border-left:2px solid var(--blue-100);margin:4px 0 0 6px;padding-left:18px}
+  .d-tl .it{position:relative;padding-bottom:16px}
+  .d-tl .it::before{
+    content:"";position:absolute;left:-22.5px;top:5px;width:9px;height:9px;border-radius:50%;
+    background:#fff;border:2px solid var(--blue-500);
+  }
+  .d-tl .it:last-child{padding-bottom:0}
+  .d-tl .t{font-size:13px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .d-tl .t .period{font-size:11.5px;color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+  .d-tl .m{font-size:12px;color:var(--text-2);margin-top:3px}
+  .x-tags{display:flex;flex-wrap:wrap;gap:6px}
+  .xtag{
+    display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:6px;
+    background:var(--blue-50);border:1px solid #DCE8FF;color:var(--blue-700);font-size:12px;
+  }
+  .d-sec .tip{font-size:11px;font-weight:400;color:var(--muted);margin-left:auto;display:inline-flex;align-items:center;gap:4px}
+  .d-foot{
+    padding:14px 22px;border-top:1px solid var(--line);background:#FCFDFF;
+    display:flex;align-items:center;gap:12px;flex:0 0 auto;
+  }
+  .d-foot .hint{font-size:12px;color:var(--muted)}
+  .d-foot .spacer{flex:1}
+
+  /* ===== 卡片右上角收藏角标（点击可取消） ===== */
+  .corner-fav{
+    display:inline-flex;align-items:center;gap:4px;height:25px;padding:0 9px;border-radius:13px;
+    border:1px solid var(--line-strong);background:#fff;color:#9AA6BA;font-size:11.5px;
+    cursor:pointer;font-family:inherit;transition:.15s;flex:0 0 auto;
+  }
+  .corner-fav svg{width:13px;height:13px;fill:none}
+  .corner-fav:hover{color:#F0A726;border-color:#FBE3B4;background:#FFF8EA}
+  .corner-fav.on{color:#C2760A;border-color:#FBE0B4;background:#FFF8EA;font-weight:600}
+  .corner-fav.on svg{fill:#F0A726;stroke:#F0A726}
+
+  /* ===== 同意/拒绝确认弹窗 ===== */
+  .mask{
+    position:fixed;inset:0;background:rgba(16,27,48,.42);z-index:80;
+    display:none;align-items:center;justify-content:center;
+  }
+  .mask.show{display:flex}
+  .dc-box{
+    width:400px;max-width:92vw;background:#fff;border-radius:14px;padding:22px;
+    box-shadow:0 18px 44px rgba(18,38,74,.20);position:relative;
+  }
+  .dc-box b{font-size:15px;color:var(--text)}
+  .dc-box p{margin:10px 0 0;font-size:13px;line-height:1.7;color:var(--text-2)}
+  .dc-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 左侧菜单 ============ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+
+        <nav class="nav">
+    <div class="nav-item" data-page="job">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="18" height="13.5" rx="2.6"/><path d="M8 7V5.6A1.6 1.6 0 0 1 9.6 4h4.8A1.6 1.6 0 0 1 16 5.6V7"/><path d="M3 12.2h18"/>
+      </svg>
+      <span>岗位管理</span>
+    </div>
+    <div class="nav-item" data-page="project">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 21 7.5 12 12 3 7.5 12 3Z"/><path d="m3 12.3 9 4.5 9-4.5"/><path d="m3 16.9 9 4.5 9-4.5"/>
+      </svg>
+      <span>项目管理</span>
+    </div>
+    <div class="nav-item active" data-page="intent">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20.2s-7.2-4.4-7.2-9.2a4.1 4.1 0 0 1 7.2-2.7 4.1 4.1 0 0 1 7.2 2.7c0 4.8-7.2 9.2-7.2 9.2Z"/>
+      </svg>
+      <span>意向大咖</span>
+    </div>
+    <div class="nav-item" data-page="expert">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="10.6" cy="10.6" r="6.4"/><path d="m15.4 15.4 4.2 4.2"/><path d="M8.2 10.6h4.8"/><path d="M10.6 8.2v4.8"/>
+      </svg>
+      <span>大咖搜索</span>
+    </div>
+    <div class="nav-item" data-page="apply">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 13.2 6.1 5.8A1.6 1.6 0 0 1 7.7 4.6h8.6a1.6 1.6 0 0 1 1.6 1.2L20 13.2v5a1.9 1.9 0 0 1-1.9 1.9H5.9A1.9 1.9 0 0 1 4 18.2Z"/><path d="M4 13.2h4.5a3.5 3.5 0 0 0 7 0H20"/>
+      </svg>
+      <span>申请管理</span>
+    </div>
+    </nav>
+
+        <div class="sidebar-bottom">
+    <div class="nav-item" data-page="rule">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 3.2H7.2A2.2 2.2 0 0 0 5 5.4v13.2a2.2 2.2 0 0 0 2.2 2.2h9.6a2.2 2.2 0 0 0 2.2-2.2V8L14 3.2Z"/><path d="M14 3.2V8h5"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.4"/>
+      </svg>
+      <span>规则说明</span>
+    </div>
+    <div class="nav-item" data-page="setting">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3.1"/><path d="M19.3 14.9a1.6 1.6 0 0 0 .32 1.77l.06.06a1.95 1.95 0 1 1-2.76 2.76l-.06-.06a1.6 1.6 0 0 0-1.77-.32 1.6 1.6 0 0 0-.97 1.47v.17a1.95 1.95 0 1 1-3.9 0v-.09a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.77.32l-.06.06a1.95 1.95 0 1 1-2.76-2.76l.06-.06a1.6 1.6 0 0 0 .32-1.77 1.6 1.6 0 0 0-1.47-.97h-.17a1.95 1.95 0 1 1 0-3.9h.09a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.77l-.06-.06a1.95 1.95 0 1 1 2.76-2.76l.06.06a1.6 1.6 0 0 0 1.77.32h.08a1.6 1.6 0 0 0 .97-1.47v-.17a1.95 1.95 0 1 1 3.9 0v.09a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.77-.32l.06-.06a1.95 1.95 0 1 1 2.76 2.76l-.06.06a1.6 1.6 0 0 0-.32 1.77v.08a1.6 1.6 0 0 0 1.47.97h.17a1.95 1.95 0 1 1 0 3.9h-.09a1.6 1.6 0 0 0-1.47.97Z"/>
+      </svg>
+      <span>设置</span>
+    </div>
+
+    </div>
+</aside>
+
+  <!-- ============ 右侧 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">企业端 <span class="sep">/</span> <b id="crumbNow">意向大咖</b></div>
+      <div class="spacer"></div>
+
+      <button class="tbtn" id="btnMsg">
+        <span class="ico-wrap">
+          <svg class="ico" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13.6 7.3a4.6 4.6 0 0 0-9.2 0c0 4-1.5 5.2-1.5 5.2h12.2s-1.5-1.2-1.5-5.2Z"/>
+            <path d="M7.5 15.1a1.7 1.7 0 0 0 3 0"/>
+          </svg>
+          <span class="badge-dot">3</span>
+        </span>
+        <span>消息</span>
+      </button>
+
+      <div class="vline"></div>
+
+      <button class="tbtn me" id="btnMe">
+        <span class="avatar">云</span>
+        <span>个人中心</span>
+      </button>
+    </header>
+
+    <div class="content">
+
+      <!-- ==================== 意向大咖 ==================== -->
+      <section id="page-list">
+        <div class="page-head">
+          <h1 class="ph-title">意向大咖</h1>
+          <span class="ph-sub">已发起合作意向的大咖，跟进转化进度</span>
+        </div>
+
+        <div class="tabs" id="tabs"></div>
+
+        <div class="filters">
+          <div class="search">
+            <svg class="si" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+              <circle cx="7" cy="7" r="4.6"/><path d="m10.6 10.6 2.9 2.9"/>
+            </svg>
+            <input id="f-kw" type="text" placeholder="搜索大咖姓名、岗位方向，回车查询">
+          </div>
+
+          <select class="sel" id="f-job">
+            <option value="">目标岗位 全部</option>
+            <option>AI 产品经理</option>
+            <option>AI 应用开发</option>
+            <option>算法工程师</option>
+            <option>AI 视觉设计</option>
+            <option>AI 数据分析</option>
+            <option>AI 训练师</option>
+          </select>
+
+          <select class="sel" id="f-city">
+            <option value="">工作城市 全部</option>
+            <option>深圳</option><option>北京</option><option>上海</option>
+            <option>武汉</option><option>杭州</option><option>成都</option>
+          </select>
+
+          <button class="btn btn-primary" id="btnSearch">查询</button>
+          <button class="btn" id="btnReset">重置</button>
+          <button class="more" id="btnMore">
+            展开更多
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 4.4 6 8l3.6-3.6"/></svg>
+          </button>
+        </div>
+
+        <div class="more-panel" id="morePanel">
+          <select class="sel" id="f-exp">
+            <option value="">经验年限 全部</option>
+            <option>3 年以内</option><option>3-5 年</option><option>5-8 年</option><option>8 年以上</option>
+          </select>
+          <select class="sel" id="f-time">
+            <option value="">发起时间 全部</option>
+            <option>7 天内</option><option>30 天内</option><option>30 天以上</option>
+          </select>
+          <select class="sel" id="f-remote">
+            <option value="">是否接受远程 全部</option>
+            <option>接受远程</option><option>仅坐班</option>
+          </select>
+        </div>
+
+        <div class="grid2" id="grid"></div>
+
+        <div class="pager">
+          <span>共 <b id="total">8</b> 条</span>
+          <div class="spacer"></div>
+          <button class="pg on">1</button>
+          <button class="pg" disabled style="opacity:.5;cursor:not-allowed">下一页</button>
+        </div>
+      </section>
+
+      <!-- 其它菜单占位 -->
+      <section id="page-stage" class="stage" style="display:none">
+        <div class="stage-inner">
+          <div class="stage-ico" id="stageIco"></div>
+          <div class="stage-title" id="stageTitle">—</div>
+          <div class="stage-sub" id="stageSub">—</div>
+          <div class="stage-flag">完成企业认证后开放</div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- 查看详情：右侧抽屉（尺寸同大咖搜索 680px） -->
+<div class="d-mask" id="dMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head" id="dHead"></div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- 同意 / 拒绝 二次确认 -->
+<div class="mask" id="dcMask">
+  <div class="dc-box">
+    <b id="dcTitle">确认同意该合作意向？</b>
+    <p id="dcMsg">同意后将建立合作联系，并解锁该大咖的联系电话与邮箱明文信息。</p>
+    <div class="dc-foot">
+      <button class="btn" id="dcCancel">取消</button>
+      <button class="btn btn-primary" id="dcOk">确认同意</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ================= 状态 ================= */
+const ST = {
+  0:{t:'待响应', c:'st-0'},
+  1:{t:'已响应', c:'st-1'},
+  2:{t:'已合作', c:'st-2'},
+  3:{t:'已婉拒', c:'st-3'},
+  4:{t:'已过期', c:'st-4'}
+};
+
+/* ================= 大咖数据 ================= */
+const DATA = [
+  { id:1, name:'陈立恒', title:'AI 产品经理 · 8 年', tags:['#AI 产品经理','#B 端','#8 年经验','#可远程'],
+    desc:'主导 3 个千万级 B 端产品从 0 到 1，擅长需求拆解与跨团队推动，带过 6 人产品组。',
+    intend:'AI 产品负责人', salary:'35-45K', city:'深圳 · 南山区', remote:1, exp:'8 年以上',
+    by:'王敏', time:'3 天前', days:3, chat:2, match:96, edu:"博士", school:"清华大学", phone:"138****1234", email:"che**@qq.com", msg:"对贵司 AI 产品负责人岗位很感兴趣，可随时安排面试。", fav:true, st:1 },
+
+  { id:2, name:'林思远', title:'AI 应用开发 · 6 年', tags:['#AI 应用开发','#LLM','#6 年经验','#武汉'],
+    desc:'主导 2 个企业级 RAG 知识库落地，熟悉向量检索与提示词工程，可独立完成模型微调到上线。',
+    intend:'AI 应用负责人', salary:'28-38K', city:'武汉 · 洪山区', remote:1, exp:'5-8 年',
+    by:'王敏', time:'1 天前', days:1, chat:0, match:92, edu:"硕士", school:"华中科技大学", phone:"139****2233", email:"lins**@163.com", msg:"有 RAG 知识库从 0 到 1 的完整落地经验，期望长期合作。", fav:true, st:0 },
+
+  { id:3, name:'周雅琪', title:'AI 视觉设计 · 5 年', tags:['#AI 视觉设计','#AIGC','#5 年经验','#上海'],
+    desc:'擅长 Midjourney + ComfyUI 工作流，产出过 40+ 品牌视觉方案，能带设计团队做规范化交付。',
+    intend:'AI 设计主管', salary:'25-32K', city:'上海 · 徐汇区', remote:0, exp:'5-8 年',
+    by:'李明', time:'5 天前', days:5, chat:4, match:89, edu:"本科", school:"中国美术学院", phone:"137****8765", email:"zhouy**@qq.com", msg:"可先试合作一个视觉专项，再谈长期驻场。", fav:true, st:1 },
+
+  { id:4, name:'吴明哲', title:'算法工程师 · 9 年', tags:['#算法工程师','#CV','#9 年经验','#北京'],
+    desc:'做过推荐与视觉两条线，主导过日均千万次调用的排序模型重构，熟悉模型压缩与端侧部署。',
+    intend:'算法技术专家', salary:'50-65K', city:'北京 · 海淀区', remote:0, exp:'8 年以上',
+    by:'王敏', time:'12 天前', days:12, chat:6, match:94, edu:"博士", school:"中国科学院", phone:"136****5544", email:"wumz**@163.com", msg:"推荐算法与端侧部署都做过完整闭环，方便的话约个时间详聊。", fav:true, st:2 },
+
+  { id:5, name:'郑晓彤', title:'AI 数据分析 · 4 年', tags:['#AI 数据分析','#SQL','#4 年经验','#深圳'],
+    desc:'搭过完整的 BI 指标体系，熟练用 Python 做归因分析，能把业务问题翻译成可验证的数据假设。',
+    intend:'数据分析师', salary:'18-25K', city:'深圳 · 福田区', remote:1, exp:'3-5 年',
+    by:'李明', time:'8 天前', days:8, chat:1, match:87, edu:"硕士", school:"中山大学", phone:"135****6677", email:"zhengx**@126.com", msg:"熟悉电商与本地生活 BI 体系，可远程支持。", fav:true, st:3 },
+
+  { id:6, name:'黄志强', title:'AI 训练师 · 3 年', tags:['#AI 训练师','#标注体系','#3 年经验','#杭州'],
+    desc:'从 0 搭过 50 万条语料的标注流程，制定过 12 版标注规范，带过 20 人标注团队。',
+    intend:'数据运营', salary:'12-18K', city:'杭州 · 余杭区', remote:1, exp:'3 年以内',
+    by:'李明', time:'2 天前', days:2, chat:0, match:85, edu:"本科", school:"浙江大学", phone:"134****8899", email:"huangz**@qq.com", msg:"带过 20 人标注团队，可快速搭建标注产线。", fav:true, st:0 },
+
+  { id:7, name:'刘婉如', title:'AI 产品经理 · 7 年', tags:['#AI 产品经理','#SaaS','#7 年经验','#成都'],
+    desc:'负责过 3 条 SaaS 产品线，熟悉从需求池到商业化的全链路，擅长To B 客户访谈与定价策略。',
+    intend:'产品总监', salary:'40-50K', city:'成都 · 高新区', remote:0, exp:'5-8 年',
+    by:'王敏', time:'20 天前', days:20, chat:5, match:91, edu:"硕士", school:"北京大学", phone:"133****1122", email:"liuwr**@163.com", msg:"SaaS 商业化经验丰富，适合产品总监岗位。", fav:true, st:2 },
+
+  { id:8, name:'徐嘉文', title:'AI 应用开发 · 5 年', tags:['#AI 应用开发','#Agent','#5 年经验','#深圳'],
+    desc:'做过 2 个智能体项目的架构设计，熟悉工具调用与多轮编排，能独立承担从 POC 到量产。',
+    intend:'AI 应用工程师', salary:'30-40K', city:'深圳 · 南山区', remote:1, exp:'5-8 年',
+    by:'李明', time:'15 天前', days:15, chat:1, match:83, edu:"硕士", school:"哈工大", phone:"132****3344", email:"xujw**@163.com", msg:"做过 2 个智能体量产项目，可接受短期驻场。", fav:true, st:4 }
+];
+
+const EDULIST = {
+  1:[{school:"清华大学",start:"2014.09",end:"2018.06",major:"计算机科学与技术",degree:"博士"}],
+  2:[{school:"华中科技大学",start:"2012.09",end:"2015.06",major:"计算机应用技术",degree:"硕士"}],
+  3:[{school:"中国美术学院",start:"2014.09",end:"2018.06",major:"视觉传达设计",degree:"本科"}],
+  4:[{school:"中国科学院",start:"2010.09",end:"2016.06",major:"模式识别与智能系统",degree:"博士"}],
+  5:[{school:"中山大学",start:"2015.09",end:"2018.06",major:"统计学",degree:"硕士"}],
+  6:[{school:"浙江大学",start:"2016.09",end:"2020.06",major:"人工智能",degree:"本科"}],
+  7:[{school:"北京大学",start:"2011.09",end:"2014.06",major:"软件工程",degree:"硕士"}],
+  8:[{school:"哈尔滨工业大学",start:"2013.09",end:"2016.06",major:"计算机技术",degree:"硕士"}]
+};
+
+const TABS = [
+  { k:'all', t:'全部' },
+  { k:0, t:'待响应' },
+  { k:1, t:'已响应' },
+  { k:2, t:'已合作' },
+  { k:3, t:'已婉拒' },
+  { k:4, t:'已过期' }
+];
+
+let curTab = 'all';
+let kw = '', fJob = '', fCity = '', fExp = '', fTime = '', fRemote = '';
+
+/* ================= 渲染页签 ================= */
+function renderTabs(){
+  const box = $('tabs');
+  box.innerHTML = TABS.map(t => {
+    const n = t.k === 'all' ? DATA.length : DATA.filter(d => d.st === t.k).length;
+    return `<button class="tab${curTab === t.k ? ' on' : ''}" data-k="${t.k}">${t.t}<span class="n">${n}</span></button>`;
+  }).join('');
+  box.querySelectorAll('.tab').forEach(b => {
+    b.onclick = () => {
+      curTab = b.dataset.k === 'all' ? 'all' : +b.dataset.k;
+      renderTabs();
+      renderCards();
+    };
+  });
+}
+
+/* ================= 过滤 ================= */
+function matched(){
+  return DATA.filter(d => {
+    if(curTab !== 'all' && d.st !== curTab) return false;
+    if(kw){
+      const s = (d.name + d.title + d.intend + d.tags.join('')).toLowerCase();
+      if(s.indexOf(kw.toLowerCase()) < 0) return false;
+    }
+    if(fJob && d.tags.join('').indexOf(fJob) < 0) return false;
+    if(fCity && d.city.indexOf(fCity) < 0) return false;
+    if(fExp && d.exp !== fExp) return false;
+    if(fRemote === '接受远程' && !d.remote) return false;
+    if(fRemote === '仅坐班' && d.remote) return false;
+    if(fTime){
+      if(fTime === '7 天内' && d.days > 7) return false;
+      if(fTime === '30 天内' && d.days > 30) return false;
+      if(fTime === '30 天以上' && d.days <= 30) return false;
+    }
+    return true;
+  });
+}
+
+/* ================= 渲染卡片 ================= */
+function renderCards(){
+  const list = matched();
+  $('total').textContent = list.length;
+
+  if(!list.length){
+    $('grid').innerHTML = '<div class="empty"><b>没有符合条件的大咖</b>换个筛选条件试试，或去「大咖搜索」里发起新的合作意向</div>';
+    return;
+  }
+
+  $('grid').innerHTML = list.map(d => {
+    const s = ST[d.st];
+    const acts = '<button class="btn btn-sm btn-primary" data-act="detail" data-id="' + d.id + '">查看详情</button>';
+
+    return '<article class="tcard">'
+      + '<div class="tc-head">'
+      +   '<div class="av">' + d.name.charAt(0) + '</div>'
+      +   '<div class="tc-id">'
+      +     '<div class="tc-name"><b>' + d.name + '</b><small>' + d.title + '</small></div>'
+      +   '</div>'
+      +   '<button class="corner-fav' + (d.fav ? ' on' : '') + '" data-act="fav" data-id="' + d.id + '" title="' + (d.fav ? '点击取消收藏' : '点击收藏') + '">'
+      +     FAV_SVG + (d.fav ? '已收藏' : '收藏') + '</button>'
+      + '</div>'
+      + '<div class="tags">' + d.tags.map(x => '<span>' + x + '</span>').join('') + '</div>'
+      + '<p class="tc-desc">' + d.desc + '</p>'
+      + '<div class="tc-meta">'
+      +   '<span>意向 <b>' + d.intend + '</b></span><span class="dot"></span>'
+      +   '<span>期望 <span class="sal">' + d.salary + '</span></span><span class="dot"></span>'
+      +   '<span>' + d.city + '</span>'
+      + '</div>'
+      + '<div class="tc-foot">'
+      +   '<span class="who"><i>' + d.by.charAt(0) + '</i>发起 <b>' + d.by + '</b> · ' + d.time
+      +     '</span>'
+      +   '<div class="acts">' + acts + '</div>'
+      + '</div>'
+      + '</article>';
+  }).join('');
+
+  $('grid').querySelectorAll('[data-act]').forEach(b => {
+    b.onclick = () => {
+      const d = DATA.find(x => x.id === +b.dataset.id);
+      if(!d) return;
+      if(b.dataset.act === 'detail'){ openDetail(+b.dataset.id); return; }
+      if(b.dataset.act === 'fav'){
+        d.fav = !d.fav;
+        renderCards();
+        toast(d.fav ? '已收藏「' + d.name + '」' : '已取消收藏「' + d.name + '」');
+      }
+    };
+  });
+}
+
+/* ================= 查看详情：右侧抽屉（内容与申请管理页一致） ================= */
+const FAV_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3.6l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.5 9.8l5.9-.8z"/></svg>';
+const ICO_LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px;vertical-align:-2px"><rect x="4.6" y="10.6" width="14.8" height="9.4" rx="2"/><path d="M8.2 10.6V7.8a3.8 3.8 0 0 1 7.6 0v2.8"/></svg>';
+const ICO_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 5l14 14"/><path d="M19 5 5 19"/></svg>';
+const ICO_CHECK2 = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;vertical-align:-2px"><path d="m4.5 12.5 5 5 10-11"/></svg>';
+
+let detailId = null;
+
+function kv(k, v, opt){
+  opt = opt || {};
+  return '<div class="kv ' + (opt.full ? 'full' : '') + '"><div class="k">' + k + '</div>' +
+         '<div class="v ' + (opt.cls || '') + '">' + v + '</div></div>';
+}
+
+function openDetail(id){
+  const d = DATA.find(x => x.id === id); if(!d) return;
+  detailId = id;
+  const st = ST[d.st];
+  /* 头部：头像 + 姓名 + 状态 + 匹配度/城市/学历/经验 */
+  $('dHead').innerHTML =
+    '<div class="hd-av">' + d.name.charAt(0) + '</div>'
+    + '<div class="hd-main">'
+    +   '<div class="hd-name"><b>' + d.name + '</b><span class="st ' + st.c + '">' + st.t + '</span></div>'
+    +   '<div class="hd-sub">🌟 匹配度 <b style="color:#B45309">' + d.match + '%</b><span class="dot"></span>' + d.city + '<span class="dot"></span>' + d.edu + '<span class="dot"></span>' + d.title.replace(/.*·\s*/, '').trim() + '经验</div>'
+    + '</div>'
+    + '<button class="d-close" id="dClose" aria-label="close">' + ICO_CLOSE + '</button>';
+
+  /* 申请信息 */
+  const applyInfo =
+    kv('意向岗位', '<span class="strong">' + d.intend + '</span>') +
+    kv('申请时间', d.time) +
+    kv('申请状态', '<span class="st ' + st.c + '">' + st.t + '</span>') +
+    kv('匹配度', '🌟 <b style="color:#B45309">' + d.match + '%</b>') +
+    kv('申请留言', d.msg || '-', { full:true, cls:'pre' });
+
+  /* 基础信息（未合作前联系方式脱敏） */
+  const unlocked = (d.st === 2);
+  const info =
+    kv('所在城市', d.city) +
+    kv('最高学历', d.edu) +
+    kv('毕业院校', d.school) +
+    kv('工作年限', d.exp.replace('年以上','').replace('年经验','').replace('年','').trim() + ' 年') +
+    kv('求职意向', '全职机会') +
+    kv('联系电话', (unlocked ? d.phone.replace(/\*+/g, '0000') : d.phone) + (unlocked ? '' : ICO_LOCK)) +
+    kv('邮箱', (unlocked ? d.email.replace(/\*+/g, '0000') : d.email) + (unlocked ? '' : ICO_LOCK));
+
+  /* 教育背景 */
+  const edu = (EDULIST[d.id] || [])[0] || {};
+  const eduRows = edu.school
+    ? '<div class="it"><div class="t">' + edu.school + '<span class="period">' + edu.start + ' - ' + (edu.end || '至今') + '</span></div>'
+      + '<div class="m">' + edu.major + ' · ' + edu.degree + '</div></div>'
+    : '';
+
+  $('dBody').innerHTML =
+    '<div class="d-sec">'
+    +   '<div class="d-sec-t">申请信息<span class="tip">合作意向</span></div>'
+    +   '<div class="d-grid">' + applyInfo + '</div>'
+    + '</div>'
+    + '<div class="d-sec">'
+    +   '<div class="d-sec-t">基础信息<span class="tip">' + (unlocked ? '已解锁明文' : ICO_LOCK + ' 同意申请后解锁联系方式') + '</span></div>'
+    +   '<div class="d-grid">' + info + '</div>'
+    + '</div>'
+    + '<div class="d-sec">'
+    +   '<div class="d-sec-t">优势标签<span class="tip">共 ' + d.tags.length + ' 项</span></div>'
+    +   '<div class="x-tags">' + d.tags.map(x => '<span class="xtag">' + x + '</span>').join('') + '</div>'
+    + '</div>'
+    + '<div class="d-sec">'
+    +   '<div class="d-sec-t">教育背景</div>'
+    +   '<div class="d-tl">' + eduRows + '</div>'
+    + '</div>'
+    + '<div class="d-sec">'
+    +   '<div class="d-sec-t">个人简介</div>'
+    +   '<div class="kv full" style="background:#FAFBFE"><div class="v pre">' + d.desc + '</div></div>'
+    + '</div>';
+
+  /* 底部按钮 */
+  const foot = $('dFoot');
+  if(d.st === 2){
+    foot.innerHTML = '<span class="hint">已同意该合作意向，联系方式已解锁明文</span><div class="spacer"></div>'
+      + '<button class="btn btn-primary" disabled style="background:#EAF7F0;color:#12A150;box-shadow:none;border:1px solid #CBEBD8">' + ICO_CHECK2 + ' 已建立联系</button>';
+  } else if(d.st === 3){
+    foot.innerHTML = '<span class="hint">已婉拒该合作意向</span><div class="spacer"></div>'
+      + '<button class="btn btn-primary" disabled style="background:#FDECEC;color:#E5484D;box-shadow:none;border:1px solid #F3C2C4">已婉拒</button>';
+  } else {
+    foot.innerHTML = '<span class="hint">同意后将建立合作联系</span><div class="spacer"></div>'
+      + '<button class="btn" id="dfReject" style="color:#E5484D;border-color:#F3C2C4;background:#FFF7F6">拒绝申请</button>'
+      + '<button class="btn btn-primary" id="dfAgree">同意并建立联系</button>';
+    foot.querySelector('#dfReject').onclick = () => openDecide('reject');
+    foot.querySelector('#dfAgree').onclick = () => openDecide('agree');
+  }
+
+  $('dMask').classList.add('show');
+  $('drawer').classList.add('show');
+  $('dClose').onclick = closeDetail;
+}
+
+/* 同意 / 拒绝 二次确认 */
+let decideAction = null;
+function openDecide(act){
+  decideAction = act;
+  document.getElementById('dcTitle').textContent = act === 'agree' ? '确认同意该合作意向？' : '确认拒绝该合作意向？';
+  document.getElementById('dcMsg').textContent = act === 'agree'
+    ? '同意后将建立合作联系，并解锁该大咖的联系电话与邮箱明文信息。'
+    : '拒绝后将通知该大咖，此合作意向随之关闭。';
+  document.getElementById('dcOk').textContent = act === 'agree' ? '确认同意' : '确认拒绝';
+  document.getElementById('dcMask').classList.add('show');
+}
+function closeDecide(){
+  document.getElementById('dcMask').classList.remove('show');
+  decideAction = null;
+}
+function confirmDecide(){
+  const d = DATA.find(x => x.id === detailId);
+  if(d && decideAction){
+    d.st = decideAction === 'agree' ? 2 : 3;
+    renderTabs(); renderCards();
+    toast(decideAction === 'agree' ? '已同意，联系方式已解锁' : '已婉拒该合作意向');
+  }
+  closeDecide();
+  if(document.getElementById('drawer').classList.contains('show')) openDetail(detailId);
+}
+(function bindDecide(){
+  const ok = document.getElementById('dcOk');
+  if(ok) ok.onclick = confirmDecide;
+  const c = document.getElementById('dcCancel');
+  if(c) c.onclick = closeDecide;
+  const m = document.getElementById('dcMask');
+  if(m) m.onclick = function(ev){ if(ev.target === m) closeDecide(); };
+})();
+
+function closeDetail(){
+  $('dMask').classList.remove('show');
+  $('drawer').classList.remove('show');
+}
+
+/* ================= 筛选交互 ================= */
+$('btnSearch').onclick = () => {
+  kw = $('f-kw').value.trim();
+  fJob = $('f-job').value;
+  fCity = $('f-city').value;
+  fExp = $('f-exp').value;
+  fTime = $('f-time').value;
+  fRemote = $('f-remote').value;
+  renderCards();
+};
+$('f-kw').addEventListener('keydown', e => { if(e.key === 'Enter') $('btnSearch').click(); });
+
+$('btnReset').onclick = () => {
+  $('f-kw').value = ''; $('f-job').value = ''; $('f-city').value = '';
+  $('f-exp').value = ''; $('f-time').value = ''; $('f-remote').value = '';
+  kw = fJob = fCity = fExp = fTime = fRemote = '';
+  curTab = 'all';
+  renderTabs(); renderCards();
+};
+
+$('btnMore').onclick = () => {
+  const p = $('morePanel');
+  p.classList.toggle('show');
+  $('btnMore').classList.toggle('open', p.classList.contains('show'));
+};
+
+/* ================= 菜单 ================= */
+const MODULES = {
+  job:     { name:'岗位管理', desc:'该模块页面已单独产出，菜单互通后可直接跳转。' },
+  project: { name:'项目管理', desc:'完成企业认证后开放。规划包含：项目发布、对接进度、交付与验收记录。' },
+  talent:  { name:'大咖管理', desc:'完成企业认证后开放。规划包含：已合作大咖、收藏夹、履约评价与黑名单。' },
+  rules:   { name:'规则说明', desc:'完成企业认证后开放。规划包含：入驻资质要求、交易与结算规则、违规处理说明。' }
+};
+
+const ICONS = {};
+document.querySelectorAll('.nav-item').forEach(el => {
+  ICONS[el.dataset.page] = el.querySelector('.ico').outerHTML;
+});
+
+const NAV_URL = { job:'岗位管理.html', project:'项目管理.html', expert:'大咖搜索.html', apply:'申请管理.html', rule:'规则说明.html', setting:'设置.html' };
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.onclick = () => {
+    const key = el.dataset.page;
+    if(key === 'intent'){
+      document.querySelectorAll('.nav-item').forEach(x => x.classList.toggle('active', x === el));
+      $('page-list').style.display = '';
+      $('page-stage').style.display = 'none';
+      $('crumbNow').textContent = '意向大咖';
+      return;
+    }
+    const url = NAV_URL[key];
+    if(url){ location.href = encodeURI(url); }
+  };
+});
+
+$('btnMsg').onclick = () => toast('消息中心页面待填充');
+$('btnMe').onclick  = () => toast('个人中心页面待填充');
+
+/* ================= 初始化 ================= */
+renderTabs();
+renderCards();
+</script>
+</body>
+</html>

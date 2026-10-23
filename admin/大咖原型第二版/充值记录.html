@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>充值记录 - 运营管理平台</title>
+<style>
+  :root{
+    --blue-700:#0F4BD8;
+    --blue-600:#1B62F5;
+    --blue-500:#2E7CFF;
+    --blue-100:#E3EDFF;
+    --blue-50:#F2F7FF;
+    --line:#E6ECF5;
+    --line-strong:#D5DEEC;
+    --text:#1A2231;
+    --text-2:#4A5568;
+    --muted:#8A97A8;
+    --bg:#F5F8FD;
+    --white:#fff;
+    --green:#12A150;
+    --green-bg:#E8F8EF;
+    --orange:#F59E0B;
+    --orange-bg:#FEF4E4;
+    --red:#E5484D;
+    --red-bg:#FDECEC;
+    --gray-bg:#F1F3F7;
+    --radius:12px;
+    --shadow-sm:0 1px 2px rgba(18,38,74,.05);
+    --shadow-lg:0 18px 48px rgba(18,38,74,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#CBD5E5;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+
+  /* ---------- 布局 ---------- */
+  .layout{display:flex;min-height:100vh}
+  .sidebar{
+    width:224px;flex:0 0 224px;background:var(--white);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+  }
+  .logo{height:60px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line)}
+  .logo-mark{
+    width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));
+    color:#fff;font-weight:800;font-size:13px;letter-spacing:-1px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 10px rgba(27,98,245,.32);text-shadow:0 1px 2px rgba(15,75,216,.35);
+  }
+  .logo-text{font-size:14px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+  .logo-text span{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:1px}
+  .nav{padding:14px 12px;overflow-y:auto;flex:1}
+  .nav-group{margin-bottom:6px}
+  .nav-group-title{
+    padding:8px 10px 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .nav-group-title::before{content:"";width:3px;height:12px;border-radius:2px;background:var(--blue-500);opacity:.55}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;cursor:pointer;
+    color:var(--text-2);font-size:14px;margin-bottom:1px;transition:.15s;user-select:none;
+  }
+  .nav-item:hover{background:var(--blue-50);color:var(--blue-600)}
+  .nav-item.active{background:linear-gradient(90deg,var(--blue-600),var(--blue-500));color:#fff;font-weight:600;box-shadow:0 4px 12px rgba(27,98,245,.28)}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;padding:1px 6px;border-radius:9px;font-weight:600}
+  .nav-item.active .badge{background:rgba(255,255,255,.28)}
+  a.nav-item{text-decoration:none}
+  /* 子菜单项与一级菜单项保持完全一致的格式与选中态（不缩进、不加圆点） */
+  .nav-item.child{padding-left:12px;font-size:14px}
+  .nav-item.child::before{display:none}
+  .nav-item .badge.ai{background:var(--blue-100);color:var(--blue-600);letter-spacing:.4px}
+  .nav-item.active .badge.ai{background:rgba(255,255,255,.26);color:#fff}
+  .sidebar-foot{padding:14px;border-top:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-700));color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+  .sidebar-foot .u-name{font-size:13px;font-weight:600}
+  .sidebar-foot .u-role{font-size:11px;color:var(--muted)}
+
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{
+    height:60px;background:var(--white);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:20;
+  }
+  .crumb{font-size:13px;color:var(--muted)}
+  .crumb b{color:var(--text);font-weight:600}
+  .topbar .spacer{flex:1}
+  .content{padding:20px 24px 40px;min-width:0}
+
+  /* ---------- 页头 ---------- */
+  .page-head{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+  .page-title{font-size:20px;font-weight:700;letter-spacing:.2px}
+  .page-head .spacer{flex:1}
+  .page-head .actions{display:flex;gap:10px;flex:0 0 auto;align-items:center}
+
+  /* ---------- 卡片与表格 ---------- */
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .toolbar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:#FCFDFF;flex-wrap:wrap}
+  .toolbar .ctrl{
+    height:34px;border:1px solid var(--line-strong);border-radius:8px;padding:0 11px;font-size:13px;color:var(--text);
+    background:#fff;outline:none;font-family:inherit;transition:.15s;width:auto;
+  }
+  .toolbar .ctrl:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px rgba(46,124,255,.14)}
+  .toolbar input.ctrl{width:230px}
+  .toolbar select.ctrl{
+    appearance:none;padding-right:30px;min-width:112px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%238A97A8' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;
+  }
+  .toolbar input[type="date"].ctrl{width:140px;font-variant-numeric:tabular-nums;color:var(--text-2)}
+  .toolbar .sep{font-size:12px;color:var(--muted)}
+  .toolbar .spacer{flex:1}
+  .toolbar .res{font-size:12px;color:var(--muted)}
+  .toolbar .res b{color:var(--blue-700);font-weight:700}
+
+  .table-wrap{overflow-x:auto}
+  table{width:100%;min-width:1120px;border-collapse:collapse;table-layout:fixed}
+  thead th{
+    background:var(--blue-50);color:var(--text-2);font-size:12px;font-weight:600;text-align:left;
+    padding:11px 18px;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  tbody td{padding:13px 18px;border-bottom:1px solid #F0F3F8;font-size:13px;vertical-align:top}
+  tbody tr{transition:.14s}
+  tbody tr:hover{background:#F8FBFF}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr.re-row .no{color:var(--muted)}
+
+  .no{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;color:var(--text);letter-spacing:.1px}
+  .sub{font-size:11.5px;color:var(--muted);margin-top:4px;line-height:1.6}
+
+  .e-name{font-size:13.5px;font-weight:700;line-height:1.4}
+  .pkg{font-size:13.5px;font-weight:600;line-height:1.4}
+  .money{font-size:15px;font-weight:800;letter-spacing:-.2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .money .cny{font-size:12px;font-weight:600;color:var(--muted);margin-right:1px}
+
+  .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+  .status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .st-on{background:var(--green-bg);color:var(--green)}
+  .st-wait{background:var(--orange-bg);color:#C2760A}
+  .st-refund{background:var(--red-bg);color:var(--red)}
+  .st-off{background:var(--gray-bg);color:#6B7989}
+
+  .ops{display:flex;align-items:center;gap:12px;white-space:nowrap}
+  .link{color:var(--blue-600);cursor:pointer;font-size:12.5px;background:none;border:none;font-family:inherit;padding:0;white-space:nowrap}
+  .link:hover{text-decoration:underline}
+
+  .cfg-foot{padding:13px 18px;font-size:12px;color:var(--muted);background:#FCFDFF;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .cfg-foot .spacer{flex:1}
+  .cfg-foot b{color:var(--text-2);font-weight:600}
+  .cfg-foot .dot{color:#D3DBE6}
+
+  /* ---------- 按钮 ---------- */
+  .btn{
+    height:36px;padding:0 16px;border-radius:9px;border:1px solid var(--line-strong);background:var(--white);
+    color:var(--text-2);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    font-family:inherit;transition:.15s;white-space:nowrap;
+  }
+  .btn:hover{border-color:var(--blue-500);color:var(--blue-600);background:var(--blue-50)}
+
+  /* ---------- 弹窗 ---------- */
+  .mask{position:fixed;inset:0;background:rgba(16,27,48,.42);opacity:0;pointer-events:none;transition:.22s;z-index:60}
+  .mask.show{opacity:1;pointer-events:auto}
+  .modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-46%) scale(.97);width:600px;max-width:94vw;
+    background:#fff;border-radius:14px;z-index:71;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.2s;
+    display:flex;flex-direction:column;max-height:90vh;
+  }
+  .modal.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .m-head{padding:18px 22px 12px;font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .m-head .sub-no{font-size:11.5px;font-weight:400;color:var(--muted);font-family:"SF Mono",Menlo,Consolas,monospace}
+  .m-body{padding:8px 22px 4px;overflow-y:auto}
+  .m-foot{padding:14px 22px 18px;display:flex;justify-content:flex-end;gap:10px;align-items:center;border-top:1px solid var(--line);background:#FCFDFF}
+
+  .kv{display:flex;padding:10px 0;border-bottom:1px dashed #EEF2F8;font-size:13px;line-height:1.6}
+  .kv:last-child{border-bottom:none}
+  .kv .k{width:96px;flex:0 0 auto;color:var(--muted);font-size:12.5px}
+  .kv .v{color:var(--text);flex:1 1 auto;min-width:0;word-break:break-all}
+  .kv .v.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:12.5px}
+  .kv .v.big{font-size:16px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
+
+  .toast{
+    position:fixed;top:22px;left:50%;transform:translate(-50%,-14px);background:#111C33;color:#fff;
+    padding:10px 18px;border-radius:10px;font-size:13px;z-index:90;opacity:0;pointer-events:none;transition:.2s;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);max-width:74vw;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  @media (max-width:1180px){
+    .toolbar input.ctrl{width:180px}
+  }
+
+  /* ===== 菜单（18 项）：统一密度 + AI 徽标，保证 1680×1000 一屏排完 ===== */
+  .nav{padding:8px 10px}
+  .nav-group{margin-bottom:0}
+  .nav-group-title{padding:5px 10px 4px;font-size:11px;letter-spacing:.3px}
+  .nav-item{padding:6px 11px;font-size:13.5px;line-height:1.35;margin-bottom:0;border-radius:8px}
+  .nav-item.child{padding-left:11px;font-size:13.5px}
+  .nav-item.child::before{display:none}
+  .nav-item .badge{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;padding:0 6px;border-radius:9px;font-weight:600;line-height:16px}
+  .nav-item .badge.ai{background:var(--blue-100);color:var(--blue-600);letter-spacing:.4px}
+  .nav-item.active .badge.ai{background:rgba(255,255,255,.26);color:#fff}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ============ 侧边栏 ============ -->
+    <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 云管理平台</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-group">
+        <div class="nav-group-title">基本信息</div>
+        <a class="nav-item" href="企业.html">企业</a>
+        <a class="nav-item" href="企业联系人.html">企业联系人</a>
+        <a class="nav-item" href="大咖.html">大咖</a>
+        <a class="nav-item" href="职业规划.html">职业规划</a>
+        <a class="nav-item" href="岗位管理.html">岗位管理</a>
+        <a class="nav-item" href="项目大厅.html">项目大厅</a>
+        <a class="nav-item" href="就业课程.html">就业课程</a>
+        <a class="nav-item" href="机构管理.html">机构管理</a>
+        <a class="nav-item" href="申请管理.html">申请管理</a>
+        <a class="nav-item" href="投诉处理.html">投诉处理</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">权限设置</div>
+        <a class="nav-item child" href="角色管理.html">角色管理</a>
+        <a class="nav-item child" href="功能管理.html">功能管理</a>
+        <a class="nav-item child" href="权限.html">权限</a>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-title">系统设置</div>
+        <a class="nav-item" href="系统配置.html">系统配置</a>
+        <a class="nav-item" href="字典管理.html">字典管理</a>
+        <a class="nav-item" href="收费规则.html">收费规则</a>
+        <a class="nav-item active" href="充值记录.html">充值记录</a>
+        <a class="nav-item" href="导入Agent.html">导入Agent<span class="badge ai">AI</span></a>
+      </div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="avatar">陈</div>
+      <div>
+        <div class="u-name">陈思远</div>
+        <div class="u-role">平台运营 · 超级管理员</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ 主体 ============ -->
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">系统设置 / <b>充值记录</b></div>
+      <div class="spacer"></div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div class="page-title">充值记录</div>
+        <div class="spacer"></div>
+        <div class="actions">
+          <button class="btn" id="btnExport">导出记录</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="toolbar">
+          <input class="ctrl" id="kw" placeholder="搜索企业名称 / 订单号">
+          <select class="ctrl" id="fPkg">
+            <option value="">全部套餐</option>
+          </select>
+          <select class="ctrl" id="fStatus">
+            <option value="">全部状态</option>
+            <option value="1">已支付</option>
+            <option value="2">待支付</option>
+            <option value="3">已退款</option>
+            <option value="4">已关闭</option>
+          </select>
+          <span class="sep">充值时间</span>
+          <input class="ctrl" type="date" id="fFrom">
+          <span class="sep">至</span>
+          <input class="ctrl" type="date" id="fTo">
+          <button class="btn" id="btnClear" style="height:34px">重置</button>
+          <div class="spacer"></div>
+          <span class="res">筛选结果 <b id="resCnt">0</b> 条</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:148px">订单号</th>
+                <th style="width:240px">企业</th>
+                <th style="width:196px">购买项</th>
+                <th style="width:116px">金额</th>
+                <th style="width:136px">充值时间</th>
+                <th style="width:96px">支付方式</th>
+                <th style="width:96px">状态</th>
+                <th style="width:76px">操作</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="cfg-foot">
+          <span>共 <b id="footTotal">0</b> 条记录</span>
+          <span class="dot">·</span>
+          <span>累计充值 <b id="footAmount">¥0.00</b></span>
+          <span class="dot">·</span>
+          <span>已支付 <b id="footPaid">0</b> 条</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 详情弹窗 ============ -->
+<div class="mask" id="mask"></div>
+<div class="modal" id="modalDetail">
+  <div class="m-head">
+    <span>充值详情</span>
+    <span class="sub-no" id="dNo">—</span>
+  </div>
+  <div class="m-body" id="dBody"></div>
+  <div class="m-foot">
+    <button class="btn" id="dClose">关闭</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 示例数据 ================= */
+const RECORDS = [
+  { no:'CZ202610210012', ent:'深圳市云启科技有限公司', area:'广东省 / 深圳市 · 互联网',
+    pkg:'尊享版', unit:'年', qty:1, amount:9800.00, time:'2026-10-21 09:42:18',
+    pay:'微信支付', status:1, trade:'4200002186202610210038215', invoice:'已开票（电子普票）',
+    op:'陈思远', remark:'企业端自助下单，支付成功后 3 分钟到账' },
+
+  { no:'CZ202610200008', ent:'杭州星野网络技术有限公司', area:'浙江省 / 杭州市 · 跨境电商 SaaS',
+    pkg:'项目专享版', unit:'月', qty:3, amount:8040.00, time:'2026-10-20 16:08:55',
+    pay:'对公转账', status:1, trade:'BANK2026102000163', invoice:'待开票',
+    op:'王审核', remark:'线下打款已确认，财务手工核销' },
+
+  { no:'CZ202610190021', ent:'广东华创建材集团有限公司', area:'广东省 / 广州市 · 建筑材料',
+    pkg:'钻石版', unit:'年', qty:1, amount:29800.00, time:'2026-10-19 10:15:02',
+    pay:'对公转账', status:1, trade:'BANK2026101900077', invoice:'已开票（增值税专票）',
+    op:'李敏', remark:'含 12 场线下招聘会权益，已同步至大客户经理' },
+
+  { no:'CZ202610180014', ent:'南京博远智能装备有限公司', area:'江苏省 / 南京市 · 智能制造',
+    pkg:'岗位专享版', unit:'月', qty:1, amount:1280.00, time:'2026-10-18 14:30:41',
+    pay:'微信支付', status:1, trade:'4200002186202610180091042', invoice:'未开票',
+    op:'系统', remark:'自动续费订单，扣款成功' },
+
+  { no:'CZ202610170006', ent:'北京恒安数据服务有限公司', area:'北京市 / 北京市 · 数据服务',
+    pkg:'基础版', unit:'月', qty:6, amount:1794.00, time:'2026-10-17 11:02:19',
+    pay:'支付宝', status:1, trade:'20261017220014302108', invoice:'已开票（电子普票）',
+    op:'陈思远', remark:'购买半年，按 299 × 6 计费' },
+
+  { no:'CZ202610160009', ent:'苏州清源环保科技有限公司', area:'江苏省 / 苏州市 · 环保科技',
+    pkg:'基础版', unit:'月', qty:1, amount:299.00, time:'2026-10-16 18:47:33',
+    pay:'微信支付', status:2, trade:'—', invoice:'未开票',
+    op:'系统', remark:'下单后未支付，2 小时内未完成付款将自动关闭' },
+
+  { no:'CZ202610150003', ent:'广州匠造家居定制有限公司', area:'广东省 / 广州市 · 家具制造',
+    pkg:'项目专享版', unit:'月', qty:1, amount:2680.00, time:'2026-10-15 09:20:07',
+    pay:'对公转账', status:3, trade:'BANK2026101500021', invoice:'已作废',
+    op:'陈思远', remark:'重复下单，已原路退回，退款单号 RF202610150002' },
+
+  { no:'CZ202610140017', ent:'成都智行人力资源服务有限公司', area:'四川省 / 成都市 · 人力资源服务',
+    pkg:'岗位专享版', unit:'月', qty:2, amount:2560.00, time:'2026-10-14 15:36:52',
+    pay:'微信支付', status:1, trade:'4200002186202610140088221', invoice:'未开票',
+    op:'系统', remark:'企业端自助下单' },
+
+  { no:'CZ202610130011', ent:'上海荟萃餐饮管理有限公司', area:'上海市 / 上海市 · 餐饮管理',
+    pkg:'基础版', unit:'月', qty:1, amount:299.00, time:'2026-10-13 20:11:45',
+    pay:'支付宝', status:4, trade:'—', invoice:'未开票',
+    op:'系统', remark:'超时未支付，系统自动关闭' },
+
+  { no:'CZ202610120004', ent:'武汉光谷芯动半导体有限公司', area:'湖北省 / 武汉市 · 半导体',
+    pkg:'尊享版', unit:'年', qty:1, amount:9800.00, time:'2026-10-12 08:55:11',
+    pay:'对公转账', status:1, trade:'BANK2026101200009', invoice:'已开票（增值税专票）',
+    op:'李敏', remark:'客户经理代下单，已回传合同扫描件' }
+];
+
+const STATUS = {
+  1:{ name:'已支付', cls:'st-on' },
+  2:{ name:'待支付', cls:'st-wait' },
+  3:{ name:'已退款', cls:'st-refund' },
+  4:{ name:'已关闭', cls:'st-off' }
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const yuan = n => '¥' + Number(n).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 });
+
+/* ================= 筛选 ================= */
+function filtered(){
+  const kw = $('kw').value.trim().toLowerCase();
+  const pkg = $('fPkg').value;
+  const st  = $('fStatus').value;
+  const from = $('fFrom').value;
+  const to   = $('fTo').value;
+
+  return RECORDS.filter(r=>{
+    if(pkg && r.pkg !== pkg) return false;
+    if(st && String(r.status) !== st) return false;
+    if(from && r.time.slice(0,10) < from) return false;
+    if(to && r.time.slice(0,10) > to) return false;
+    if(kw){
+      const hit = r.ent.toLowerCase().includes(kw) || r.no.toLowerCase().includes(kw);
+      if(!hit) return false;
+    }
+    return true;
+  });
+}
+
+/* ================= 渲染 ================= */
+function render(){
+  const list = filtered();
+
+  $('tbody').innerHTML = list.length ? list.map(r=>{
+    const s = STATUS[r.status];
+    return `<tr data-no="${r.no}">
+      <td>
+        <div class="no">${esc(r.no)}</div>
+        <div class="sub">${esc(r.invoice.split('（')[0])}</div>
+      </td>
+      <td>
+        <div class="e-name">${esc(r.ent)}</div>
+        <div class="sub">${esc(r.area)}</div>
+      </td>
+      <td>
+        <div class="pkg">${esc(r.pkg)}</div>
+        <div class="sub">${r.unit}付 · ${r.qty} ${r.unit}${r.qty > 1 ? '' : ''} · 单价 ${yuan(r.amount / r.qty)}</div>
+      </td>
+      <td><div class="money"><span class="cny">¥</span>${Number(r.amount).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2})}</div></td>
+      <td><div style="font-variant-numeric:tabular-nums">${r.time.slice(0,10)}</div><div class="sub">${r.time.slice(11)}</div></td>
+      <td>${esc(r.pay)}</td>
+      <td><span class="status ${s.cls}">${s.name}</span></td>
+      <td><div class="ops"><button class="link" data-detail="${r.no}">详情</button></div></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div style="padding:52px 0;text-align:center;color:var(--muted);font-size:13px">没有匹配的充值记录，试试调整筛选条件</div></td></tr>`;
+
+  $('resCnt').textContent = list.length;
+  $('footTotal').textContent = list.length;
+  const paid = list.filter(r=> r.status === 1);
+  $('footAmount').textContent = yuan(paid.reduce((a,r)=> a + r.amount, 0));
+  $('footPaid').textContent = paid.length;
+
+  document.querySelectorAll('[data-detail]').forEach(el=>{
+    el.onclick = ()=> openDetail(el.dataset.detail);
+  });
+}
+
+/* ================= 详情 ================= */
+function openDetail(no){
+  const r = RECORDS.find(x=> x.no === no);
+  if(!r) return;
+  const s = STATUS[r.status];
+  $('dNo').textContent = r.no;
+  $('dBody').innerHTML = `
+    <div class="kv"><div class="k">企业</div><div class="v">${esc(r.ent)}<div class="sub" style="margin-top:2px">${esc(r.area)}</div></div></div>
+    <div class="kv"><div class="k">购买项</div><div class="v">${esc(r.pkg)} · ${r.unit}付 × ${r.qty}</div></div>
+    <div class="kv"><div class="k">订单金额</div><div class="v big">${yuan(r.amount)}</div></div>
+    <div class="kv"><div class="k">充值时间</div><div class="v">${r.time}</div></div>
+    <div class="kv"><div class="k">支付方式</div><div class="v">${esc(r.pay)}</div></div>
+    <div class="kv"><div class="k">订单状态</div><div class="v"><span class="status ${s.cls}">${s.name}</span></div></div>
+    <div class="kv"><div class="k">交易流水号</div><div class="v mono">${esc(r.trade)}</div></div>
+    <div class="kv"><div class="k">发票</div><div class="v">${esc(r.invoice)}</div></div>
+    <div class="kv"><div class="k">经办人</div><div class="v">${esc(r.op)}</div></div>
+    <div class="kv"><div class="k">备注</div><div class="v">${esc(r.remark)}</div></div>`;
+  $('mask').classList.add('show');
+  $('modalDetail').classList.add('show');
+}
+function closeDetail(){
+  $('modalDetail').classList.remove('show');
+  $('mask').classList.remove('show');
+}
+
+/* ================= 交互 ================= */
+// 套餐下拉按数据去重生成，避免写死与数据不一致
+(function fillPkg(){
+  const pkgs = [...new Set(RECORDS.map(r=> r.pkg))];
+  $('fPkg').innerHTML = '<option value="">全部套餐</option>' +
+    pkgs.map(p=> `<option value="${p}">${p}</option>`).join('');
+})();
+
+['kw','fPkg','fStatus','fFrom','fTo'].forEach(id=>{
+  $(id).addEventListener('input', render);
+  $(id).addEventListener('change', render);
+});
+
+$('btnClear').onclick = ()=>{
+  $('kw').value = ''; $('fPkg').value = ''; $('fStatus').value = '';
+  $('fFrom').value = ''; $('fTo').value = '';
+  render();
+};
+
+$('btnExport').onclick = ()=>{
+  toast(`已导出当前筛选结果 ${filtered().length} 条记录（原型示意）`);
+};
+
+$('mask').onclick = closeDetail;
+$('dClose').onclick = closeDetail;
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeDetail(); });
+
+
+/* ================= Toast ================= */
+let toastTimer;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+render();
+</script>
+<!-- nav-common -->
+<script>
+(function(){
+  /* 高亮项自动进入可视区 */
+  var nav = document.querySelector('.sidebar .nav'), act = document.querySelector('.sidebar .nav-item.active');
+  if(nav && act){
+    var nr = nav.getBoundingClientRect(), ar = act.getBoundingClientRect();
+    if(ar.bottom > nr.bottom) nav.scrollTop += (ar.bottom - nr.bottom) + 10;
+    else if(ar.top < nr.top) nav.scrollTop -= (nr.top - ar.top) + 10;
+  }
+  var here = (location.pathname.split('/').pop() || '').toLowerCase();
+  if(here === 'infoshar_bus_manage.html') return;   // 该页菜单由页面自身接管（切换占位页）
+  Array.prototype.forEach.call(document.querySelectorAll('.sidebar .nav-item'), function(el){
+    el.onclick = function(e){
+      var href = el.getAttribute('href');
+      if(href && href !== '#') return;               // 有对应页面，交给浏览器跳转
+      e.preventDefault();
+      var msg = '「' + el.textContent.trim() + '」页未在本次原型范围内';
+      var t = document.getElementById('toast');
+      if(t){
+        t.textContent = msg; t.classList.add('show');
+        clearTimeout(window.__navTimer);
+        window.__navTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+      }
+    };
+  });
+})();
+</script>
+</body>
+</html>
