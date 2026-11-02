@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-auth="index">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人端登录 · DAKA 统一工作台</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body data-role="personal" data-page="login">
+<div class="auth" id="authPage">
+  <aside class="brand">
+    <div class="brand-logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 统一工作台<span>ENTERPRISE × TALENT</span></div>
+    </div>
+    <div class="brand-hero">
+      <h1>个人端 / 企业端<br><em>按登录账号分配权限</em></h1>
+      <p>岗位招聘、项目外包、岗位外包、数智化咨询、AI培训、AI私教、AI职业规划、AI实习等业务按账号分配；不同身份登录后进入各自权限的工作台。</p>
+    </div>
+    <div class="brand-foot">
+      © 2026 DAKA 高科人才共享 · 粤 ICP 备 2026000000 号<br>
+      技术支持 · 服务条款 · 隐私政策
+    </div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h2 class="auth-title">登录 <span class="bar">|</span> DAKA · 统一工作台</h2>
+
+      <div class="l-field" id="f-acc">
+        <label for="acc">账号</label>
+        <div class="input-row">
+          <input id="acc" type="text" autocomplete="username" placeholder="请输入账号">
+        </div>
+        <p class="l-msg" id="acc-msg"></p>
+      </div>
+
+      <div class="l-field" id="f-pwd">
+        <label for="pwd">密码</label>
+        <div class="input-row">
+          <input id="pwd" type="password" autocomplete="current-password" placeholder="请输入密码">
+          <button type="button" class="send" id="pwdEye" title="显示密码" aria-label="显示密码">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.2 12S5.8 5.6 12 5.6 21.8 12 21.8 12 18.2 18.4 12 18.4 2.2 12 2.2 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>
+          </button>
+        </div>
+        <p class="l-msg" id="pwd-msg"></p>
+      </div>
+
+      <button type="button" class="submit" id="btnLogin">登录</button>
+
+      <div class="demo-acc" id="demoAcc"></div>
+
+      <label class="agree">
+        <input type="checkbox" id="agree" checked>
+        <span>已阅读并同意 <a>《用户服务协议》</a> 与 <a>《隐私政策》</a>，允许平台在业务流转场景中使用您的联系方式。</span>
+      </label>
+      <p class="l-msg" id="agree-msg"></p>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+
+<script>
+  renderLoginUI();
+  fillLoginForm();
+  if($('acc')) $('acc').focus();
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-auth="boot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI职业规划 · DAKA 统一工作台</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+<style>
+  /* 会话未校验前先不显示工作台，避免闪一下 */
+  html[data-auth="boot"] .layout{visibility:hidden}
+  /* 侧边栏改为链接后的样式对齐 */
+  a.nav-item{text-decoration:none;color:inherit}
+  a.nav-item:visited{color:inherit}
+</style>
+</head>
+<body data-role="personal" data-page="career">
+<div class="layout" id="appPage">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 统一工作台</div>
+      <button class="side-toggle" id="btnSideToggle" title="收起 / 展开侧边栏">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5 9 12l5.5 5.5"/></svg>
+      </button>
+    </div>
+    <nav class="nav" id="sideNav"></nav>
+    <div class="nav-foot">
+      <div class="nav-item" id="btnLogout">
+        <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4.6H6.4A1.9 1.9 0 0 0 4.5 6.5v11a1.9 1.9 0 0 0 1.9 1.9h3.1"/><path d="m15.5 8 4 4-4 4"/><path d="M19.5 12H9.5"/></svg></span>
+        <span class="label">退出登录</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb"><span id="crumbRole">企业端</span><span class="sep">/</span><b id="crumbNow">岗位招聘</b></div>
+      <span class="role-chip" id="roleChip"><span class="r-dot"></span><span id="roleChipTxt">企业端 · 全部管理权限</span></span>
+      <div class="spacer"></div>
+      <div class="top-actions">
+        <div class="profile" id="btnProfile">
+          <span class="avatar" id="pfAvatar">云</span>
+          <span class="p-info">
+            <span class="p-name" id="pfName">云启科技</span>
+            <span class="p-role" id="pfRole">企业管理员</span>
+          </span>
+          <span class="chev">▼</span>
+          <div class="pmenu" id="pfMenu">
+            <div class="pi" id="pmInfo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 10.8v5"/><path d="M12 7.8h.01"/></svg>
+              当前身份信息
+            </div>
+            <div class="p-split"></div>
+            <div class="pi exit" id="pmLogout">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4.6H6.4A1.9 1.9 0 0 0 4.5 6.5v11a1.9 1.9 0 0 0 1.9 1.9h3.1"/><path d="m15.5 8 4 4-4 4"/><path d="M19.5 12H9.5"/></svg>
+              退出并切换身份
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 当前页面（JS 渲染） -->
+    <div class="content" id="pageBox"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     详情抽屉
+     ============================================================ -->
+<div class="d-mask" id="dMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div style="flex:1;min-width:0">
+      <div class="d-title" id="dTitle">—</div>
+      <div class="d-sub" id="dSub"></div>
+    </div>
+    <button class="d-close" id="dClose" title="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============================================================
+     通用表单弹窗（发布 / 编辑 / 求职端提交类）
+     ============================================================ -->
+<div class="overlay" id="formOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="m-head">
+      <div>
+        <div class="m-title" id="fmTitle">—</div>
+        <div class="m-sub" id="fmSub">—</div>
+      </div>
+      <button class="m-close" id="fmClose" title="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="m-body" id="fmBody"></div>
+    <div class="m-foot">
+      <span class="spacer"></span>
+      <button class="btn" id="fmCancel">取消</button>
+      <button class="btn btn-primary" id="fmOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     AI职业规划 · 历史记录
+     ============================================================ -->
+<div class="overlay" id="gwHistOverlay">
+  <div class="modal" style="width:640px" role="dialog" aria-modal="true">
+    <div class="m-head">
+      <div>
+        <div class="m-title">评估历史 <span class="badge" id="gwHistBadge">0 次</span></div>
+        <div class="m-sub">每次生成的职业规划都会留档，可回看当时的结论与规划</div>
+      </div>
+      <button class="m-close" id="gwHistClose" title="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="m-body" id="gwHistBody"></div>
+    <div class="m-foot">
+      <span class="hint" id="gwHistHint" style="font-size: 12px;color:var(--muted)">—</span>
+      <span class="spacer"></span>
+      <button class="btn" id="gwHistBack" style="display:none">返回列表</button>
+      <button class="btn btn-primary" id="gwHistOk">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     二次确认
+     ============================================================ -->
+<div class="overlay confirm" id="cfOverlay">
+  <div class="confirm-box">
+    <div class="c-ico" id="cfIco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 21 20H3L12 4.5Z"/><path d="M12 10v4.2M12 17.2h.01"/></svg>
+    </div>
+    <b id="cfTitle">确认操作？</b>
+    <p id="cfMsg">—</p>
+    <div class="c-foot">
+      <button class="btn" id="cfCancel">取消</button>
+      <button class="btn btn-primary" id="cfOk">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/business.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/features.js"></script>
+<script src="../assets/js/career-plan.js"></script>
+<script>bootPage();</script>
+</body>
+</html>
