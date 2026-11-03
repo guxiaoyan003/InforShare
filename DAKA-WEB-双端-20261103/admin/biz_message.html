@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 沟通消息（biz_message）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_message.html","table":"biz_message","title":"沟通消息","group":"申请与沟通域","pk":"message_id","desc":"申请通过后的双方消息沟通记录（biz_message）","fields":[{"k":"message_id","label":"消息ID","type":"pk","required":false,"wide":false},{"k":"application_id","label":"所属申请单ID","type":"num","required":true,"wide":false},{"k":"sender_user_id","label":"发送者用户ID","type":"num","required":true,"wide":false},{"k":"receiver_user_id","label":"接收者用户ID","type":"num","required":true,"wide":false},{"k":"content","label":"消息正文","type":"area","required":true,"wide":true},{"k":"msg_type","label":"消息类型","type":"select","required":false,"wide":false,"options":[["text","文本"],["system","系统通知"]],"badge":{},"def":"text"},{"k":"is_read","label":"是否已读","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"read_time","label":"阅读时间","type":"dt","required":false,"wide":false},{"k":"created_at","label":"发送时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["message_id","application_id","sender_user_id","receiver_user_id","content","msg_type","is_read","created_at"],"search":["content"],"filters":["msg_type","is_read"],"audit":false});
+
+</script>
+</body>
+</html>

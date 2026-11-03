@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 个人档案（user_personal_profile）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"user_personal_profile.html","table":"user_personal_profile","title":"个人档案","group":"用户与认证域","pk":"profile_id","desc":"个人用户档案与实名认证主体信息（user_personal_profile）","fields":[{"k":"profile_id","label":"档案ID","type":"pk","required":false,"wide":false},{"k":"user_id","label":"所属用户ID","type":"num","required":true,"wide":false},{"k":"real_name","label":"真实姓名","type":"text","required":false,"wide":false},{"k":"id_card_no_enc","label":"身份证号密文","type":"text","required":false,"wide":false},{"k":"id_card_no_mask","label":"身份证号脱敏值","type":"text","required":false,"wide":false},{"k":"auth_status","label":"实名认证状态","type":"select","required":false,"wide":false,"options":[["0","未提交"],["1","审核中"],["2","已通过"],["3","已驳回"]],"badge":{"0":"gray","1":"amber","2":"green","3":"red"},"def":"0"},{"k":"education","label":"最高学历","type":"text","required":false,"wide":false},{"k":"graduate_school","label":"毕业院校","type":"text","required":false,"wide":false},{"k":"job_title","label":"当前职位","type":"text","required":false,"wide":false},{"k":"current_company","label":"当前所在公司","type":"text","required":false,"wide":false},{"k":"work_city","label":"所在城市","type":"text","required":false,"wide":false},{"k":"work_years","label":"工作年限","type":"num","required":false,"wide":false},{"k":"self_intro","label":"个人简介","type":"area","required":false,"wide":true},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["profile_id","user_id","real_name","id_card_no_mask","auth_status","job_title","work_city","work_years"],"search":["real_name","job_title","work_city"],"filters":["auth_status"],"audit":false});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 企业档案（user_enterprise_profile）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"user_enterprise_profile.html","table":"user_enterprise_profile","title":"企业档案","group":"用户与认证域","pk":"profile_id","desc":"企业用户档案与营业执照认证信息（user_enterprise_profile）","fields":[{"k":"profile_id","label":"档案ID","type":"pk","required":false,"wide":false},{"k":"user_id","label":"所属用户ID","type":"num","required":true,"wide":false},{"k":"enterprise_name","label":"企业名称","type":"text","required":true,"wide":false},{"k":"credit_code","label":"统一社会信用代码","type":"text","required":false,"wide":false},{"k":"legal_person_name","label":"法定代表人","type":"text","required":false,"wide":false},{"k":"legal_person_id_mask","label":"法人身份证脱敏值","type":"text","required":false,"wide":false},{"k":"license_no","label":"营业执照注册号","type":"text","required":false,"wide":false},{"k":"license_image_url","label":"营业执照图片URL","type":"text","required":false,"wide":false},{"k":"license_valid_from","label":"有效期起","type":"date","required":false,"wide":false},{"k":"license_valid_to","label":"有效期止","type":"date","required":false,"wide":false},{"k":"register_address","label":"注册地址","type":"text","required":false,"wide":true},{"k":"business_scope","label":"经营范围","type":"area","required":false,"wide":true},{"k":"industry","label":"所属行业","type":"text","required":false,"wide":false},{"k":"employee_scale","label":"企业规模","type":"text","required":false,"wide":false},{"k":"contact_name","label":"联系人","type":"text","required":false,"wide":false},{"k":"contact_mobile","label":"联系人手机号","type":"text","required":false,"wide":false},{"k":"auth_status","label":"营业执照认证状态","type":"select","required":false,"wide":false,"options":[["0","未提交"],["1","审核中"],["2","已通过"],["3","已驳回"]],"badge":{"0":"gray","1":"amber","2":"green","3":"red"},"def":"0"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["profile_id","user_id","enterprise_name","credit_code","auth_status","industry","employee_scale","contact_name"],"search":["enterprise_name","credit_code","contact_name"],"filters":["auth_status"],"audit":false});
+
+</script>
+</body>
+</html>

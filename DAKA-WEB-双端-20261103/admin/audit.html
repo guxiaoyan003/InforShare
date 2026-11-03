@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 内容发布审批</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script>
+
+/* ===================== 内容发布审批工作台 ===================== */
+const AUDIT_TABS = ['content','identity','record','log'];
+let auditTab = 'content', contentFilter = 'pending';
+const BIZ_CN = {project:'项目', job:'岗位', course:'AI培训', identity:'认证申请', order:'订单'};
+const ACTION_CN = {submit:'提交审核',approve:'审核通过',reject:'审核驳回',offline:'下架',reopen:'重新开放'};
+
+function auditRows(){
+  const db = loadDB(), t = db.tables, out = [];
+  [['project','biz_project','project_id'],['job','biz_job','job_id'],['course','biz_ai_course','course_id']].forEach(c=>{
+    (t[c[1]]||[]).forEach(r=>out.push({module:'content', bizType:c[0], bizId:r[c[2]], table:c[1],
+      title:r.title, publisher:r.publisher_user_id, status:r.publish_status,
+      submit:r.created_at || r.audit_pass_time || '—', row:r}));
+  });
+  return out;
+}
+function renderAudit(){
+  const db = loadDB(), t = db.tables;
+  const all = auditRows();
+  const pendC = all.filter(x=>x.status==='pending').length;
+  const pendI = (t.biz_identity_auth_apply||[]).filter(r=>String(r.status)==='1').length;
+  const today = nowStr().slice(0,10);
+  const todayAudit = (t.biz_audit_record||[]).filter(r=>String(r.audit_time||'').startsWith(today)).length;
+  let h = '<div class="page-head"><div class="ph-txt"><div class="page-title">内容发布审批'+
+    '<span class="tbl-code">AUDIT</span></div></div></div>';
+  h += '<div class="card" style="padding:16px 18px"><div class="tabs">'+
+    '<div class="tab'+(auditTab==='content'?' active':'')+'" onclick="switchTab(\'content\')">内容发布审批'+(pendC?'<span class="t-badge">'+pendC+'</span>':'')+'</div>'+
+    '<div class="tab'+(auditTab==='identity'?' active':'')+'" onclick="switchTab(\'identity\')">实名认证审批'+(pendI?'<span class="t-badge">'+pendI+'</span>':'')+'</div>'+
+    '<div class="tab'+(auditTab==='record'?' active':'')+'" onclick="switchTab(\'record\')">审批流水</div>'+
+    '<div class="tab'+(auditTab==='log'?' active':'')+'" onclick="switchTab(\'log\')">状态流转日志</div></div><div id="auditBody"></div></div>';
+  $('content').innerHTML = h;
+  renderAuditBody();
+}
+function switchTab(t){ auditTab = t; renderAudit(); }
+function setFilter(v){ contentFilter = v; renderAuditBody(); }
+
+function renderAuditBody(){
+  const db = loadDB(), t = db.tables;
+  const box = $('auditBody'); if(!box) return;
+  if(auditTab === 'content'){
+    const all = auditRows();
+    const list = contentFilter === 'all' ? all : all.filter(x=>x.status === contentFilter);
+    let h = '<div class="toolbar" style="padding:0 0 14px;border:none">'+
+      '<div class="filters"><select onchange="setFilter(this.value)">'+
+      [['pending','待审核'],['draft','草稿'],['published','已发布'],['rejected','已驳回'],['offline','已下架'],['closed','已结束'],['all','全部状态']]
+        .map(o=>'<option value="'+o[0]+'"'+(contentFilter===o[0]?' selected':'')+'>'+o[1]+'</option>').join('')+
+      '</select></div><div class="spacer"></div><span class="toolbar-hint">共 '+list.length+' 条内容</span></div>';
+    if(!list.length){ h += '<div class="empty"><span class="e-ico">✓</span>当前筛选下没有内容</div>'; box.innerHTML=h; return; }
+    h += '<div class="audit-list">';
+    list.forEach(x=>{
+      const stMap = {draft:['b-gray','草稿'],pending:['b-amber','待审核'],published:['b-green','已发布'],
+        rejected:['b-red','已驳回'],offline:['b-gray','已下架'],closed:['b-gray','已结束']};
+      const st = stMap[x.status] || ['b-gray',x.status];
+      const user = (t.sys_user||[]).find(u=>String(u.user_id)===String(x.publisher));
+      h += '<div class="audit-item"><div class="ai-main">'+
+        '<div class="ai-top"><span class="tag">'+esc(BIZ_CN[x.bizType])+'</span>'+
+        '<span class="ai-title">'+esc(x.title||'（无标题）')+'</span>'+
+        '<span class="badge '+st[0]+'">'+st[1]+'</span></div>'+
+        '<div class="ai-meta">数据表 <b>'+esc(x.table)+'</b> · 主键 <b>#'+esc(x.bizId)+'</b>　|　'+
+        '发布者 <b>'+esc(user?user.nickname:('用户#'+x.publisher))+'</b>　|　'+
+        '提交时间 <b>'+esc(String(x.submit).slice(0,16))+'</b>　|　'+
+        '计费 <b>'+esc(x.row.fee_mode==='free'||!x.row.fee_mode?'免费':(({times:'按次',year:'按年',month:'按月'}[x.row.fee_mode]||x.row.fee_mode)+' ¥'+Number(x.row.fee_amount||0).toLocaleString()))+'</b></div>'+
+        (x.row.summary?'<div class="audit-note">'+esc(String(x.row.summary).slice(0,160))+'</div>':'')+
+        '</div><div class="ai-actions">'+
+        '<button class="btn btn-sm" onclick="auditDetail(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\')">查看详情</button>';
+      if(x.status === 'pending' || x.status === 'draft'){
+        h += '<button class="btn btn-sm btn-primary" onclick="quickAudit(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\',\'approve\',\''+esc(String(x.title).replace(/'/g,""))+'\',\''+x.status+'\')">✓ 审核通过</button>'+
+             '<button class="btn btn-sm btn-danger" onclick="quickAudit(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\',\'reject\',\''+esc(String(x.title).replace(/'/g,""))+'\',\''+x.status+'\')">✕ 审核驳回</button>';
+        if(x.status === 'draft'){
+          h += '<button class="btn btn-sm" onclick="quickAudit(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\',\'submit\',\''+esc(String(x.title).replace(/'/g,""))+'\',\''+x.status+'\')">代提交审核</button>';
+        }
+      } else if(x.status === 'published'){
+        h += '<button class="btn btn-sm" onclick="quickAudit(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\',\'offline\',\''+esc(String(x.title).replace(/'/g,""))+'\',\''+x.status+'\')">下架</button>';
+      } else if(x.status === 'rejected' || x.status === 'offline'){
+        h += '<button class="btn btn-sm" onclick="quickAudit(\'content\',\''+x.bizType+'\',\''+esc(x.bizId)+'\',\'reopen\',\''+esc(String(x.title).replace(/'/g,""))+'\',\''+x.status+'\')">重新开放</button>';
+      }
+      h += '</div></div>';
+    });
+    h += '</div>'; box.innerHTML = h; return;
+  }
+  if(auditTab === 'identity'){
+    const list = (t.biz_identity_auth_apply||[]);
+    let h = '<div class="audit-list">';
+    if(!list.length) h += '<div class="empty">暂无认证申请</div>';
+    list.forEach(r=>{
+      const st = {0:['b-gray','草稿'],1:['b-amber','待审核'],2:['b-green','已通过'],3:['b-red','已驳回']}[String(r.status)] || ['b-gray',r.status];
+      const user = (t.sys_user||[]).find(u=>String(u.user_id)===String(r.user_id));
+      h += '<div class="audit-item"><div class="ai-main">'+
+        '<div class="ai-top"><span class="tag">'+esc(r.auth_type==='enterprise_license'?'营业执照认证':'个人实名认证')+'</span>'+
+        '<span class="ai-title">'+esc(r.enterprise_name || r.real_name || ('申请#'+r.apply_id))+'</span>'+
+        '<span class="badge '+st[0]+'">'+st[1]+'</span></div>'+
+        '<div class="ai-meta">申请单 <b>#'+esc(r.apply_id)+'</b>　|　申请用户 <b>'+esc(user?user.nickname:('用户#'+r.user_id))+'</b>　|　'+
+        '信用代码 <b>'+esc(r.credit_code||'—')+'</b>　|　证件 <b>'+esc(r.id_card_no_mask||'—')+'</b>　|　'+
+        '提交时间 <b>'+esc(String(r.submit_time||'—').slice(0,16))+'</b></div></div>'+
+        '<div class="ai-actions"><button class="btn btn-sm" onclick="auditDetail(\'identity_auth\',\'identity\',\''+esc(r.apply_id)+'\')">查看详情</button>';
+      if(String(r.status) === '1'){
+        h += '<button class="btn btn-sm btn-primary" onclick="quickAudit(\'identity_auth\',\'identity\',\''+esc(r.apply_id)+'\',\'approve\',\''+esc(String(r.enterprise_name||r.real_name||'').replace(/'/g,""))+'\',\'1\')">✓ 审核通过</button>'+
+             '<button class="btn btn-sm btn-danger" onclick="quickAudit(\'identity_auth\',\'identity\',\''+esc(r.apply_id)+'\',\'reject\',\''+esc(String(r.enterprise_name||r.real_name||'').replace(/'/g,""))+'\',\'1\')">✕ 审核驳回</button>';
+      }
+      h += '</div></div>';
+    });
+    h += '</div>'; box.innerHTML = h; return;
+  }
+  if(auditTab === 'record'){
+    const list = (t.biz_audit_record||[]).slice().reverse();
+    let h = '<div class="table-wrap"><table><thead><tr><th>流水ID</th><th>模块</th><th>业务对象</th><th>审批动作</th>'+
+      '<th>状态流转</th><th>提交人</th><th>审批人ID</th><th>审批时间</th><th>审批意见</th></tr></thead><tbody>';
+    if(!list.length) h += '<tr><td colspan="9"><div class="empty">暂无审批流水</div></td></tr>';
+    list.forEach(r=>{
+      const ac = {approve:'b-green',reject:'b-red',submit:'b-blue',offline:'b-gray',reopen:'b-blue'}[r.action]||'b-gray';
+      h += '<tr><td class="cell-main">#'+esc(r.audit_id)+'</td><td><span class="tag">'+esc(r.module)+'</span></td>'+
+        '<td>'+esc(BIZ_CN[r.biz_type]||r.biz_type)+' #'+esc(r.biz_id)+'</td>'+
+        '<td><span class="badge '+ac+'">'+esc(ACTION_CN[r.action]||r.action)+'</span></td>'+
+        '<td>'+esc(r.from_status||'—')+' → '+esc(r.to_status||'—')+'</td>'+
+        '<td>'+esc(r.applicant_user_id==null?'—':'用户#'+r.applicant_user_id)+'</td>'+
+        '<td><b>'+esc(r.auditor_admin_id==null?'—':('#'+r.auditor_admin_id))+'</b></td>'+
+        '<td>'+esc(r.audit_time||'—')+'</td><td><span class="ellip" title="'+esc(r.audit_remark||'')+'">'+esc(r.audit_remark||'—')+'</span></td></tr>';
+    });
+    h += '</tbody></table></div>'; box.innerHTML = h; return;
+  }
+  if(auditTab === 'log'){
+    const list = (t.biz_content_status_log||[]).slice().reverse();
+    let h = '<div class="table-wrap"><table><thead><tr><th>日志ID</th><th>模块</th><th>业务ID</th><th>变更前</th>'+
+      '<th>变更后</th><th>操作后台人员</th><th>备注</th><th>变更时间</th></tr></thead><tbody>';
+    if(!list.length) h += '<tr><td colspan="8"><div class="empty">暂无状态日志</div></td></tr>';
+    list.forEach(r=>{
+      h += '<tr><td class="cell-main">#'+esc(r.log_id)+'</td><td>'+esc(BIZ_CN[r.module]||r.module)+'</td>'+
+        '<td>#'+esc(r.biz_id)+'</td><td>'+esc(r.from_status||'—')+'</td>'+
+        '<td><span class="badge b-blue">'+esc(r.to_status)+'</span></td>'+
+        '<td>'+esc(r.operator_admin_id==null?'用户操作':'后台 #'+r.operator_admin_id)+'</td>'+
+        '<td>'+esc(r.remark||'—')+'</td><td>'+esc(r.created_at||'—')+'</td></tr>';
+    });
+    h += '</tbody></table></div>'; box.innerHTML = h; return;
+  }
+}
+function quickAudit(module, bizType, bizId, action, title, from){
+  openAuditDialog({ module:module, bizType:bizType, bizId:bizId, action:action,
+    title:title, bizName:(BIZ_CN[bizType]||bizType), from:from, onDone:renderAudit });
+}
+function auditDetail(module, bizType, bizId){
+  const db = loadDB(), t = db.tables;
+  let row = null, title = '审批对象详情';
+  if(module === 'content'){
+    const c = AUDIT_TABLES[bizType];
+    row = (t[c.t]||[]).find(r=>String(r[c.pk])===String(bizId));
+    title = (BIZ_CN[bizType]||'')+' · 内容详情';
+  } else {
+    row = (t.biz_identity_auth_apply||[]).find(r=>String(r.apply_id)===String(bizId));
+    title = '认证申请详情';
+  }
+  if(!row){ toast('记录不存在','err'); return; }
+  let h = '<div class="detail-grid">';
+  Object.keys(row).forEach(k=>{
+    h += '<div class="di"><span class="dk">'+esc(k)+'</span><span class="dv">'+esc(row[k]==null?'—':String(row[k]))+'</span></div>';
+  });
+  h += '</div>';
+  openModal({ size:'lg', title:title, sub:'ID = '+bizId, body:h,
+    footer:'<button class="btn" onclick="closeModal()">关闭</button>' });
+}
+(function(){ if(!guard('audit.html')) return; renderAudit();
+  window.addEventListener('storage', ()=>renderAudit()); })();
+
+</script>
+</body>
+</html>

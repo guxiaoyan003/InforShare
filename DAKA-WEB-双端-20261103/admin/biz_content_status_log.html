@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 内容状态日志（biz_content_status_log）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_content_status_log.html","table":"biz_content_status_log","title":"内容状态日志","group":"内容域","pk":"log_id","desc":"内容状态流转日志（biz_content_status_log）：草稿→待审→发布→下架 全链路","fields":[{"k":"log_id","label":"日志ID","type":"pk","required":false,"wide":false},{"k":"module","label":"业务模块","type":"select","required":true,"wide":false,"options":[["project","项目"],["job","岗位"],["course","AI培训"]],"badge":{},"def":"project"},{"k":"biz_id","label":"业务对象ID","type":"num","required":true,"wide":false},{"k":"from_status","label":"变更前状态","type":"text","required":false,"wide":false},{"k":"to_status","label":"变更后状态","type":"text","required":true,"wide":false},{"k":"operator_user_id","label":"操作用户ID","type":"num","required":false,"wide":false},{"k":"operator_admin_id","label":"操作后台人员ID","type":"num","required":false,"wide":false},{"k":"remark","label":"变更备注","type":"area","required":false,"wide":true},{"k":"created_at","label":"变更时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["log_id","module","biz_id","from_status","to_status","operator_admin_id","remark","created_at"],"search":["biz_id","remark"],"filters":["module","to_status"],"audit":false});
+
+</script>
+</body>
+</html>

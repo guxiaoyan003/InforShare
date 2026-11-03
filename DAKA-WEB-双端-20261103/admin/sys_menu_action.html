@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 菜单动作配置（sys_menu_action）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_menu_action.html","table":"sys_menu_action","title":"菜单动作配置","group":"后台配置域","pk":"action_id","desc":"菜单下动作级权限（sys_menu_action）：发布 / 申请 / 报名的可见性、实名要求与收费属性","fields":[{"k":"action_id","label":"动作ID","type":"pk","required":false,"wide":false},{"k":"menu_id","label":"所属菜单ID","type":"num","required":true,"wide":false},{"k":"action_code","label":"动作编码","type":"text","required":true,"wide":false},{"k":"action_name","label":"动作名称","type":"text","required":true,"wide":false},{"k":"is_visible","label":"动作是否可见","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"need_realname","label":"需实名认证","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"need_enterprise_auth","label":"需营业执照认证","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"is_fee_charged","label":"动作是否收费","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"sort_no","label":"排序号","type":"num","required":false,"wide":false,"def":"0"},{"k":"status","label":"状态","type":"select","required":false,"wide":false,"options":[["1","正常"],["0","禁用"]],"badge":{"1":"green","0":"red"},"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["action_id","menu_id","action_code","action_name","need_realname","need_enterprise_auth","is_fee_charged","status"],"search":["action_code","action_name"],"filters":["is_visible","is_fee_charged","status"],"audit":false});
+
+</script>
+</body>
+</html>

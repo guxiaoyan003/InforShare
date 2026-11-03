@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 字典类型（sys_dict_type）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_dict_type.html","table":"sys_dict_type","title":"字典类型","group":"字典域","pk":"dict_type_id","desc":"字典类型（sys_dict_type）：项目类型 / 岗位类型 / 状态 / 计费方式等枚举","fields":[{"k":"dict_type_id","label":"字典类型ID","type":"pk","required":false,"wide":false},{"k":"dict_type_code","label":"字典类型编码","type":"text","required":true,"wide":false},{"k":"dict_type_name","label":"字典类型名称","type":"text","required":true,"wide":false},{"k":"remark","label":"备注","type":"area","required":false,"wide":true},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["dict_type_id","dict_type_code","dict_type_name","remark","created_at"],"search":["dict_type_code","dict_type_name","remark"],"filters":[],"audit":false});
+
+</script>
+</body>
+</html>

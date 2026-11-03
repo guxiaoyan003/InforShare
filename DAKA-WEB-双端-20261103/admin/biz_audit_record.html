@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 审批流水（biz_audit_record）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_audit_record.html","table":"biz_audit_record","title":"审批流水","group":"用户与认证域","pk":"audit_id","desc":"所有审批行为统一留痕（biz_audit_record）· 必含审批人与审批时间","fields":[{"k":"audit_id","label":"审批记录ID","type":"pk","required":false,"wide":false},{"k":"module","label":"审批模块","type":"select","required":true,"wide":false,"options":[["content","内容发布"],["identity_auth","实名认证"],["payment","收费订单"]],"badge":{},"def":"content"},{"k":"biz_type","label":"业务对象类型","type":"select","required":true,"wide":false,"options":[["project","项目"],["job","岗位"],["course","AI培训"],["identity","认证申请"],["order","订单"]],"badge":{},"def":"project"},{"k":"biz_id","label":"业务对象ID","type":"num","required":true,"wide":false},{"k":"action","label":"审批动作","type":"select","required":true,"wide":false,"options":[["submit","提交审核"],["approve","审核通过"],["reject","审核驳回"],["offline","下架"],["reopen","重新开放"]],"badge":{"submit":"blue","approve":"green","reject":"red","offline":"gray","reopen":"blue"},"def":"approve"},{"k":"from_status","label":"审批前状态","type":"text","required":false,"wide":false},{"k":"to_status","label":"审批后状态","type":"text","required":false,"wide":false},{"k":"applicant_user_id","label":"提交人用户ID","type":"num","required":false,"wide":false},{"k":"auditor_admin_id","label":"审批人ID","type":"num","required":true,"wide":false},{"k":"audit_time","label":"审批时间","type":"dt","required":true,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"audit_remark","label":"审批意见 / 驳回原因","type":"area","required":false,"wide":true},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["audit_id","module","biz_type","biz_id","action","from_status","to_status","auditor_admin_id","audit_time"],"search":["biz_id","audit_remark"],"filters":["module","action"],"audit":false});
+
+</script>
+</body>
+</html>

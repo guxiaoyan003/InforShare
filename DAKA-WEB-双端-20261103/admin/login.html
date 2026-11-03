@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - DAKA 管理后台</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="auth">
+  <aside class="brand">
+    <div class="brand-logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 管理后台<span>ADMIN CONSOLE</span></div>
+    </div>
+    <div class="brand-hero">
+      <h1>一个后台，管好<br><em>全平台业务与配置</em></h1>
+      <p>覆盖 27 张数据表的增删改查、内容发布审批、账户管理、菜单与收费配置、字典维护。所有审批均记录审批人与审批时间。</p>
+      <div class="brand-feat">
+        <span>实体增删改查</span><span>内容审批留痕</span><span>账户与角色</span>
+        <span>菜单 / 状态配置</span><span>收费标准</span><span>字典管理</span>
+      </div>
+    </div>
+    <div class="brand-foot">
+      © 2026 DAKA 高科人才共享 · 管理后台原型<br>
+      依据 Inforshare_数据库设计文档.md 构建 · 数据保存在浏览器本地
+    </div>
+  </aside>
+  <main class="auth-main">
+    <div class="auth-card">
+      <h2 class="auth-title">登录 <span class="bar">|</span> DAKA 管理后台</h2>
+      <p class="auth-sub">请使用后台管理人员账号登录，登录后进入控制台。</p>
+
+      <div class="l-field">
+        <label for="acc">登录账号</label>
+        <div class="input-row has-ico"><span class="i-ico">◉</span>
+          <input id="acc" type="text" autocomplete="username" placeholder="请输入后台登录账号" value="admin"></div>
+        <p class="l-msg" id="accMsg"></p>
+      </div>
+      <div class="l-field">
+        <label for="pwd">登录密码</label>
+        <div class="input-row has-ico"><span class="i-ico">⚿</span>
+          <input id="pwd" type="password" autocomplete="current-password" placeholder="请输入密码" value="admin123">
+          <button type="button" class="eye" id="btnEye" title="显示 / 隐藏密码">显示</button></div>
+        <p class="l-msg" id="pwdMsg"></p>
+      </div>
+      <button type="button" class="submit" id="btnLogin">登 录</button>
+
+      <div class="demo-acc">
+        <b>默认演示账号</b>　<code>admin</code> / <code>admin123</code><br>
+        其他后台账号：<code>auditor</code> / <code>audit123</code>　<code>operator</code> / <code>oper123</code><br>
+        <span style="color:var(--muted)">可在「用户与认证域 → 后台账户」中增删改查，新增账号可直接用于登录。</span>
+      </div>
+      <label class="agree"><input type="checkbox" id="agree" checked>
+        <span>已阅读并同意《后台管理系统使用规范》，承诺按授权范围操作数据。</span></label>
+      <p class="l-msg" id="agreeMsg"></p>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script>
+
+/* ===================== 登录逻辑 ===================== */
+(function(){
+  if(getSession()){ location.href=pageHref('home.html'); return; }
+  const eye = $('btnEye');
+  eye.onclick = ()=>{ const p=$('pwd'); if(p.type==='password'){ p.type='text'; eye.textContent='隐藏'; }
+                      else { p.type='password'; eye.textContent='显示'; } };
+  const submit = ()=>{
+    $('accMsg').textContent=''; $('pwdMsg').textContent=''; $('agreeMsg').textContent='';
+    const acc = $('acc').value.trim(), pwd = $('pwd').value;
+    if(!acc){ $('accMsg').textContent='请输入登录账号'; return; }
+    if(!pwd){ $('pwdMsg').textContent='请输入密码'; return; }
+    if(!$('agree').checked){ $('agreeMsg').textContent='请先勾选使用规范'; return; }
+    const db = loadDB();
+    let u = (db.tables.sys_admin_user||[]).find(x => String(x.admin_account) === acc);
+    /* 兜底：默认管理员账号始终可用（即使演示数据里被删除） */
+    if(!u && acc === 'admin' && pwd === 'admin123'){
+      u = { admin_id:1, admin_account:'admin', real_name:'系统管理员', status:1 };
+      db.tables.sys_admin_user = db.tables.sys_admin_user || [];
+      db.tables.sys_admin_user.push(Object.assign({}, u, {password_hash:'admin123', password_salt:'salt_admin_01',
+        mobile:'13900000001', created_at:nowStr(), updated_at:nowStr(), deleted:0}));
+    }
+    if(!u){ $('accMsg').textContent='账号不存在，请检查后重试'; return; }
+    if(String(u.status) !== '1'){ $('accMsg').textContent='该账号已被禁用，请联系超级管理员'; return; }
+    if(String(u.password_hash) !== pwd){ $('pwdMsg').textContent='密码错误，请重新输入'; return; }
+    u.last_login_time = nowStr(); u.last_login_ip = '127.0.0.1';
+    db.tables.sys_login_log = db.tables.sys_login_log || [];
+    db.tables.sys_login_log.push({ log_id: nextIdIn(db,'sys_login_log','log_id'), user_id: null,
+      login_type:'password', login_result:1, client_ip:'127.0.0.1',
+      user_agent:'DAKA 管理后台 / '+(acc), created_at:nowStr() });
+    saveDB(db);
+    setSession({ admin_id:Number(u.admin_id), admin_account:u.admin_account,
+                 real_name:u.real_name, login_at:nowStr() });
+    toast('登录成功，正在进入控制台…','ok');
+    setTimeout(()=>{ location.href=pageHref('home.html'); }, 450);
+  };
+  $('btnLogin').onclick = submit;
+  document.addEventListener('keydown', e=>{ if(e.key === 'Enter') submit(); });
+})();
+
+</script>
+</body>
+</html>

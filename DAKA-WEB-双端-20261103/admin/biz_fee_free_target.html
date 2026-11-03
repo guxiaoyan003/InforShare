@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 免收费对象（biz_fee_free_target）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_fee_free_target.html","table":"biz_fee_free_target","title":"免收费对象","group":"收费域","pk":"id","desc":"后台指定特定企业或个人免收费用（biz_fee_free_target）","fields":[{"k":"id","label":"主键ID","type":"pk","required":false,"wide":false},{"k":"user_id","label":"被免收费用户ID","type":"num","required":true,"wide":false},{"k":"subject_type","label":"用户主体类型","type":"select","required":true,"wide":false,"options":[["enterprise","企业申请"],["personal","个人申请"]],"badge":{},"def":"personal"},{"k":"biz_type","label":"适用内容类型","type":"select","required":false,"wide":false,"options":[["project","项目"],["course","AI培训"]],"badge":{}},{"k":"biz_id","label":"适用内容ID","type":"num","required":false,"wide":false},{"k":"is_free","label":"是否免收费","type":"select","required":true,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"discount_rate","label":"折扣百分比","type":"money","required":false,"wide":false,"def":"100"},{"k":"effective_from","label":"生效日期","type":"date","required":false,"wide":false},{"k":"effective_to","label":"失效日期","type":"date","required":false,"wide":false},{"k":"reason","label":"设置原因","type":"area","required":false,"wide":true},{"k":"created_by_admin_id","label":"配置人ID","type":"num","required":false,"wide":false,"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["id","user_id","subject_type","biz_type","biz_id","is_free","discount_rate","effective_to"],"search":["user_id","reason"],"filters":["subject_type","is_free","biz_type"],"audit":false});
+
+</script>
+</body>
+</html>

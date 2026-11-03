@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 字典项（sys_dict_item）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_dict_item.html","table":"sys_dict_item","title":"字典项","group":"字典域","pk":"dict_item_id","desc":"字典项（sys_dict_item）：各字典类型下的可选项 · 增删改查","fields":[{"k":"dict_item_id","label":"字典项ID","type":"pk","required":false,"wide":false},{"k":"dict_type_id","label":"所属字典类型ID","type":"num","required":true,"wide":false},{"k":"item_code","label":"字典项编码","type":"text","required":true,"wide":false},{"k":"item_name","label":"字典项名称","type":"text","required":true,"wide":false},{"k":"sort_no","label":"排序号","type":"num","required":false,"wide":false,"def":"0"},{"k":"is_default","label":"是否默认项","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"status","label":"状态","type":"select","required":false,"wide":false,"options":[["1","正常"],["0","禁用"]],"badge":{"1":"green","0":"red"},"def":"1"},{"k":"remark","label":"备注","type":"area","required":false,"wide":true},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["dict_item_id","dict_type_id","item_code","item_name","sort_no","is_default","status"],"search":["item_code","item_name","remark"],"filters":["dict_type_id","status"],"audit":false});
+
+</script>
+</body>
+</html>

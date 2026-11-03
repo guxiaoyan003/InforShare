@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · AI培训课程（biz_ai_course）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_ai_course.html","table":"biz_ai_course","title":"AI培训课程","group":"内容域","pk":"course_id","desc":"企业端 AI 培训课程独立单表（biz_ai_course）· 报名走申请单","fields":[{"k":"course_id","label":"课程ID","type":"pk","required":false,"wide":false},{"k":"publisher_user_id","label":"发布企业用户ID","type":"num","required":true,"wide":false},{"k":"title","label":"课程名称","type":"text","required":true,"wide":true},{"k":"cover_image_url","label":"封面图URL","type":"text","required":false,"wide":false},{"k":"summary","label":"课程简介","type":"area","required":false,"wide":true},{"k":"description","label":"课程详情","type":"area","required":false,"wide":true},{"k":"outline","label":"课程大纲","type":"area","required":false,"wide":true},{"k":"teacher_name","label":"主讲老师","type":"text","required":false,"wide":false},{"k":"teacher_title","label":"老师头衔","type":"text","required":false,"wide":false},{"k":"teacher_intro","label":"老师简介","type":"area","required":false,"wide":true},{"k":"course_category","label":"课程分类","type":"text","required":false,"wide":false},{"k":"level","label":"难度层级","type":"select","required":false,"wide":false,"options":[["入门","入门"],["进阶","进阶"],["高阶","高阶"]],"badge":{}},{"k":"duration_hours","label":"总课时(小时)","type":"money","required":false,"wide":false},{"k":"start_date","label":"开课日期","type":"date","required":false,"wide":false},{"k":"end_date","label":"结课日期","type":"date","required":false,"wide":false},{"k":"city","label":"上课城市","type":"text","required":false,"wide":false},{"k":"is_offline","label":"是否线下","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"class_limit","label":"招生人数上限","type":"num","required":false,"wide":false,"def":"0"},{"k":"enrolled_count","label":"已报名人数","type":"num","required":false,"wide":false,"def":"0"},{"k":"fee_mode","label":"计费方式","type":"select","required":false,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"free"},{"k":"fee_amount","label":"收费金额","type":"money","required":false,"wide":false,"def":"0"},{"k":"fee_times","label":"可报名次数","type":"num","required":false,"wide":false},{"k":"fee_unit_desc","label":"收费单位描述","type":"text","required":false,"wide":false},{"k":"publish_status","label":"发布状态","type":"select","required":true,"wide":false,"options":[["draft","草稿"],["pending","待审核"],["published","已发布"],["rejected","已驳回"],["offline","已下架"],["closed","已结束"]],"badge":{"draft":"gray","pending":"amber","published":"green","rejected":"red","offline":"gray","closed":"gray"},"def":"draft"},{"k":"audit_pass_time","label":"审核通过时间","type":"dt","required":false,"wide":false},{"k":"view_count","label":"浏览次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"apply_count","label":"报名次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["course_id","title","teacher_name","course_category","level","city","fee_mode","publish_status","enrolled_count"],"search":["title","teacher_name","course_category","city"],"filters":["publish_status","fee_mode","level"],"audit":true});
+
+</script>
+</body>
+</html>

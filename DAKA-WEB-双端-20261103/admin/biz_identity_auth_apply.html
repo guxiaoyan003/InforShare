@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 实名认证申请（biz_identity_auth_apply）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_identity_auth_apply.html","table":"biz_identity_auth_apply","title":"实名认证申请","group":"用户与认证域","pk":"apply_id","desc":"个人实名 / 营业执照认证申请单（biz_identity_auth_apply）· 可在审批工作台审核","fields":[{"k":"apply_id","label":"申请单ID","type":"pk","required":false,"wide":false},{"k":"user_id","label":"申请用户ID","type":"num","required":true,"wide":false},{"k":"auth_type","label":"认证类型","type":"select","required":true,"wide":false,"options":[["personal_realname","个人实名认证"],["enterprise_license","营业执照认证"]],"badge":{},"def":"personal_realname"},{"k":"real_name","label":"实名姓名","type":"text","required":false,"wide":false},{"k":"id_card_no_enc","label":"身份证号密文","type":"text","required":false,"wide":false},{"k":"id_card_no_mask","label":"身份证号脱敏值","type":"text","required":false,"wide":false},{"k":"enterprise_name","label":"企业名称","type":"text","required":false,"wide":false},{"k":"credit_code","label":"统一社会信用代码","type":"text","required":false,"wide":false},{"k":"license_image_url","label":"营业执照图片URL","type":"text","required":false,"wide":false},{"k":"status","label":"申请状态","type":"select","required":true,"wide":false,"options":[["0","草稿"],["1","待审核"],["2","已通过"],["3","已驳回"]],"badge":{"0":"gray","1":"amber","2":"green","3":"red"},"def":"1"},{"k":"submit_time","label":"提交审核时间","type":"dt","required":false,"wide":false},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["apply_id","user_id","auth_type","real_name","enterprise_name","status","submit_time"],"search":["real_name","enterprise_name","credit_code"],"filters":["auth_type","status"],"audit":false});
+
+</script>
+</body>
+</html>

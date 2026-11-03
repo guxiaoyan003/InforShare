@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA · 职业规划服务（企业端）</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<!-- ============================================================
+     登录页：通过登录账号分配权限（个人端 / 企业端）
+     ============================================================ -->
+<div class="auth hidden" id="authPage">
+  <aside class="brand">
+    <div class="brand-logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 统一工作台<span>ENTERPRISE × TALENT</span></div>
+    </div>
+    <div class="brand-hero">
+      <h1>个人端 / 企业端<br><em>按登录账号分配权限</em></h1>
+      <p>岗位招聘、项目外包、岗位外包、数智化咨询、AI培训、AI私教、AI职业规划、AI实习等业务按账号分配；不同身份登录后进入各自权限的工作台。</p>
+    </div>
+    <div class="brand-foot">
+      © 2026 DAKA 高科人才共享 · 粤 ICP 备 2026000000 号<br>
+      技术支持 · 服务条款 · 隐私政策
+    </div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h2 class="auth-title">登录 <span class="bar">|</span> DAKA · 统一工作台</h2>
+
+      <div class="l-field" id="f-acc">
+        <label for="acc">账号</label>
+        <div class="input-row">
+          <input id="acc" type="text" autocomplete="username" placeholder="请输入账号">
+        </div>
+        <p class="l-msg" id="acc-msg"></p>
+      </div>
+
+      <div class="l-field" id="f-pwd">
+        <label for="pwd">密码</label>
+        <div class="input-row">
+          <input id="pwd" type="password" autocomplete="current-password" placeholder="请输入密码">
+          <button type="button" class="send" id="pwdEye" title="显示密码" aria-label="显示密码">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.2 12S5.8 5.6 12 5.6 21.8 12 21.8 12 18.2 18.4 12 18.4 2.2 12 2.2 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>
+          </button>
+        </div>
+        <p class="l-msg" id="pwd-msg"></p>
+      </div>
+
+      <button type="button" class="submit" id="btnLogin">登录</button>
+      <button type="button" class="gate-guest-btn" id="btnGuestBrowse">返回浏览（暂不登录）</button>
+
+      <div class="demo-acc" id="demoAcc"></div>
+
+      <label class="agree">
+        <input type="checkbox" id="agree" checked>
+        <span>已阅读并同意 <a>《用户服务协议》</a> 与 <a>《隐私政策》</a>，允许平台在业务流转场景中使用您的联系方式。</span>
+      </label>
+      <p class="l-msg" id="agree-msg"></p>
+    </div>
+  </main>
+</div>
+
+<!-- ============================================================
+     平台（登录后展示）
+     ============================================================ -->
+<div class="layout hidden" id="appPage">
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 统一工作台</div>
+      <button class="side-toggle" id="btnSideToggle" title="收起 / 展开侧边栏">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5 9 12l5.5 5.5"/></svg>
+      </button>
+    </div>
+    <nav class="nav" id="sideNav"></nav>
+    <div class="nav-foot">
+      <div class="nav-item" id="btnLogout">
+        <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4.6H6.4A1.9 1.9 0 0 0 4.5 6.5v11a1.9 1.9 0 0 0 1.9 1.9h3.1"/><path d="m15.5 8 4 4-4 4"/><path d="M19.5 12H9.5"/></svg></span>
+        <span class="label">退出登录</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb"><span id="crumbRole">企业端</span><span class="sep">/</span><b id="crumbNow">岗位招聘</b></div>
+      <span class="role-chip" id="roleChip"><span class="r-dot"></span><span id="roleChipTxt">企业端 · 全部管理权限</span></span>
+      <div class="spacer"></div>
+      <div class="top-actions">
+        <span class="guest-tip" id="guestTip"><span class="gt-dot"></span>未登录 · 浏览模式</span>
+        <button type="button" class="btn btn-primary" id="btnGuestLogin" style="display:none">登录 / 注册</button>
+        <div class="profile" id="btnProfile">
+          <span class="avatar" id="pfAvatar">云</span>
+          <span class="p-info">
+            <span class="p-name" id="pfName">云启科技</span>
+            <span class="p-role" id="pfRole">企业管理员</span>
+          </span>
+          <span class="chev">▼</span>
+          <div class="pmenu" id="pfMenu">
+            <div class="pi" id="pmInfo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.6"/><path d="M12 10.8v5"/><path d="M12 7.8h.01"/></svg>
+              当前身份信息
+            </div>
+            <div class="p-split"></div>
+            <div class="pi exit" id="pmLogout">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4.6H6.4A1.9 1.9 0 0 0 4.5 6.5v11a1.9 1.9 0 0 0 1.9 1.9h3.1"/><path d="m15.5 8 4 4-4 4"/><path d="M19.5 12H9.5"/></svg>
+              退出并切换身份
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 当前页面（JS 渲染） -->
+    <div class="content" id="pageBox"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     详情抽屉
+     ============================================================ -->
+<div class="d-mask" id="dMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div style="flex:1;min-width:0">
+      <div class="d-title" id="dTitle">—</div>
+      <div class="d-sub" id="dSub"></div>
+    </div>
+    <button class="d-close" id="dClose" title="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="d-body" id="dBody"></div>
+  <div class="d-foot" id="dFoot"></div>
+</aside>
+
+<!-- ============================================================
+     通用表单弹窗（发布 / 编辑 / 求职端提交类）
+     ============================================================ -->
+<div class="overlay" id="formOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="m-head">
+      <div>
+        <div class="m-title" id="fmTitle">—</div>
+        <div class="m-sub" id="fmSub">—</div>
+      </div>
+      <button class="m-close" id="fmClose" title="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="m-body" id="fmBody"></div>
+    <div class="m-foot">
+      <span class="spacer"></span>
+      <button class="btn" id="fmCancel">取消</button>
+      <button class="btn btn-primary" id="fmOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     AI职业规划 · 历史记录
+     ============================================================ -->
+<div class="overlay" id="gwHistOverlay">
+  <div class="modal" style="width:640px" role="dialog" aria-modal="true">
+    <div class="m-head">
+      <div>
+        <div class="m-title">评估历史 <span class="badge" id="gwHistBadge">0 次</span></div>
+        <div class="m-sub">每次生成的职业规划都会留档，可回看当时的结论与规划</div>
+      </div>
+      <button class="m-close" id="gwHistClose" title="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="m-body" id="gwHistBody"></div>
+    <div class="m-foot">
+      <span class="hint" id="gwHistHint" style="font-size: 12px;color:var(--muted)">—</span>
+      <span class="spacer"></span>
+      <button class="btn" id="gwHistBack" style="display:none">返回列表</button>
+      <button class="btn btn-primary" id="gwHistOk">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     二次确认
+     ============================================================ -->
+<div class="overlay confirm" id="cfOverlay">
+  <div class="confirm-box">
+    <div class="c-ico" id="cfIco">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4.5 21 20H3L12 4.5Z"/><path d="M12 10v4.2M12 17.2h.01"/></svg>
+    </div>
+    <b id="cfTitle">确认操作？</b>
+    <p id="cfMsg">—</p>
+    <div class="c-foot">
+      <button class="btn" id="cfCancel">取消</button>
+      <button class="btn btn-primary" id="cfOk">确认</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     登录拦截层：未登录时点击写操作弹出
+     ============================================================ -->
+<div class="overlay" id="loginGate">
+  <div class="gate-box">
+    <div class="g-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.8" y="10.2" width="14.4" height="9.6" rx="2.2"/><path d="M8.2 10.2V7.6a3.8 3.8 0 0 1 7.6 0v2.6"/></svg>
+    </div>
+    <b id="gateTitle">该操作需要登录</b>
+    <p id="gateDesc">登录后可以继续当前操作。</p>
+    <input class="gate-in" id="gateAcc" autocomplete="username" placeholder="请输入账号">
+    <input class="gate-in" id="gatePwd" type="password" autocomplete="current-password" placeholder="请输入密码">
+    <div class="gate-err" id="gateErr"></div>
+    <div class="gate-tip" id="gateTip">演示账号：<b>王旭</b>　密码 <b>123456</b></div>
+    <div class="c-foot">
+      <button class="btn" id="gateCancel">取消</button>
+      <button class="btn btn-primary" id="gateOk">登录并继续</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.DAKA_ROLE='company';window.DAKA_PAGE='careerManage';</script>
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

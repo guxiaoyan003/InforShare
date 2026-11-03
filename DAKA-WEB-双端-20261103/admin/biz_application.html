@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 申请单管理（biz_application）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_application.html","table":"biz_application","title":"申请单管理","group":"申请与沟通域","pk":"application_id","desc":"申请单（biz_application）：申请项目 / 申请岗位 / 报名课程，可撤回","fields":[{"k":"application_id","label":"申请单ID","type":"pk","required":false,"wide":false},{"k":"application_no","label":"申请单号","type":"text","required":true,"wide":false},{"k":"apply_type","label":"申请类型","type":"select","required":true,"wide":false,"options":[["project","申请项目"],["job","申请岗位"],["course","报名课程"]],"badge":{},"def":"project"},{"k":"applicant_user_id","label":"申请人用户ID","type":"num","required":true,"wide":false},{"k":"biz_type","label":"被申请内容类型","type":"select","required":true,"wide":false,"options":[["project","项目"],["job","岗位"],["course","AI培训"]],"badge":{},"def":"project"},{"k":"biz_id","label":"被申请内容ID","type":"num","required":true,"wide":false},{"k":"biz_title_snapshot","label":"内容标题快照","type":"text","required":false,"wide":true},{"k":"publisher_user_id","label":"发布者用户ID","type":"num","required":false,"wide":false},{"k":"applicant_type","label":"申请人主体","type":"select","required":true,"wide":false,"options":[["enterprise","企业申请"],["personal","个人申请"]],"badge":{},"def":"personal"},{"k":"status","label":"申请状态","type":"select","required":true,"wide":false,"options":[["submitted","已提交"],["accepted","已通过"],["rejected","已拒绝"],["withdrawn","已撤回"],["canceled","已取消"]],"badge":{"submitted":"amber","accepted":"green","rejected":"red","withdrawn":"gray","canceled":"gray"},"def":"submitted"},{"k":"apply_note","label":"申请留言","type":"area","required":false,"wide":true},{"k":"apply_resume_url","label":"附件/简历链接","type":"text","required":false,"wide":false},{"k":"expect_fee_mode","label":"计费方式快照","type":"select","required":false,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{}},{"k":"expect_fee_amount","label":"收费金额快照","type":"money","required":false,"wide":false,"def":"0"},{"k":"is_paid","label":"是否已付费","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"order_id","label":"关联订单ID","type":"num","required":false,"wide":false},{"k":"handled_time","label":"处理完成时间","type":"dt","required":false,"wide":false},{"k":"withdrawn_time","label":"撤回时间","type":"dt","required":false,"wide":false},{"k":"withdraw_reason","label":"撤回原因","type":"area","required":false,"wide":true},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["application_id","application_no","apply_type","applicant_user_id","biz_title_snapshot","status","expect_fee_amount","created_at"],"search":["application_no","biz_title_snapshot","apply_note"],"filters":["apply_type","status","applicant_type"],"audit":false});
+
+</script>
+</body>
+</html>

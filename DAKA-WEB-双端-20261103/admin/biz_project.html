@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 项目管理（biz_project）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_project.html","table":"biz_project","title":"项目管理","group":"内容域","pk":"project_id","desc":"项目表（biz_project）：外包项目 / 数智化咨询 / AI私教 三类合一 · 支持发布审批操作","fields":[{"k":"project_id","label":"项目ID","type":"pk","required":false,"wide":false},{"k":"project_type","label":"项目类型","type":"select","required":true,"wide":false,"options":[["outsourcing","外包项目"],["consultation","数智化咨询"],["ai_coaching","AI私教"]],"badge":{},"def":"outsourcing"},{"k":"publisher_user_id","label":"发布者用户ID","type":"num","required":true,"wide":false},{"k":"publisher_type","label":"发布者主体","type":"select","required":true,"wide":false,"options":[["personal","个人端用户"],["enterprise","企业端用户"]],"badge":{},"def":"enterprise"},{"k":"title","label":"项目标题","type":"text","required":true,"wide":true},{"k":"cover_image_url","label":"封面图URL","type":"text","required":false,"wide":false},{"k":"summary","label":"项目简介","type":"area","required":false,"wide":true},{"k":"description","label":"项目详细描述","type":"area","required":false,"wide":true},{"k":"demand_desc","label":"客户需求描述","type":"area","required":false,"wide":true},{"k":"service_desc","label":"服务内容描述","type":"area","required":false,"wide":true},{"k":"delivery_date","label":"期望交付/开课日期","type":"date","required":false,"wide":false},{"k":"work_city","label":"项目所在城市","type":"text","required":false,"wide":false},{"k":"remote_allowed","label":"是否允许远程","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"headcount","label":"招募人数","type":"num","required":false,"wide":false},{"k":"skill_tags","label":"技能标签","type":"text","required":false,"wide":false},{"k":"contact_name","label":"联系人","type":"text","required":false,"wide":false},{"k":"contact_mobile","label":"联系人手机号","type":"text","required":false,"wide":false},{"k":"fee_mode","label":"计费方式","type":"select","required":false,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"free"},{"k":"fee_amount","label":"收费金额","type":"money","required":false,"wide":false,"def":"0"},{"k":"fee_times","label":"可购买次数","type":"num","required":false,"wide":false},{"k":"fee_unit_desc","label":"收费单位描述","type":"text","required":false,"wide":false},{"k":"publish_status","label":"发布状态","type":"select","required":true,"wide":false,"options":[["draft","草稿"],["pending","待审核"],["published","已发布"],["rejected","已驳回"],["offline","已下架"],["closed","已结束"]],"badge":{"draft":"gray","pending":"amber","published":"green","rejected":"red","offline":"gray","closed":"gray"},"def":"draft"},{"k":"audit_pass_time","label":"审核通过时间","type":"dt","required":false,"wide":false},{"k":"view_count","label":"浏览次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"apply_count","label":"申请次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["project_id","project_type","title","publisher_user_id","fee_mode","publish_status","view_count","apply_count","created_at"],"search":["title","summary","skill_tags","contact_name"],"filters":["project_type","publish_status","fee_mode"],"audit":true});
+
+</script>
+</body>
+</html>

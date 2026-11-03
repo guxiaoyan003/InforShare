@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 状态配置（sys_status_config）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_status_config.html","table":"sys_status_config","title":"状态配置","group":"后台配置域","pk":"status_id","desc":"内容状态配置（sys_status_config）：项目/岗位/课程的可用状态、默认状态与可申请性","fields":[{"k":"status_id","label":"配置ID","type":"pk","required":false,"wide":false},{"k":"biz_type","label":"适用内容类型","type":"select","required":true,"wide":false,"options":[["project","项目"],["job","岗位"],["course","AI培训"]],"badge":{},"def":"project"},{"k":"status_code","label":"状态编码","type":"select","required":true,"wide":false,"options":[["draft","草稿"],["pending","待审核"],["published","已发布"],["rejected","已驳回"],["offline","已下架"],["closed","已结束"]],"badge":{"draft":"gray","pending":"amber","published":"green","rejected":"red","offline":"gray","closed":"gray"},"def":"draft"},{"k":"status_name","label":"状态名称","type":"text","required":true,"wide":false},{"k":"status_desc","label":"状态说明","type":"text","required":false,"wide":true},{"k":"is_default","label":"是否默认状态","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"is_visible","label":"前台可见/可选","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"can_publish","label":"允许发布/上架","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"can_apply","label":"允许被申请","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"sort_no","label":"排序号","type":"num","required":false,"wide":false,"def":"0"},{"k":"status","label":"配置状态","type":"select","required":false,"wide":false,"options":[["1","正常"],["0","禁用"]],"badge":{"1":"green","0":"red"},"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["status_id","biz_type","status_code","status_name","is_default","is_visible","can_publish","can_apply","sort_no"],"search":["status_name","status_desc","status_code"],"filters":["biz_type","is_default","status"],"audit":false});
+
+</script>
+</body>
+</html>

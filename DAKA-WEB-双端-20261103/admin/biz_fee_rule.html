@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 收费标准规则（biz_fee_rule）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_fee_rule.html","table":"biz_fee_rule","title":"收费标准规则","group":"收费域","pk":"rule_id","desc":"收费标准配置（biz_fee_rule）：后台设置是否收费及按次数/年/月标准，默认全部免费","fields":[{"k":"rule_id","label":"规则ID","type":"pk","required":false,"wide":false},{"k":"rule_name","label":"规则名称","type":"text","required":true,"wide":true},{"k":"subject_scope","label":"适用主体范围","type":"select","required":true,"wide":false,"options":[["all","全部"],["enterprise","企业端"],["personal","个人端"]],"badge":{},"def":"all"},{"k":"biz_type","label":"适用内容类型","type":"select","required":true,"wide":false,"options":[["project","项目"],["course","AI培训"]],"badge":{},"def":"project"},{"k":"fee_mode","label":"允许的计费方式","type":"select","required":true,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"free"},{"k":"fee_amount","label":"标准收费金额","type":"money","required":false,"wide":false,"def":"0"},{"k":"fee_times","label":"标准次数","type":"num","required":false,"wide":false},{"k":"fee_unit_desc","label":"收费单位描述","type":"text","required":false,"wide":false},{"k":"is_enabled","label":"是否启用","type":"select","required":true,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"priority","label":"优先级","type":"num","required":false,"wide":false,"def":"0"},{"k":"remark","label":"规则说明","type":"area","required":false,"wide":true},{"k":"created_by_admin_id","label":"配置人ID","type":"num","required":false,"wide":false,"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["rule_id","rule_name","subject_scope","biz_type","fee_mode","fee_amount","is_enabled","priority"],"search":["rule_name","remark"],"filters":["subject_scope","biz_type","fee_mode","is_enabled"],"audit":false});
+
+</script>
+</body>
+</html>

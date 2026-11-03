@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 项目收费明细（biz_project_fee）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_project_fee.html","table":"biz_project_fee","title":"项目收费明细","group":"收费域","pk":"fee_id","desc":"项目收费标准明细（biz_project_fee）：一条项目可配置多种计费方案并存","fields":[{"k":"fee_id","label":"明细ID","type":"pk","required":false,"wide":false},{"k":"project_id","label":"项目ID","type":"num","required":true,"wide":false},{"k":"fee_mode","label":"计费方式","type":"select","required":true,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"free"},{"k":"fee_amount","label":"收费金额","type":"money","required":false,"wide":false,"def":"0"},{"k":"times_count","label":"次数","type":"num","required":false,"wide":false},{"k":"fee_unit_desc","label":"收费单位描述","type":"text","required":false,"wide":false},{"k":"is_default","label":"是否默认方案","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["fee_id","project_id","fee_mode","fee_amount","times_count","fee_unit_desc","is_default"],"search":["project_id","fee_unit_desc"],"filters":["fee_mode","is_default"],"audit":false});
+
+</script>
+</body>
+</html>

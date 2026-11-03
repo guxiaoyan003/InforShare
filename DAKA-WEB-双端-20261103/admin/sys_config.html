@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 全局参数配置（sys_config）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_config.html","table":"sys_config","title":"全局参数配置","group":"后台配置域","pk":"config_id","desc":"全局参数（sys_config）：默认是否收费、是否需审批等全局开关 · 配置增删改查","fields":[{"k":"config_id","label":"配置ID","type":"pk","required":false,"wide":false},{"k":"config_key","label":"配置键名","type":"text","required":true,"wide":false},{"k":"config_value","label":"配置值","type":"text","required":true,"wide":true},{"k":"config_name","label":"配置名称","type":"text","required":true,"wide":false},{"k":"config_group","label":"配置分组","type":"select","required":false,"wide":false,"options":[["common","通用"],["fee","收费"],["audit","审批"],["apply","申请"]],"badge":{},"def":"common"},{"k":"value_type","label":"值类型","type":"select","required":false,"wide":false,"options":[["string","字符串"],["int","整数"],["bool","布尔"],["json","JSON"]],"badge":{},"def":"string"},{"k":"remark","label":"配置说明","type":"area","required":false,"wide":true},{"k":"updated_by_admin_id","label":"最后修改人ID","type":"num","required":false,"wide":false},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["config_id","config_key","config_name","config_value","config_group","value_type","updated_at"],"search":["config_key","config_name","config_value","remark"],"filters":["config_group","value_type"],"audit":false});
+
+</script>
+</body>
+</html>

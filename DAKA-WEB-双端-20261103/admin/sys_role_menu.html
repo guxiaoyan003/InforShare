@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 角色菜单关联（sys_role_menu）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_role_menu.html","table":"sys_role_menu","title":"角色菜单关联","group":"后台配置域","pk":"id","desc":"角色与菜单关联表（sys_role_menu）","fields":[{"k":"id","label":"主键ID","type":"pk","required":false,"wide":false},{"k":"role_id","label":"角色ID","type":"num","required":true,"wide":false},{"k":"menu_id","label":"菜单ID","type":"num","required":true,"wide":false},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["id","role_id","menu_id","created_at"],"search":["role_id","menu_id"],"filters":[],"audit":false});
+
+</script>
+</body>
+</html>

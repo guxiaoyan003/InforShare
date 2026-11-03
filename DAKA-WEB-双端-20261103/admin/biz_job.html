@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 岗位管理（biz_job）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_job.html","table":"biz_job","title":"岗位管理","group":"内容域","pk":"job_id","desc":"岗位表（biz_job）：岗位招聘 / 岗位外包 / 实习 三类合一 · 岗位发布固定不收费","fields":[{"k":"job_id","label":"岗位ID","type":"pk","required":false,"wide":false},{"k":"job_type","label":"岗位类型","type":"select","required":true,"wide":false,"options":[["recruitment","岗位招聘"],["outsourcing","岗位外包"],["internship","实习"]],"badge":{},"def":"recruitment"},{"k":"publisher_user_id","label":"发布者用户ID","type":"num","required":true,"wide":false},{"k":"publisher_type","label":"发布者主体","type":"select","required":true,"wide":false,"options":[["personal","个人端用户"],["enterprise","企业端用户"]],"badge":{},"def":"enterprise"},{"k":"title","label":"岗位名称","type":"text","required":true,"wide":true},{"k":"company_name","label":"招聘企业名称","type":"text","required":true,"wide":false},{"k":"description","label":"岗位描述","type":"area","required":false,"wide":true},{"k":"requirement","label":"任职要求","type":"area","required":false,"wide":true},{"k":"job_category","label":"岗位职能分类","type":"text","required":false,"wide":false},{"k":"salary_min","label":"薪资下限(元/月)","type":"money","required":false,"wide":false},{"k":"salary_max","label":"薪资上限(元/月)","type":"money","required":false,"wide":false},{"k":"salary_months","label":"薪资月数","type":"num","required":false,"wide":false},{"k":"headcount","label":"招聘人数","type":"num","required":false,"wide":false,"def":"1"},{"k":"work_city","label":"工作城市","type":"text","required":false,"wide":false},{"k":"work_address","label":"详细工作地址","type":"text","required":false,"wide":true},{"k":"work_mode","label":"工作方式","type":"select","required":false,"wide":false,"options":[["onsite","坐班"],["remote","远程"],["hybrid","混合"]],"badge":{},"def":"onsite"},{"k":"education_require","label":"学历要求","type":"text","required":false,"wide":false},{"k":"experience_require","label":"经验要求","type":"text","required":false,"wide":false},{"k":"skill_tags","label":"技能标签","type":"text","required":false,"wide":false},{"k":"contact_name","label":"联系人","type":"text","required":false,"wide":false},{"k":"contact_mobile","label":"联系人手机号","type":"text","required":false,"wide":false},{"k":"fee_mode","label":"计费方式","type":"select","required":false,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"free"},{"k":"fee_amount","label":"收费金额","type":"money","required":false,"wide":false,"def":"0"},{"k":"publish_status","label":"发布状态","type":"select","required":true,"wide":false,"options":[["draft","草稿"],["pending","待审核"],["published","已发布"],["rejected","已驳回"],["offline","已下架"],["closed","已结束"]],"badge":{"draft":"gray","pending":"amber","published":"green","rejected":"red","offline":"gray","closed":"gray"},"def":"draft"},{"k":"audit_pass_time","label":"审核通过时间","type":"dt","required":false,"wide":false},{"k":"view_count","label":"浏览次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"apply_count","label":"申请次数","type":"num","required":false,"wide":false,"def":"0"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["job_id","job_type","title","company_name","salary_min","salary_max","work_city","publish_status","apply_count"],"search":["title","company_name","skill_tags","work_city"],"filters":["job_type","publish_status","work_mode"],"audit":true});
+
+</script>
+</body>
+</html>

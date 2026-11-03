@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 菜单配置（sys_menu）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_menu.html","table":"sys_menu","title":"菜单配置","group":"后台配置域","pk":"menu_id","desc":"端菜单配置（sys_menu）：可见性 / 实名要求 / 扫码登录 / 验证码登录 / 发布审批 均可后台控制","fields":[{"k":"menu_id","label":"菜单ID","type":"pk","required":false,"wide":false},{"k":"parent_id","label":"父菜单ID","type":"num","required":false,"wide":false},{"k":"end_type","label":"所属端","type":"select","required":true,"wide":false,"options":[["enterprise","企业端"],["personal","个人端"],["all","全部"]],"badge":{},"def":"enterprise"},{"k":"menu_code","label":"菜单编码","type":"text","required":true,"wide":false},{"k":"menu_name","label":"菜单名称","type":"text","required":true,"wide":false},{"k":"menu_icon","label":"菜单图标标识","type":"text","required":false,"wide":false},{"k":"route_path","label":"前端路由路径","type":"text","required":false,"wide":false},{"k":"sort_no","label":"排序号","type":"num","required":false,"wide":false,"def":"0"},{"k":"is_visible","label":"菜单是否可见","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"need_realname","label":"访问需实名认证","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"need_enterprise_auth","label":"访问需营业执照认证","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"allow_scan_login","label":"支持扫码登录","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"allow_code_login","label":"支持验证码登录","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"allow_publish","label":"提供发布入口","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"need_audit","label":"发布需后台审批","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"1"},{"k":"status","label":"菜单状态","type":"select","required":false,"wide":false,"options":[["1","正常"],["0","禁用"]],"badge":{"1":"green","0":"red"},"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["menu_id","end_type","menu_code","menu_name","is_visible","need_realname","need_audit","allow_publish","sort_no"],"search":["menu_code","menu_name","route_path"],"filters":["end_type","is_visible","need_audit","status"],"audit":false});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 · DAKA 统一工作台</title>
+<link rel="stylesheet" href="assets/css/app.css">
+<!--
+  演示账号（仅注释，页面不展示）：
+  大咖个人端：王旭　　　　　　　　密码 123456　手机 13800000001
+  大咖企业端：深圳市云启科技有限公司　密码 123456　手机 13900000002
+  短信验证码：123456
+  管理后台：admin / admin123（直接打开 admin/login.html）
+-->
+<style>
+  /* ============================================================
+     登录页专属样式：沿用 app.css 的 .auth / .brand / .auth-card 体系，
+     仅补充「身份切换 · 输入框前缀 · 扫码 · 登录方式文字切换」
+     ============================================================ */
+  body{background:var(--bg)}
+  .auth-main{padding:32px}
+  .auth-card{max-width:430px}
+  .auth-card .l-field{margin-bottom:15px}
+  .auth-card .agree{margin-top:20px}
+  .auth-card .submit{margin-top:4px}
+  .auth-title{margin-bottom:24px}
+
+  /* 登录拦截提示条 */
+  .gate-bar{display:none;font-size: 12px;line-height:1.7;color:#8A5B00;background:#FFF7E6;
+    border:1px solid #FFE1A1;border-radius:10px;padding:10px 12px;margin-bottom:18px}
+  .gate-bar.show{display:block}
+
+  /* 身份切换：大咖个人端 / 大咖企业端 */
+  .seg{margin-top:0;margin-bottom:20px}
+  .seg button{height:46px;font-size: 14px;font-weight:600}
+
+  .pane{display:none}
+  .pane.on{display:block}
+
+  /* 手机号前缀 */
+  .input-row .pre{flex:0 0 auto;font-size: 14px;color:var(--text-2);padding-right:2px}
+
+  /* 验证码 */
+  .input-row .code-btn{
+    flex:0 0 auto;height:34px;margin-right:8px;padding:0 14px;border:1px solid #C9DBFF;
+    border-radius:17px;background:var(--white);color:var(--blue-600);
+    font-size: 12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.16s;
+  }
+  .input-row .code-btn:hover{background:var(--blue-50)}
+  .input-row .code-btn:disabled{color:var(--muted);border-color:var(--line);cursor:not-allowed;background:var(--gray-bg)}
+
+  /* 扫码 */
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0 2px}
+  .qr-box{position:relative;width:184px;height:184px;border:1px solid var(--line);border-radius:14px;
+    padding:10px;cursor:pointer;background:var(--white);transition:box-shadow .2s,border-color .2s}
+  .qr-box:hover{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(13,119,255,.10)}
+  .qr-box canvas{width:100%;height:100%;display:block}
+  .qr-mask{position:absolute;inset:0;border-radius:14px;background:rgba(255,255,255,.97);
+    display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+    font-size: 14px;color:var(--blue-700);font-weight:600}
+  .qr-box.scanned .qr-mask{display:flex}
+  .qr-mask .ok{width:46px;height:46px;border-radius:50%;background:var(--blue-600);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size: 22px;box-shadow:var(--shadow-blue)}
+  .qr-tip{font-size: 12px;line-height:1.7;color:var(--text-2);text-align:center;margin-top:12px}
+  .qr-tip b{color:var(--blue-700)}
+
+  /* 登录方式文字切换：手机验证码登录 | 扫码登录 | 忘记密码 */
+  .alt-modes{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    margin-top:16px;font-size: 12px;line-height:1;
+  }
+  .alt-modes button{
+    border:0;background:none;padding:2px 0;font-family:inherit;font-size: 12px;
+    color:var(--text-2);cursor:pointer;transition:color .16s;
+  }
+  .alt-modes button:hover{color:var(--blue-600)}
+  .alt-modes button.alt-forgot{color:var(--muted)}
+  .alt-modes button.alt-forgot:hover{color:var(--blue-600)}
+  .alt-sep{color:#D5DEEC;user-select:none}
+
+  @media (max-width:900px){
+    .auth-main{padding:28px 18px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     统一登录页：左侧品牌区 + 右侧登录卡
+     · 身份由顶部「大咖个人端 / 大咖企业端」切换决定
+     · 三种登录方式：账号密码 / 手机验证码 / 扫码，用按钮下方的文字切换
+     ============================================================ -->
+<div class="auth">
+  <aside class="brand">
+    <div class="brand-logo">
+      <div class="logo-mark">大咖</div>
+      <div class="logo-text">DAKA · 统一工作台<span>ENTERPRISE × TALENT</span></div>
+    </div>
+    <div class="brand-hero">
+      <h1>个人端 / 企业端<br><em>按登录账号分配权限</em></h1>
+      <p>岗位招聘、项目外包、岗位外包、数智化咨询、AI培训、AI私教、AI职业规划、AI实习等业务按账号分配；不同身份登录后进入各自权限的工作台。</p>
+    </div>
+    <div class="brand-foot">
+      © 2026 DAKA 高科人才共享 · 粤 ICP 备 2026000000 号<br>
+      技术支持 · 服务条款 · 隐私政策
+    </div>
+  </aside>
+
+  <main class="auth-main">
+    <div class="auth-card">
+      <h2 class="auth-title">登录 <span class="bar">|</span> DAKA · 统一工作台</h2>
+
+      <div class="gate-bar" id="gateBar"></div>
+
+      <!-- 身份切换 -->
+      <div class="seg" id="roleSeg">
+        <button type="button" data-role="person" class="active">大咖个人端</button>
+        <button type="button" data-role="company">大咖企业端</button>
+      </div>
+
+      <!-- ① 账号密码登录（默认） -->
+      <div class="pane on" id="panePwd">
+        <div class="l-field" id="fAcc">
+          <label for="acc">账号</label>
+          <div class="input-row">
+            <input id="acc" type="text" autocomplete="username" placeholder="用户名 / 企业名称">
+          </div>
+          <p class="l-msg" id="mAcc"></p>
+        </div>
+        <div class="l-field" id="fPwd">
+          <label for="pwd">密码</label>
+          <div class="input-row">
+            <input id="pwd" type="password" autocomplete="current-password" placeholder="请输入密码">
+            <button type="button" class="send" id="pwdEye" title="显示密码" aria-label="显示密码"></button>
+          </div>
+          <p class="l-msg" id="mPwd"></p>
+        </div>
+        <button class="submit" id="btnPwd">登录 / 注册</button>
+      </div>
+
+      <!-- ② 手机验证码登录 -->
+      <div class="pane" id="paneSms">
+        <div class="l-field" id="fPhone">
+          <label for="phone">手机号</label>
+          <div class="input-row">
+            <span class="pre">+86</span>
+            <input id="phone" type="tel" maxlength="11" inputmode="numeric" autocomplete="tel" placeholder="请输入手机号">
+          </div>
+          <p class="l-msg" id="mPhone"></p>
+        </div>
+        <div class="l-field" id="fCode">
+          <label for="code">验证码</label>
+          <div class="input-row">
+            <input id="code" type="text" maxlength="6" inputmode="numeric" autocomplete="one-time-code" placeholder="6 位短信验证码">
+            <button type="button" class="code-btn" id="btnCode">获取验证码</button>
+          </div>
+          <p class="l-msg" id="mCode"></p>
+        </div>
+        <button class="submit" id="btnSms">登录 / 注册</button>
+      </div>
+
+      <!-- ③ 扫码登录 -->
+      <div class="pane" id="paneQr">
+        <div class="qr-wrap">
+          <div class="qr-box" id="qrBox" title="点击模拟手机扫码">
+            <canvas id="qr" width="300" height="300"></canvas>
+            <div class="qr-mask"><span class="ok">✓</span><span id="qrMsg">扫描成功，正在登录…</span></div>
+          </div>
+          <div class="qr-tip">打开 <b>DAKA App</b> 扫一扫，或点击二维码模拟扫码</div>
+        </div>
+      </div>
+
+      <!-- 登录方式文字切换 -->
+      <div class="alt-modes">
+        <button type="button" id="altMode0" data-slot="0">手机验证码登录</button>
+        <span class="alt-sep">|</span>
+        <button type="button" id="altMode1" data-slot="1">扫码登录</button>
+        <span class="alt-sep">|</span>
+        <button type="button" class="alt-forgot" id="forgotLink">忘记密码</button>
+      </div>
+
+      <label class="agree">
+        <input type="checkbox" id="agree" checked>
+        <span>已阅读并同意 <a onclick="return false">《用户服务协议》</a> 与 <a onclick="return false">《隐私政策》</a>，允许平台在业务流转场景中使用您的联系方式。</span>
+      </label>
+      <p class="l-msg" id="agree-msg"></p>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================================================================
+   DAKA 统一登录页
+   · 身份切换（大咖个人端 / 大咖企业端）直接决定登录后进入哪一端
+   · 三种方式：账号密码（默认）/ 手机验证码 / 扫码
+     按钮下方用文字切换，点哪一项，该位置就换成刚才的登录方式，可来回切
+   · 登录成功写入统一会话 daka_unified_session_v1，回跳 next 或本端首页
+   演示：个人端 王旭 / 123456 · 企业端 深圳市云启科技有限公司 / 123456
+         短信验证码 123456（点击「获取验证码」自动填入）
+   ================================================================ */
+var US_KEY = 'daka_unified_session_v1';
+var REMEMBER_KEY = 'daka_remember_account_v1';
+var DEMO_CODE = '123456';
+
+var QS = new URLSearchParams(location.search);
+var NEXT = QS.get('next') || '';
+var GATE = QS.get('gate') || '';
+
+var ROLES = {
+  person:{
+    key:'person', end:'个人端（大咖）', short:'个人端',
+    def:'personal/index.html', acc:'王旭', pwd:'123456', phone:'13800000001'
+  },
+  company:{
+    key:'company', end:'企业端', short:'企业端',
+    def:'enterprise/index.html', acc:'深圳市云启科技有限公司', pwd:'123456', phone:'13900000002'
+  }
+};
+
+var $ = function(id){ return document.getElementById(id); };
+var role = (QS.get('role') === 'company' || QS.get('end') === 'company') ? 'company' : 'person';
+
+/* 登录方式：当前方式 + 两个可切换位置（点哪一项，那一项就变成刚切走的方式） */
+var MODE_LABEL = { pwd:'账号密码登录', sms:'手机验证码登录', qr:'扫码登录' };
+var mode = 'pwd';
+var slotModes = ['sms', 'qr'];
+var codeTimer = null, sentCode = '';
+
+/* ---------- 通用提示 ---------- */
+var toastTimer = null;
+function toast(msg, type){
+  var t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+}
+
+/* ---------- 登录拦截提示 ---------- */
+if (GATE) {
+  $('gateBar').classList.add('show');
+  $('gateBar').textContent = '该操作需要登录：' + decodeURIComponent(GATE) + '　完成登录后将回到原页面。';
+}
+
+/* ---------- 身份切换 ---------- */
+function renderRole(){
+  document.querySelectorAll('#roleSeg button').forEach(function(b){
+    b.classList.toggle('active', b.dataset.role === role);
+  });
+  document.title = '登录 · ' + ROLES[role].end + ' · DAKA';
+  /* 表单预填：账号带出、密码留空，避免切换身份后沿用上一端凭据 */
+  $('acc').value = ROLES[role].acc;
+  $('pwd').value = '';
+  $('pwd').type = 'password';
+  $('pwdEye').innerHTML = EYE_ON;
+  $('pwdEye').classList.remove('on');
+  $('phone').value = ROLES[role].phone;
+  $('code').value = '';
+  clearErr();
+  resetQr();
+  resetCode();
+}
+document.querySelectorAll('#roleSeg button').forEach(function(b){
+  b.addEventListener('click', function(){
+    if (role === b.dataset.role) return;
+    role = b.dataset.role;
+    renderRole();
+    toast('已切换到' + ROLES[role].end + '登录');
+  });
+});
+
+/* ---------- 登录方式切换 ---------- */
+function setMode(m){
+  mode = m;
+  $('panePwd').classList.toggle('on', m === 'pwd');
+  $('paneSms').classList.toggle('on', m === 'sms');
+  $('paneQr').classList.toggle('on', m === 'qr');
+  clearErr();
+}
+function renderAltModes(){
+  $('altMode0').textContent = MODE_LABEL[slotModes[0]];
+  $('altMode1').textContent = MODE_LABEL[slotModes[1]];
+}
+function switchBySlot(i){
+  var prev = mode;
+  mode = slotModes[i];
+  slotModes[i] = prev;       /* 点过的那一项换成刚才的登录方式，可再点回来 */
+  setMode(mode);
+  renderAltModes();
+}
+document.querySelectorAll('.alt-modes button[data-slot]').forEach(function(b){
+  b.addEventListener('click', function(){ switchBySlot(Number(b.dataset.slot)); });
+});
+
+/* ---------- 二维码绘制（确定性图案，不依赖外部库） ---------- */
+function drawQr(){
+  var cv = $('qr'), ctx = cv.getContext('2d');
+  var N = 29, cell = cv.width / N;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.fillStyle = '#1A2231';
+  var seed = 20261103;
+  function rnd(){ seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; }
+  for (var y = 0; y < N; y++) for (var x = 0; x < N; x++){
+    var inFinder = (x < 9 && y < 9) || (x > N - 10 && y < 9) || (x < 9 && y > N - 10);
+    if (!inFinder && rnd() > 0.52) ctx.fillRect(x * cell, y * cell, cell + 0.5, cell + 0.5);
+  }
+  function finder(fx, fy){
+    ctx.fillStyle = '#1A2231'; ctx.fillRect(fx * cell, fy * cell, 7 * cell, 7 * cell);
+    ctx.fillStyle = '#fff';     ctx.fillRect((fx + 1) * cell, (fy + 1) * cell, 5 * cell, 5 * cell);
+    ctx.fillStyle = '#1A2231'; ctx.fillRect((fx + 2) * cell, (fy + 2) * cell, 3 * cell, 3 * cell);
+  }
+  finder(0, 0); finder(N - 7, 0); finder(0, N - 7);
+  ctx.fillStyle = '#0D77FF'; ctx.fillRect(12 * cell, 12 * cell, 5 * cell, 5 * cell);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold ' + (3.4 * cell) + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('D', 14.5 * cell, 14.7 * cell);
+}
+drawQr();
+function resetQr(){
+  $('qrBox').classList.remove('scanned');
+  $('qrMsg').textContent = '扫描成功，正在登录…';
+}
+$('qrBox').addEventListener('click', function(){
+  if ($('qrBox').classList.contains('scanned')) return;
+  if (!$('agree').checked){ $('agree-msg').classList.add('show'); return; }
+  $('agree-msg').classList.remove('show');
+  $('qrBox').classList.add('scanned');
+  setTimeout(function(){ doLogin(role, 'qr'); }, 900);
+});
+
+/* ---------- 验证码 ---------- */
+function resetCode(){
+  clearInterval(codeTimer); codeTimer = null;
+  $('btnCode').disabled = false;
+  $('btnCode').textContent = '获取验证码';
+  sentCode = '';
+}
+$('btnCode').addEventListener('click', function(){
+  clearErr();
+  var p = $('phone').value.trim();
+  if (!/^1\d{10}$/.test(p)){ setErr('fPhone', 'mPhone', '请输入正确的 11 位手机号'); $('phone').focus(); return; }
+  sentCode = DEMO_CODE;
+  $('code').value = DEMO_CODE;
+  toast('验证码已发送至 ' + p + '（演示验证码：' + DEMO_CODE + '）');
+  var left = 60;
+  $('btnCode').disabled = true;
+  $('btnCode').textContent = left + 's 后重发';
+  codeTimer = setInterval(function(){
+    left--;
+    if (left <= 0){ resetCode(); return; }
+    $('btnCode').textContent = left + 's 后重发';
+  }, 1000);
+});
+$('btnSms').addEventListener('click', function(){
+  clearErr();
+  var p = $('phone').value.trim(), c = $('code').value.trim();
+  if (!/^1\d{10}$/.test(p)){ setErr('fPhone', 'mPhone', '请输入正确的 11 位手机号'); $('phone').focus(); return; }
+  if (!sentCode){ setErr('fCode', 'mCode', '请先点击「获取验证码」'); return; }
+  if (!/^\d{6}$/.test(c)){ setErr('fCode', 'mCode', '请输入 6 位数字验证码'); $('code').focus(); return; }
+  if (c !== sentCode){ setErr('fCode', 'mCode', '验证码不正确，演示验证码为 ' + DEMO_CODE); $('code').focus(); return; }
+  if (!$('agree').checked){ $('agree-msg').classList.add('show'); return; }
+  var btn = $('btnSms'); btn.disabled = true; btn.textContent = '登录中…';
+  setTimeout(function(){ doLogin(role, 'sms'); }, 500);
+});
+
+/* ---------- 账号密码 ---------- */
+var EYE_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.2 12S5.8 5.6 12 5.6 21.8 12 21.8 12 18.2 18.4 12 18.4 2.2 12 2.2 12Z"/><circle cx="12" cy="12" r="2.9"/></svg>';
+var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.9 9.9 0 0 1 12 6c6.2 0 9.8 6 9.8 6a17 17 0 0 1-3.2 3.9"/><path d="M6.5 7.7A16.8 16.8 0 0 0 2.2 12s3.6 6 9.8 6a9.6 9.6 0 0 0 4.1-.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
+$('pwdEye').innerHTML = EYE_ON;
+$('pwdEye').addEventListener('click', function(){
+  var show = $('pwd').type === 'password';
+  $('pwd').type = show ? 'text' : 'password';
+  $('pwdEye').innerHTML = show ? EYE_OFF : EYE_ON;
+  $('pwdEye').classList.toggle('on', show);
+  $('pwdEye').title = show ? '隐藏密码' : '显示密码';
+});
+
+$('btnPwd').addEventListener('click', function(){
+  clearErr();
+  var a = $('acc').value.trim(), p = $('pwd').value.trim();
+  if (!a){ setErr('fAcc', 'mAcc', '请输入账号'); $('acc').focus(); return; }
+  var hit = Object.keys(ROLES).filter(function(r){ return ROLES[r].acc === a; })[0];
+  if (!hit){
+    setErr('fAcc', 'mAcc', '账号不存在，当前身份演示账号：' + ROLES[role].acc);
+    $('acc').focus(); return;
+  }
+  /* 账号属于另一端时自动切换身份，并提示用户 */
+  if (hit !== role){
+    role = hit;
+    document.querySelectorAll('#roleSeg button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.role === role);
+    });
+    toast('该账号属于' + ROLES[role].end + '，已自动切换身份');
+  }
+  if (!p){ setErr('fPwd', 'mPwd', '请输入密码'); $('pwd').focus(); return; }
+  if (p !== ROLES[hit].pwd){ setErr('fPwd', 'mPwd', '密码不正确，演示密码为 ' + ROLES[hit].pwd); $('pwd').focus(); return; }
+  if (!$('agree').checked){ $('agree-msg').classList.add('show'); return; }
+  var btn = $('btnPwd'); btn.disabled = true; btn.textContent = '登录中…';
+  setTimeout(function(){ doLogin(hit, 'pwd'); }, 500);
+});
+
+['acc', 'pwd', 'phone', 'code'].forEach(function(id){
+  $(id).addEventListener('input', function(){ clearErr(); });
+  $(id).addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') return;
+    if (mode === 'sms') $('btnSms').click();
+    else if (mode === 'pwd') $('btnPwd').click();
+  });
+});
+
+/* ---------- 校验提示 ---------- */
+function setErr(fid, mid, msg){
+  $(fid).classList.add('invalid');
+  $(mid).textContent = msg;
+  $(mid).classList.add('show');
+}
+function clearErr(){
+  ['fAcc', 'fPwd', 'fPhone', 'fCode'].forEach(function(f){ $(f).classList.remove('invalid'); });
+  ['mAcc', 'mPwd', 'mPhone', 'mCode'].forEach(function(m){ $(m).classList.remove('show'); });
+  $('agree-msg').classList.remove('show');
+}
+
+/* ---------- 登录成功：写会话并回跳 ----------
+   目标页属于另一端时忽略 next，回到本端首页，避免「登录成功却仍是游客态」 */
+function endOfPath(p){
+  if (/(^|\/)enterprise\//.test(p)) return 'company';
+  if (/(^|\/)personal\//.test(p)) return 'person';
+  return 'both';
+}
+function safeNext(def){
+  if (!NEXT) return def;
+  if (/^\s*javascript:/i.test(NEXT)) return def;
+  if (NEXT.indexOf('.html') < 0) return def;
+  var e = endOfPath(NEXT);
+  if (e !== 'both' && e !== role) return def;
+  return NEXT;
+}
+function doLogin(r, via){
+  var R = ROLES[r], now = Date.now();
+  try{
+    localStorage.setItem(US_KEY, JSON.stringify({ role:r, account:R.acc, via:via, at:now }));
+    /* 同步写「记住账号」结构，进入工作台后账号即已记住 */
+    localStorage.setItem(REMEMBER_KEY, JSON.stringify({
+      role:r, account:R.acc, pwd:btoa(unescape(encodeURIComponent(R.pwd))), at:now
+    }));
+  }catch(e){}
+  var btn = $('btn' + via.charAt(0).toUpperCase() + via.slice(1));
+  if (btn) btn.textContent = '登录成功，正在进入' + R.end + '…';
+  setTimeout(function(){ location.href = safeNext(R.def); }, 420);
+}
+
+/* ---------- 忘记密码（原型占位） ---------- */
+$('forgotLink').addEventListener('click', function(){
+  toast('演示环境暂不支持自助找回，请联系管理员重置密码');
+});
+
+/* ---------- 启动 ---------- */
+renderRole();
+setMode(mode);
+renderAltModes();
+document.title = '登录 · ' + ROLES[role].end + ' · DAKA';
+</script>
+</body>
+</html>

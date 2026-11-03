@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 角色管理（sys_role）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_role.html","table":"sys_role","title":"角色管理","group":"后台配置域","pk":"role_id","desc":"角色表（sys_role）：后台管理角色与业务角色统一管理","fields":[{"k":"role_id","label":"角色ID","type":"pk","required":false,"wide":false},{"k":"role_code","label":"角色编码","type":"text","required":true,"wide":false},{"k":"role_name","label":"角色名称","type":"text","required":true,"wide":false},{"k":"end_type","label":"适用端","type":"select","required":false,"wide":false,"options":[["enterprise","企业端"],["personal","个人端"],["all","全部"]],"badge":{},"def":"all"},{"k":"remark","label":"角色说明","type":"area","required":false,"wide":true},{"k":"status","label":"状态","type":"select","required":false,"wide":false,"options":[["1","正常"],["0","禁用"]],"badge":{"1":"green","0":"red"},"def":"1"},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"deleted","label":"逻辑删除标记","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"}],"cols":["role_id","role_code","role_name","end_type","status","remark"],"search":["role_code","role_name","remark"],"filters":["end_type","status"],"audit":false});
+
+</script>
+</body>
+</html>

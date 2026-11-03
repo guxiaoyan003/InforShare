@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 控制台首页</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script>
+
+/* ===================== 后台首页 ===================== */
+(function(){
+  const s = guard('home.html'); if(!s) return;
+  const db = loadDB(), t = db.tables;
+  const n = (k)=> (t[k]||[]).length;
+  const pendingContent = ['biz_project','biz_job','biz_ai_course']
+    .reduce((a,k)=>a + (t[k]||[]).filter(r=>String(r.publish_status)==='pending').length, 0);
+  const pendingAuth = (t.biz_identity_auth_apply||[]).filter(r=>String(r.status)==='1').length;
+  const auditTotal = n('biz_audit_record');
+  const fmt = (v)=>String(v==null?'—':v);
+
+  const stats = [
+    {label:'平台用户账号', val:n('sys_user'), sub:'sys_user · 个人端 + 企业端', cls:'accent'},
+    {label:'内容总数', val:n('biz_project')+n('biz_job')+n('biz_ai_course'), sub:'项目 / 岗位 / AI培训', cls:''},
+    {label:'待审核内容', val:pendingContent, sub:'publish_status = pending', cls:'warn'},
+    {label:'待审核认证', val:pendingAuth, sub:'实名 / 营业执照认证', cls:'warn'},
+    {label:'申请单 / 订单', val:n('biz_application')+' / '+n('biz_order'), sub:'申请与沟通域 + 收费域', cls:''},
+    {label:'审批流水', val:auditTotal, sub:'含审批人与审批时间', cls:'ok'}
+  ];
+  let h = '<div class="page-head"><div class="ph-txt"><div class="page-title">后台首页'+
+    '<span class="tbl-code">OVERVIEW</span></div></div>'+
+    '<a class="btn btn-primary" href="'+pageHref('audit.html')+'">前往审批工作台 →</a></div>';
+  h += '<div class="stat-row">'+stats.map(x=>
+    '<div class="stat-card '+x.cls+'"><div class="s-label">'+esc(x.label)+'</div>'+
+    '<div class="s-val">'+esc(x.val)+'</div><div class="s-sub">'+esc(x.sub)+'</div></div>').join('')+'</div>';
+
+  h += '<div class="grid-2">';
+  /* 快捷入口 */
+  const quick = [
+    ['audit.html','内容发布审批','审批通过 / 驳回 / 下架，自动记录审批人与时间'],
+    ['sys_user.html','用户账号','个人端与企业端统一账号的增删改查'],
+    ['sys_admin_user.html','后台账户','后台管理人员账号与状态管理'],
+    ['biz_project.html','项目管理','外包 / 咨询 / AI私教 三类合一'],
+    ['biz_job.html','岗位管理','招聘 / 外包 / 实习 三类合一'],
+    ['sys_config.html','全局参数配置','默认收费、审批开关等全局配置'],
+    ['sys_menu.html','菜单配置','可见性 / 实名 / 登录方式开关'],
+    ['biz_fee_rule.html','收费标准规则','按次数 / 年 / 月收费，默认免费'],
+    ['sys_dict_item.html','字典项','项目类型 / 状态 / 计费方式枚举']
+  ];
+  h += '<div class="card sec-card"><div class="sec-head"><h3>快捷入口</h3><span class="sh-sub">常用管理功能</span></div>'+
+    '<div class="quick-grid">'+quick.map(q=>
+      '<a class="quick-item" href="'+pageHref(q[0])+'"><div class="qi-t">▦ '+esc(q[1])+'</div>'+
+      '<div class="qi-d">'+esc(q[2])+'</div></a>').join('')+'</div>';
+  /* 最近审批 */
+  const recent = (t.biz_audit_record||[]).slice().reverse().slice(0,6);
+  const actionMap = {submit:'提交审核',approve:'审核通过',reject:'审核驳回',offline:'下架',reopen:'重新开放'};
+  h += '<div class="sec-head" style="margin-top:22px"><h3>最近审批记录</h3>'+
+       '<a class="sh-sub" href="'+pageHref('biz_audit_record.html')+'" style="color:var(--blue-600)">查看全部 →</a></div>'+
+       '<table class="mini-tbl"><tbody>'+(recent.length?recent.map(r=>
+         '<tr><td><span class="tag">'+esc(r.module)+'</span> '+esc(actionMap[r.action]||r.action)+'</td>'+
+         '<td>'+esc(r.biz_type)+' #'+esc(r.biz_id)+'</td>'+
+         '<td>审批人 ID '+esc(r.auditor_admin_id==null?'—':r.auditor_admin_id)+'</td>'+
+         '<td>'+esc(String(r.audit_time||'').slice(0,16))+'</td></tr>').join(''):
+         '<tr><td>暂无审批记录</td></tr>')+'</tbody></table></div>';
+
+  /* 数据表一览 */
+  h += '<div class="card sec-card"><div class="sec-head"><h3>数据表一览</h3><span class="sh-sub">'+Object.keys(t).length+' 张表 · 点击查看数据</span></div><div class="tbl-list">';
+  NAV.forEach(g=>{
+    g[1].forEach(it=>{
+      if(!it[0].endsWith('.html') || it[0]==='home.html' || it[0]==='audit.html') return;
+      const key = it[0].replace('.html','');
+      if(!(key in t)) return;
+      h += '<a class="tbl-row" href="'+pageHref(it[0])+'"><span class="tr-name">'+esc(it[1])+'</span>'+
+           '<span class="tr-code">'+esc(key)+'</span>'+
+           '<span class="tr-cnt">'+n(key)+' 条</span></a>';
+    });
+  });
+  h += '</div><div class="info-box" style="margin-top:16px;margin-bottom:0">'+
+    '所有页面数据保存在浏览器 <b>localStorage</b> 中并互相共享：在任一页面的新增 / 编辑 / 物理删除 / 审批操作，'+
+    '刷新其他页面即可看到结果。点击顶栏「重置演示数据」可恢复初始状态。</div></div>';
+  h += '</div>';
+  $('content').innerHTML = h;
+})();
+
+</script>
+</body>
+</html>

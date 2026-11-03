@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 收费订单（biz_order）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"biz_order.html","table":"biz_order","title":"收费订单","group":"收费域","pk":"order_id","desc":"收费订单（biz_order）：项目与课程按次数/年/月付费产生","fields":[{"k":"order_id","label":"订单ID","type":"pk","required":false,"wide":false},{"k":"order_no","label":"订单号","type":"text","required":true,"wide":false},{"k":"application_id","label":"关联申请单ID","type":"num","required":false,"wide":false},{"k":"payer_user_id","label":"付款用户ID","type":"num","required":true,"wide":false},{"k":"payee_user_id","label":"收款方用户ID","type":"num","required":false,"wide":false},{"k":"biz_type","label":"购买内容类型","type":"select","required":true,"wide":false,"options":[["project","项目"],["course","AI培训"]],"badge":{},"def":"project"},{"k":"biz_id","label":"购买内容ID","type":"num","required":true,"wide":false},{"k":"fee_mode","label":"计费方式","type":"select","required":true,"wide":false,"options":[["free","免费"],["times","按次数"],["year","按年"],["month","按月"]],"badge":{},"def":"times"},{"k":"fee_amount","label":"订单金额","type":"money","required":true,"wide":false,"def":"0"},{"k":"times_count","label":"购买次数","type":"num","required":false,"wide":false},{"k":"is_free","label":"是否免费单","type":"select","required":false,"wide":false,"options":[["1","是"],["0","否"]],"badge":{},"def":"0"},{"k":"free_reason","label":"免费原因","type":"text","required":false,"wide":false},{"k":"pay_status","label":"支付状态","type":"select","required":true,"wide":false,"options":[["unpaid","待支付"],["paid","已支付"],["refunded","已退款"],["closed","已关闭"]],"badge":{"unpaid":"amber","paid":"green","refunded":"gray","closed":"gray"},"def":"unpaid"},{"k":"pay_channel","label":"支付渠道","type":"select","required":false,"wide":false,"options":[["wechat","微信"],["alipay","支付宝"],["balance","余额"],["manual","人工"]],"badge":{}},{"k":"pay_time","label":"支付完成时间","type":"dt","required":false,"wide":false},{"k":"refund_time","label":"退款时间","type":"dt","required":false,"wide":false},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"},{"k":"updated_at","label":"更新时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["order_id","order_no","payer_user_id","biz_type","biz_id","fee_mode","fee_amount","pay_status","created_at"],"search":["order_no","free_reason"],"filters":["pay_status","fee_mode","is_free"],"audit":false});
+
+</script>
+</body>
+</html>

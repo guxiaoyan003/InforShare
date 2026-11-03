@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DAKA 后台 · 后台人员角色关联（sys_admin_user_role）</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<div class="mask hidden" id="mask"></div>
+<div class="toast" id="toast"></div>
+
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/crud.js"></script>
+<script>
+initCrud({"file":"sys_admin_user_role.html","table":"sys_admin_user_role","title":"后台人员角色关联","group":"用户与认证域","pk":"id","desc":"后台人员与角色关联表（sys_admin_user_role）","fields":[{"k":"id","label":"主键ID","type":"pk","required":false,"wide":false},{"k":"admin_id","label":"后台人员ID","type":"num","required":true,"wide":false},{"k":"role_id","label":"角色ID","type":"num","required":true,"wide":false},{"k":"created_at","label":"创建时间","type":"dt","required":false,"wide":false,"def":"2026-11-02 10:00:00"}],"cols":["id","admin_id","role_id","created_at"],"search":["admin_id","role_id"],"filters":[],"audit":false});
+
+</script>
+</body>
+</html>
